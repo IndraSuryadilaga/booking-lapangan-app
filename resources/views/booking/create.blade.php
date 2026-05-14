@@ -14,8 +14,4 @@
             </div>
         </div>
     </div>
-<<<<<<< HEAD
-
-=======
->>>>>>> f6fb88c (WEB2-06 feat: update navigation and dashboard for user authentication, add booking route, and modify test assertions)
 </x-app-layout>
