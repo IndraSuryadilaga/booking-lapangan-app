@@ -17,4 +17,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/admin/test', function () {
+    return 'Halo Admin! Anda berhasil masuk ke benteng pertahanan.';
+})->middleware('admin');
+
+Route::get('/styleguide', function () {
+    return view('styleguide');
+});
+
 require __DIR__.'/auth.php';
