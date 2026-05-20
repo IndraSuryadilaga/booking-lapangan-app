@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AdminFieldController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -28,6 +29,14 @@ Route::get('/admin/test', function () {
 
 Route::get('/styleguide', function () {
     return view('styleguide');
+});
+
+// Grup Route khusus Admin (Terlindungi oleh Middleware keamanan admin buatan Indra)
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // Route otomatis untuk semua fitur CRUD (index, create, store, edit, update, destroy)
+    Route::resource('fields', AdminFieldController::class);
+    
 });
 
 require __DIR__.'/auth.php';
