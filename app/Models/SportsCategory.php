@@ -8,7 +8,8 @@ class SportsCategory extends Model
 {
     protected $fillable = [
         'name',
+        'slug',
+        'icon',
         'is_active',
     ];
 }
-?>
