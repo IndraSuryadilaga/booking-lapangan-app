@@ -180,10 +180,36 @@
 
 ---
 
+### **Task 2.5: Implementasi Standarisasi UI/UX Admin & Navigasi**
+- **ID**: `feature/11-admin-ui-enhancement`
+- **Deskripsi**: Menyempurnakan tampilan halaman CRUD Kategori Olahraga dan Lapangan agar sesuai dengan Design Guideline, termasuk penerapan tabel responsif, modal konfirmasi penghapusan, empty state, validasi form, serta penyempurnaan navigasi pada Navbar.
+- **Assignee**: Anggota C (Frontend) atau Anggota B (Fullstack)
+- **Dependencies**: `feature/08-crud-categories`, `feature/10-crud-fields`
+
+**Langkah Teknis:**
+1. **Layout & Navigasi (Navbar, Sidebar, Breadcrumb)**:
+    - **Navbar**: Implementasikan navigasi atas (Navbar) yang bersifat sticky dengan utilitas `backdrop-blur-sm bg-white/80` saat halaman di-scroll ke bawah. Pastikan tinggi navbar tetap (h-16). Untuk pengguna layar kecil (mobile), buat menu hamburger fungsional menggunakan Alpine.js (`x-show` beserta slide transition). Berikan indikator visual pada menu yang sedang aktif menggunakan teks `text-primary-600 font-semibold` dan garis bawah `border-b-2 border-primary-600`.
+    - **Sidebar Admin**: Pastikan menggunakan warna latar `bg-gray-900` dengan teks `text-gray-300`, dan menu aktif ditandai dengan `bg-gray-800 text-white rounded-lg`.
+    - **Breadcrumb**: Implementasikan di bagian atas halaman detail dan manajemen admin sebagai panduan lokasi halaman bagi pengguna.
+2. **Tabel Responsif & Ikon**: Buat tabel daftar kategori dan lapangan menggunakan wrapper `overflow-x-auto` dan `min-w-full` untuk tampilan seluler. Gunakan komponen tombol ukuran sm (`px-3 py-1.5 text-xs`) di dalam baris tabel untuk aksi. Tambahkan Heroicons berjenis outline (ukuran `size-4` di dalam tombol), seperti `PencilSquareIcon` untuk Edit dan `TrashIcon` untuk Hapus.
+3. **Modal Konfirmasi (Aksesibilitas)**: Buat komponen Modal Konfirmasi menggunakan Alpine.js (dengan durasi transisi masuk 300ms). Modal ini wajib dipanggil dan ditampilkan pada setiap aksi destruktif (seperti menghapus kategori atau lapangan) sebelum data benar-benar dihapus. Tombol hapus di dalam modal harus menggunakan `variant-danger`.
+4. **Form & Pesan Kesalahan**: Terapkan error state visual yang jelas pada form input apabila validasi Laravel gagal, dan pastikan setiap input memiliki `<label>` yang terhubung dengan baik via `for` / `id`.
+5. **Empty State & Flash Message**: Buat tampilan Empty State yang informatif apabila data kategori atau lapangan masih kosong di tabel. Sempurnakan tampilan Flash Message (Alert) menggunakan warna semantic (misalnya token warna success dengan hex `#16a34a` atau kelas `green-600`) untuk operasi CRUD yang berhasil.
+
+**Acceptance Criteria:**
+- [ ] Navigasi Navbar terimplementasi dengan baik, merespons scroll (sticky), memiliki menu hamburger interaktif pada ukuran layar mobile, dan menyoroti menu halaman yang sedang aktif.
+- [ ] Tampilan tabel dapat digeser (scroll) secara horizontal pada layar mobile tanpa merusak layout halaman.
+- [ ] Menekan tombol "Hapus" pada data kategori atau lapangan tidak langsung menghapus data, melainkan memunculkan Modal Konfirmasi terlebih dahulu.
+- [ ] Pesan error dan flash message sukses muncul dengan warna dan desain yang sesuai guideline.
+- [ ] Halaman menampilkan Empty State (bukan layar kosong atau error) jika database kategori/lapangan tidak memiliki isi.
+- [ ] Sidebar dan Breadcrumb berfungsi sebagai indikator navigasi yang jelas.
+
+---
+
 ## Epic 3: Sistem Booking (Core Logic)
 
-### **Task 1: Migration untuk bookings dan booking_slots**
-- **ID**: `feature/11-db-bookings`
+### **Task 3.1: Migration untuk bookings dan booking_slots**
+- **ID**: `feature/3.1-db-bookings`
 - **Deskripsi**: Membuat skema database untuk menyimpan data pesanan dan detail slot waktu yang dipesan.
 - **Assignee**: Orlando Sugian
 
@@ -198,8 +224,8 @@
 
 ---
 
-### **Task 2: API Ketersediaan Slot**
-- **ID**: `feature/12-api-availability`
+### **Task 3.2: API Ketersediaan Slot**
+- **ID**: `feature/3.2-api-availability`
 - **Deskripsi**: Membuat endpoint API untuk mengecek ketersediaan slot secara dinamis.
 - **Assignee**: Anggota B (Fullstack)
 
@@ -216,8 +242,8 @@
 
 ---
 
-### **Task 3: Service & Validasi Booking**
-- **ID**: `feature/13-booking-service`
+### **Task 3.3: Service & Validasi Booking**
+- **ID**: `feature/3.3-booking-service`
 - **Deskripsi**: Mengembangkan `BookingService` untuk menangani semua logika bisnis booking secara atomik.
 - **Assignee**: Lead / Anggota A (Backend)
 
@@ -236,8 +262,8 @@
 
 ---
 
-### **Task 4: UI Booking & Interaksi Pengguna**
-- **ID**: `feature/14-ui-booking`
+### **Task 3.4: UI Booking & Interaksi Pengguna**
+- **ID**: `feature/3.4-ui-booking`
 - **Deskripsi**: Membangun antarmuka halaman detail lapangan tempat pengguna memilih slot.
 - **Assignee**: Anggota B (Frontend/Fullstack)
 
@@ -257,8 +283,8 @@
 
 ## Epic 4: Transaksi & Otomatisasi
 
-### **Task 1: Buat Migration dan relasi untuk payments**
-- **ID**: `feature/15-db-payments`
+### **Task 4.1: Buat Migration dan relasi untuk payments**
+- **ID**: `feature/4.1-db-payments`
 - **Deskripsi**: Membuat skema database untuk menyimpan riwayat transaksi pembayaran.
 - **Assignee**: Orlando Sugian
 
@@ -273,8 +299,8 @@
 
 ---
 
-### **Task 2: Simulasi Sistem Pembayaran**
-- **ID**: `feature/16-payment-system`
+### **Task 4.2: Simulasi Sistem Pembayaran**
+- **ID**: `feature/4.2-payment-system`
 - **Deskripsi**: Membuat halaman simulasi pembayaran dan logika untuk mengubah status booking.
 - **Assignee**: Anggota B (Fullstack)
 
@@ -292,8 +318,8 @@
 
 ---
 
-### **Task 3: Job Otomatisasi: Kedaluwarsa**
-- **ID**: `feature/17-job-expiration`
+### **Task 4.3: Job Otomatisasi: Kedaluwarsa**
+- **ID**: `feature/4.3-job-expiration`
 - **Deskripsi**: Membuat job terjadwal untuk membatalkan booking yang tidak dibayar.
 - **Assignee**: Anggota A (Backend)
 
@@ -309,8 +335,8 @@
 
 ---
 
-### **Task 4: Job Otomatisasi: Selesai**
-- **ID**: `feature/18-job-completion`
+### **Task 4.4: Job Otomatisasi: Selesai**
+- **ID**: `feature/4.4-job-completion`
 - **Deskripsi**: Membuat job terjadwal untuk mengubah status booking yang telah selesai.
 - **Assignee**: Anggota A (Backend)
 
