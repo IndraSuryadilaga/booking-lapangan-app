@@ -4,21 +4,25 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\SportsCategory;
+use Illuminate\Support\Str;
 
 class SportsCategorySeeder extends Seeder
 {
     public function run(): void
     {
-        SportsCategory::create([
-            'name' => 'Futsal'
-        ]);
+        $categories = [
+            'Futsal',
+            'Badminton',
+            'Basket',
+        ];
 
-        SportsCategory::create([
-            'name' => 'Badminton'
-        ]);
-
-        SportsCategory::create([
-            'name' => 'Basket'
-        ]);
+        foreach ($categories as $category) {
+            SportsCategory::create([
+                'name' => $category,
+                'slug' => Str::slug($category),
+                'icon' => null,
+                'is_active' => true,
+            ]);
+        }
     }
 }

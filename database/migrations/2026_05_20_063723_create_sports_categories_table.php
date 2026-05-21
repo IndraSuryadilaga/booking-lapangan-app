@@ -12,11 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sports_categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
-
-        });
+    $table->id();
+    $table->string('name');
+    $table->string('slug')->unique();
+    $table->string('icon')->nullable();
+    $table->boolean('is_active')->default(true);
+    $table->timestamps();
+});
     }
 
     /**
