@@ -321,25 +321,36 @@ project-root/
 │   ├── Http/
 │   │   ├── Controllers/
 │   │   │   ├── Auth/               ← LoginController, RegisterController
+│   │   │   ├── VenueController.php
 │   │   │   ├── BookingController.php
-│   │   │   ├── FieldController.php
 │   │   │   ├── PaymentController.php
 │   │   │   ├── DashboardController.php
+│   │   │   └── ReviewController.php
 │   │   │   └── Admin/
 │   │   │       ├── AdminDashboardController.php
-│   │   │       ├── AdminFieldController.php
+│   │   │       ├── AdminVenueController.php
+│   │   │       ├── AdminFieldController.php      ← Nested under Venue
+│   │   │       ├── AdminFacilityController.php
 │   │   │       ├── AdminBookingController.php
-│   │   │       └── AdminSportsCategoryController.php
+│   │   │       ├── AdminSportsCategoryController.php
+│   │   │       └── AdminPublicHolidayController.php
 │   │   ├── Middleware/
 │   │   │   └── IsAdmin.php         ← Middleware proteksi rute admin
 │   │   └── Requests/
 │   │       ├── StoreBookingRequest.php
-│   │       └── StoreFieldRequest.php
+│   │       ├── StoreVenueRequest.php
+│   │       └── StoreFieldRequest.php   ← Disesuaikan untuk konteks venue
 │   ├── Models/
 │   │   ├── User.php
+│   │   ├── Venue.php
 │   │   ├── Field.php
-│   │   ├── SportsCategory.php
+│   │   ├── FieldImage.php
 │   │   ├── FieldOperatingHour.php
+│   │   ├── FieldPricing.php
+│   │   ├── SportsCategory.php
+│   │   ├── Facility.php
+│   │   ├── PublicHoliday.php
+│   │   ├── Review.php
 │   │   ├── Booking.php
 │   │   ├── BookingSlot.php
 │   │   └── Payment.php
@@ -353,8 +364,10 @@ project-root/
 │   └── seeders/
 │       ├── DatabaseSeeder.php
 │       ├── AdminUserSeeder.php
+│       ├── VenueSeeder.php
+│       ├── FieldSeeder.php
 │       ├── SportsCategorySeeder.php
-│       └── FieldSeeder.php
+│       └── FacilitySeeder.php
 ├── resources/
 │   ├── views/
 │   │   ├── layouts/
@@ -363,15 +376,17 @@ project-root/
 │   │   ├── auth/
 │   │   ├── pages/
 │   │   │   ├── home.blade.php
-│   │   │   ├── catalog.blade.php
-│   │   │   └── field-detail.blade.php
+│   │   │   ├── venue-catalog.blade.php
+│   │   │   └── venue-detail.blade.php  ← Menampilkan detail venue & field-nya
 │   │   ├── dashboard/
 │   │   │   ├── index.blade.php
 │   │   │   ├── bookings/
 │   │   │   └── transactions/
 │   │   ├── admin/
 │   │   │   ├── dashboard.blade.php
-│   │   │   ├── fields/
+│   │   │   ├── venues/
+│   │   │   │   └── fields/             ← Manajemen field di dalam venue
+│   │   │   ├── facilities/
 │   │   │   ├── categories/
 │   │   │   └── bookings/
 │   │   └── errors/
