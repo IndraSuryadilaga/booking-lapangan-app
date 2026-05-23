@@ -181,7 +181,7 @@
 ---
 
 ### **Task 2.5: Implementasi Standarisasi UI/UX Admin & Navigasi**
-- **ID**: `feature/11-admin-ui-enhancement`
+- **ID**: `feature/2.5-admin-ui-enhancement`
 - **Deskripsi**: Menyempurnakan tampilan halaman CRUD Kategori Olahraga dan Lapangan agar sesuai dengan Design Guideline, termasuk penerapan tabel responsif, modal konfirmasi penghapusan, empty state, validasi form, serta penyempurnaan navigasi pada Navbar.
 - **Assignee**: Anggota C (Frontend) atau Anggota B (Fullstack)
 - **Dependencies**: `feature/08-crud-categories`, `feature/10-crud-fields`
@@ -224,6 +224,64 @@
 - [ ] Keempat tabel berhasil dibuat di database dengan tipe data dan constraint Foreign Key yang tepat.
 - [ ] Relasi Eloquent belongsToMany dapat memanggil fasilitas dan kategori olahraga dari sebuah Venue tanpa error.
 - [ ] Seeder berjalan sukses dan mengisi data awal.
+
+---
+
+### **Task 2.7: Setup Database Lapangan (Fields, Images, Hours, Pricing)**
+- **ID**: `feature/2.7-db-fields-module`
+- **Deskripsi**: Membuat migrasi, model, dan seeder untuk tabel fields, field_images, field_operating_hours, dan field_pricing.
+- **Assignee**: Ndzul (Anggota Tim)
+- **Dependencies**: `feature/2.6-db-facilities-venues` (Harus menunggu selesai membuat Venue).
+
+**Langkah Teknis:**
+1. Buat migration untuk fields (pastikan ada venue_id dan sports_category_id).
+2. Buat migration untuk field_images (tambahkan logic/trigger atau Observer Eloquent untuk handle is_primary).
+3. Buat migration untuk field_operating_hours (0 = Minggu hingga 6 = Sabtu).
+4. Buat migration untuk field_pricing (berisi ENUM weekday, weekend, holiday).
+5. Definisikan relasi Eloquent di Model Field (belongsTo Venue, hasMany Images, Hours, dan Pricing).
+6. Buat FieldSeeder yang mengaitkan lapangan ke Venue pertama di database.
+
+**Acceptance Criteria:**
+- [ ] Keempat tabel berhasil di-migrate tanpa masalah Foreign Key.
+- [ ] Model Field dapat memanggil semua data relasinya dengan sukses.
+
+---
+
+### **Task 2.8: CRUD Lapangan & Galeri Foto**
+- **ID**: `feature/2.8-crud-fields-images`
+- **Deskripsi**: Membangun antarmuka untuk Admin mengelola data utama lapangan dan mengunggah galeri foto lapangan.
+- **Assignee**: Ndzul (Anggota Tim)
+
+**Langkah Teknis:**
+1. Buat AdminFieldController (metode index, create, store, edit, update, destroy).
+2. Modifikasi form create/edit agar Admin wajib memilih venue_id tempat lapangan ini berada.
+3. Buat fitur upload multiple foto untuk field_images menggunakan Laravel Storage (jangan lupa jalankan php artisan storage:link).
+4. Berikan tombol antarmuka untuk mengatur foto mana yang menjadi is_primary = 1.
+
+**Acceptance Criteria:**
+- [ ] Admin dapat menambah, mengedit, dan menghapus Lapangan.
+- [ ] Admin dapat mengunggah banyak foto sekaligus untuk satu lapangan.
+- [ ] Hanya ada satu foto yang berstatus primary per lapangan.
+- [ ] Menghapus lapangan akan otomatis menghapus file fotonya dari storage lokal.
+
+---
+
+### **Task 2.9: Manajemen Jam Operasional & Harga Lapangan**
+- **ID**: `feature/2.9-crud-fields-hours-pricing`
+- **Deskripsi**: Membangun form antarmuka dinamis untuk menetapkan jam buka-tutup (7 hari) dan menetapkan 3 skema harga (Weekday, Weekend, Holiday) per lapangan.
+- **Assignee**: Ndzul (Anggota Tim)
+- **Dependencies**: `feature/10a-crud-fields-images`
+
+**Langkah Teknis:**
+1. Buat view manajemen khusus (atau tab terpisah di halaman detail lapangan) untuk Hours dan Pricing.
+2. Pada jam operasional, buat form looping untuk 7 hari (Minggu s/d Sabtu) yang memungkinkan input open_time, close_time, dan toggle is_open.
+3. Pada harga, sediakan 3 input tetap (Weekday, Weekend, Holiday) yang akan disimpan ke tabel field_pricing.
+4. Bungkus proses insert/update menggunakan DB::transaction() agar data tersimpan secara atomik.
+
+**Acceptance Criteria:**
+- [ ] Admin dapat mengatur jam buka dan tutup spesifik untuk tiap hari dalam seminggu.
+- [ ] Admin dapat mengisi 3 jenis harga, dan harga tersebut tersimpan dengan benar di tabel field_pricing.
+- [ ] Terdapat validasi backend yang memastikan close_time harus lebih besar dari open_time.
 
 ---
 
