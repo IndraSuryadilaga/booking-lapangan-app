@@ -206,6 +206,27 @@
 
 ---
 
+### **Task 2.6: Setup Database Fasilitas & Venue (Master Data)**
+- **ID**: `feature/2.6-db-facilities-venues`
+- **Deskripsi**: Membuat migrasi, model, dan seeder untuk tabel facilities, venues, serta tabel pivot venue_sport_categories dan venue_facilities.
+- **Assignee**: Orlando Sugian
+
+**Langkah Teknis:**
+1. Buat migration untuk facilities (id, name, icon).
+2. Buat migration untuk venues (id, name, slug, address, city, province, latitude, longitude, rating_avg, review_count, refund_policy, reschedule_policy, logo, rating_avg, review_count).
+3. Buat migration untuk tabel pivot venue_sport_categories (venue_id, sports_category_id).
+4. Buat migration untuk tabel pivot venue_facilities (venue_id, facility_id).
+5. Buat Model Facility dan Venue.
+6. Definisikan relasi belongsToMany di Model Venue untuk menghubungkannya dengan Facility dan SportsCategory.
+7. Buat VenueSeeder beserta data fasilitas penunjangnya.
+
+**Acceptance Criteria:**
+- [ ] Keempat tabel berhasil dibuat di database dengan tipe data dan constraint Foreign Key yang tepat.
+- [ ] Relasi Eloquent belongsToMany dapat memanggil fasilitas dan kategori olahraga dari sebuah Venue tanpa error.
+- [ ] Seeder berjalan sukses dan mengisi data awal.
+
+---
+
 ## Epic 3: Sistem Booking (Core Logic)
 
 ### **Task 3.1: Migration untuk bookings dan booking_slots**
