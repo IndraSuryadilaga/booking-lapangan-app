@@ -287,20 +287,23 @@
 
 ## Epic 3: Sistem Booking (Core Logic)
 
-### **Task 3.1: Migration untuk bookings dan booking_slots**
-- **ID**: `feature/3.1-db-bookings`
-- **Deskripsi**: Membuat skema database untuk menyimpan data pesanan dan detail slot waktu yang dipesan.
-- **Assignee**: Orlando Sugian
+### **Task 3.1: Setup Database Transaksi, Users (Revisi), & Holidays**
+- **ID**: `feature/3.1-db-core-transactions`
+- **Deskripsi**: Melakukan revisi tabel users, serta membuat migrasi untuk public_holidays, bookings, booking_slots, payments, dan reviews.
+- **Assignee**: Orlandos
+- **Dependencies**: `feature/09-db-fields-module`
 
 **Langkah Teknis:**
-1. Buat migration `bookings` (id, user_id, field_id, total_price, status [pending, paid, cancelled, expired, completed], booking_date).
-2. Buat migration `booking_slots` (id, booking_id, start_time, end_time).
-3. Tambahkan Unique Key `uq_slot` pada `booking_slots` yang menggabungkan `booking_id` (atau `field_id`), `booking_date`, dan `start_time` untuk mencegah double booking di level database.
+1. Revisi migration users sesuai skema terbaru (tambah phone, avatar).
+2. Buat migration `public_holidays`.
+3. Buat migration `bookings` dan `booking_slots`. Pastikan menambahkan Constraint Unique Key di `booking_slots` untuk mencegah double-booking.
+4. Buat migration `payments` dan `reviews`.
+5. Di migration `reviews`, tambahkan `DB::unprepared()` untuk menjalankan eksekusi Trigger MySQL pengubah `rating_avg` di tabel `venues`. (Alternatif: Gunakan Eloquent Observer pada Model Review).
+6. Definisikan semua relasi Model (User, Booking, BookingSlot, Payment, Review).
 
 **Acceptance Criteria:**
-- [ ] Tabel `bookings` dan `booking_slots` berhasil dibuat.
-- [ ] Constraint Unique Key mencegah duplikasi jadwal pada hari dan jam yang sama.
-
+- [ ] Semua tabel terbentuk sempurna tanpa error Foreign Key.
+- [ ] Relasi antar-Model berfungsi dengan baik.
 ---
 
 ### **Task 3.2: API Ketersediaan Slot**
@@ -363,7 +366,7 @@
 ### **Task 3.5: Setup Database Transaksi, Users (Revisi), & Holidays**
 - **ID**: `feature/3.5-db-core-transactions`
 - **Deskripsi**: Melakukan revisi tabel users, serta membuat migrasi untuk public_holidays, bookings, booking_slots, payments, dan reviews.
-- **Assignee**: Indra Suryadilaga
+- **Assignee**: Orlandos
 - **Dependencies**: `feature/09-db-fields-module`
 
 **Langkah Teknis:**
