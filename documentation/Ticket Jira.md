@@ -307,40 +307,40 @@
 ---
 
 ### **Task 3.2: API Ketersediaan Slot**
-- **ID**: `feature/3.2-api-availability`
-- **Deskripsi**: Membuat endpoint API untuk mengecek ketersediaan slot secara dinamis.
-- **Assignee**: Anggota B (Fullstack)
+- **ID**: `feature/3.2-api-availability-pricing`
+- **Deskripsi**: Membuat servis backend untuk mengecek jam kosong dan menghitung harga otomatis (Weekday/Weekend/Holiday).
+- **Assignee**: Indra Suryadilaga
 
 **Langkah Teknis:**
-1. Buat rute API `GET /api/fields/{field}/availability` di `routes/api.php`.
-2. Buat `AvailabilityController` untuk menangani logika.
-3. Logika: Ambil jam operasional, ambil slot yang sudah di-booking, lalu generate daftar slot beserta status ketersediaannya.
-4. Kembalikan response JSON seperti `{"time": "09:00", "available": false}`.
+1. Buat rute API internal (misal: `/api/fields/{field}/slots`).
+2. Buat fungsi logika di Controller/Service yang:
+    - Mengecek hari dari tanggal yang dipilih (`day_of_week`).
+    - Mengecek apakah tanggal tersebut ada di tabel `public_holidays`.
+    - Mengambil `open_time` dan `close_time` dari `field_operating_hours`.
+    - Mengecek tabel `booking_slots` pada tanggal tersebut.
+3. Kembalikan data JSON berupa daftar slot jam, status `available` (true/false), dan harga spesifik (`price_per_slot`) pada hari tersebut.
 
 **Acceptance Criteria:**
-- [ ] Endpoint mengembalikan response JSON 200.
-- [ ] Response berisi semua slot dari jam buka hingga tutup.
-- [ ] Properti `available` bernilai `false` untuk slot yang sudah dipesan atau di luar jam operasional.
+- [ ] API mengembalikan status `false` pada jam yang sudah dipesan (berada di tabel `booking_slots`).
+- [ ] Harga yang dikembalikan otomatis berubah menjadi harga Holiday jika tanggal cocok dengan tabel `public_holidays`.
 
 ---
 
 ### **Task 3.3: Service & Validasi Booking**
-- **ID**: `feature/3.3-booking-service`
-- **Deskripsi**: Mengembangkan `BookingService` untuk menangani semua logika bisnis booking secara atomik.
-- **Assignee**: Lead / Anggota A (Backend)
+- **ID**: `feature/3.3-booking-checkout`
+- **Deskripsi**: Membangun logika pembuatan pesanan yang aman dari Race Condition.
+- **Assignee**: Indra Suryadilaga
 
 **Langkah Teknis:**
 1. Buat `app/Services/BookingService.php`.
-2. Buat metode `createBooking(User $user, Field $field, array $slots)`.
-3. Bungkus semua logika dengan `DB::transaction()`.
-4. Di dalam transaksi, gunakan `lockForUpdate()` pada slot yang akan dipesan untuk mencegah *race condition*.
-5. Lakukan validasi (slot tersedia, dalam jam operasional, bukan waktu lampau).
-6. Jika valid, buat data di tabel `bookings` dan `booking_slots`.
+2. Buat fungsi `createBooking()`.
+3. Bungkus eksekusi penyimpanan ke tabel `bookings` dan `booking_slots` dalam `DB::transaction()`.
+4. Implementasikan Pessimistic Locking (menggunakan `lockForUpdate()`) saat memverifikasi ulang apakah slot yang dipilih masih kosong.
+5. Set `expires_at` pesanan (misal 30 menit dari waktu pembuatan).
 
 **Acceptance Criteria:**
-- [ ] Memanggil `createBooking` dengan data valid akan menyimpan data ke database.
-- [ ] Memanggil `createBooking` dengan slot yang sama secara bersamaan akan menyebabkan salah satunya gagal (melempar Exception).
-- [ ] Tidak ada data "yatim" yang tersisa di database jika proses gagal di tengah jalan.
+- [ ] Pesanan berhasil masuk ke database beserta detail slotnya.
+- [ ] Menekan tombol "Booking" dua kali di detik yang sama (atau oleh dua user berbeda) tidak menyebabkan bentrok data berkat validasi `uq_slot` dan Locking.
 
 ---
 
@@ -360,64 +360,6 @@
 - [ ] Daftar slot diperbarui secara dinamis saat tanggal diubah tanpa refresh halaman.
 - [ ] Slot yang tidak tersedia tidak dapat diklik.
 - [ ] Total harga berubah secara otomatis saat pengguna memilih atau batal memilih slot.
-
----
-
-### **Task 3.5: Setup Database Transaksi, Users (Revisi), & Holidays**
-- **ID**: `feature/3.5-db-core-transactions`
-- **Deskripsi**: Melakukan revisi tabel users, serta membuat migrasi untuk public_holidays, bookings, booking_slots, payments, dan reviews.
-- **Assignee**: Orlandos
-- **Dependencies**: `feature/09-db-fields-module`
-
-**Langkah Teknis:**
-1. Revisi migration users sesuai skema terbaru (tambah phone, avatar).
-2. Buat migration `public_holidays`.
-3. Buat migration `bookings` dan `booking_slots`. Pastikan menambahkan Constraint Unique Key di `booking_slots` untuk mencegah double-booking.
-4. Buat migration `payments` dan `reviews`.
-5. Di migration `reviews`, tambahkan `DB::unprepared()` untuk menjalankan eksekusi Trigger MySQL pengubah `rating_avg` di tabel `venues`. (Alternatif: Gunakan Eloquent Observer pada Model Review).
-6. Definisikan semua relasi Model (User, Booking, BookingSlot, Payment, Review).
-
-**Acceptance Criteria:**
-- [ ] Semua tabel terbentuk sempurna tanpa error Foreign Key.
-- [ ] Relasi antar-Model berfungsi dengan baik.
-
----
-
-### **Task 3.6: API Ketersediaan Slot & Logic Harga Dinamis**
-- **ID**: `feature/3.6-api-availability-pricing`
-- **Deskripsi**: Membuat servis backend untuk mengecek jam kosong dan menghitung harga otomatis (Weekday/Weekend/Holiday).
-- **Assignee**: Indra Suryadilaga
-
-**Langkah Teknis:**
-1. Buat rute API internal (misal: `/api/fields/{field}/slots`).
-2. Buat fungsi logika di Controller/Service yang:
-    - Mengecek hari dari tanggal yang dipilih (`day_of_week`).
-    - Mengecek apakah tanggal tersebut ada di tabel `public_holidays`.
-    - Mengambil `open_time` dan `close_time` dari `field_operating_hours`.
-    - Mengecek tabel `booking_slots` pada tanggal tersebut.
-3. Kembalikan data JSON berupa daftar slot jam, status `available` (true/false), dan harga spesifik (`price_per_slot`) pada hari tersebut.
-
-**Acceptance Criteria:**
-- [ ] API mengembalikan status `false` pada jam yang sudah dipesan (berada di tabel `booking_slots`).
-- [ ] Harga yang dikembalikan otomatis berubah menjadi harga Holiday jika tanggal cocok dengan tabel `public_holidays`.
-
----
-
-### **Task 3.7: Sistem Checkout (Booking Service)**
-- **ID**: `feature/3.7-booking-checkout`
-- **Deskripsi**: Membangun logika pembuatan pesanan yang aman dari Race Condition.
-- **Assignee**: Indra Suryadilaga
-
-**Langkah Teknis:**
-1. Buat `app/Services/BookingService.php`.
-2. Buat fungsi `createBooking()`.
-3. Bungkus eksekusi penyimpanan ke tabel `bookings` dan `booking_slots` dalam `DB::transaction()`.
-4. Implementasikan Pessimistic Locking (menggunakan `lockForUpdate()`) saat memverifikasi ulang apakah slot yang dipilih masih kosong.
-5. Set `expires_at` pesanan (misal 30 menit dari waktu pembuatan).
-
-**Acceptance Criteria:**
-- [ ] Pesanan berhasil masuk ke database beserta detail slotnya.
-- [ ] Menekan tombol "Booking" dua kali di detik yang sama (atau oleh dua user berbeda) tidak menyebabkan bentrok data berkat validasi `uq_slot` dan Locking.
 
 ---
 
