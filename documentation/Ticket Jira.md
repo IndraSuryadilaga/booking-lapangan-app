@@ -360,6 +360,64 @@
 
 ---
 
+### **Task 3.5: Setup Database Transaksi, Users (Revisi), & Holidays**
+- **ID**: `feature/3.5-db-core-transactions`
+- **Deskripsi**: Melakukan revisi tabel users, serta membuat migrasi untuk public_holidays, bookings, booking_slots, payments, dan reviews.
+- **Assignee**: Indra Suryadilaga
+- **Dependencies**: `feature/09-db-fields-module`
+
+**Langkah Teknis:**
+1. Revisi migration users sesuai skema terbaru (tambah phone, avatar).
+2. Buat migration `public_holidays`.
+3. Buat migration `bookings` dan `booking_slots`. Pastikan menambahkan Constraint Unique Key di `booking_slots` untuk mencegah double-booking.
+4. Buat migration `payments` dan `reviews`.
+5. Di migration `reviews`, tambahkan `DB::unprepared()` untuk menjalankan eksekusi Trigger MySQL pengubah `rating_avg` di tabel `venues`. (Alternatif: Gunakan Eloquent Observer pada Model Review).
+6. Definisikan semua relasi Model (User, Booking, BookingSlot, Payment, Review).
+
+**Acceptance Criteria:**
+- [ ] Semua tabel terbentuk sempurna tanpa error Foreign Key.
+- [ ] Relasi antar-Model berfungsi dengan baik.
+
+---
+
+### **Task 3.6: API Ketersediaan Slot & Logic Harga Dinamis**
+- **ID**: `feature/3.6-api-availability-pricing`
+- **Deskripsi**: Membuat servis backend untuk mengecek jam kosong dan menghitung harga otomatis (Weekday/Weekend/Holiday).
+- **Assignee**: Indra Suryadilaga
+
+**Langkah Teknis:**
+1. Buat rute API internal (misal: `/api/fields/{field}/slots`).
+2. Buat fungsi logika di Controller/Service yang:
+    - Mengecek hari dari tanggal yang dipilih (`day_of_week`).
+    - Mengecek apakah tanggal tersebut ada di tabel `public_holidays`.
+    - Mengambil `open_time` dan `close_time` dari `field_operating_hours`.
+    - Mengecek tabel `booking_slots` pada tanggal tersebut.
+3. Kembalikan data JSON berupa daftar slot jam, status `available` (true/false), dan harga spesifik (`price_per_slot`) pada hari tersebut.
+
+**Acceptance Criteria:**
+- [ ] API mengembalikan status `false` pada jam yang sudah dipesan (berada di tabel `booking_slots`).
+- [ ] Harga yang dikembalikan otomatis berubah menjadi harga Holiday jika tanggal cocok dengan tabel `public_holidays`.
+
+---
+
+### **Task 3.7: Sistem Checkout (Booking Service)**
+- **ID**: `feature/3.7-booking-checkout`
+- **Deskripsi**: Membangun logika pembuatan pesanan yang aman dari Race Condition.
+- **Assignee**: Indra Suryadilaga
+
+**Langkah Teknis:**
+1. Buat `app/Services/BookingService.php`.
+2. Buat fungsi `createBooking()`.
+3. Bungkus eksekusi penyimpanan ke tabel `bookings` dan `booking_slots` dalam `DB::transaction()`.
+4. Implementasikan Pessimistic Locking (menggunakan `lockForUpdate()`) saat memverifikasi ulang apakah slot yang dipilih masih kosong.
+5. Set `expires_at` pesanan (misal 30 menit dari waktu pembuatan).
+
+**Acceptance Criteria:**
+- [ ] Pesanan berhasil masuk ke database beserta detail slotnya.
+- [ ] Menekan tombol "Booking" dua kali di detik yang sama (atau oleh dua user berbeda) tidak menyebabkan bentrok data berkat validasi `uq_slot` dan Locking.
+
+---
+
 ## Epic 4: Transaksi & Otomatisasi
 
 ### **Task 4.1: Buat Migration dan relasi untuk payments**
