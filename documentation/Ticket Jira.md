@@ -270,7 +270,7 @@
 - **ID**: `feature/2.9-crud-fields-hours-pricing`
 - **Deskripsi**: Membangun form antarmuka dinamis untuk menetapkan jam buka-tutup (7 hari) dan menetapkan 3 skema harga (Weekday, Weekend, Holiday) per lapangan.
 - **Assignee**: Ndzul (Anggota Tim)
-- **Dependencies**: `feature/10a-crud-fields-images`
+- **Dependencies**: `feature/2.8-crud-fields-images`
 
 **Langkah Teknis:**
 1. Buat view manajemen khusus (atau tab terpisah di halaman detail lapangan) untuk Hours dan Pricing.
@@ -485,3 +485,39 @@
 **Acceptance Criteria:**
 - [ ] Booking `paid` yang sudah lewat jamnya otomatis berubah menjadi `completed`.
 - [ ] Job tidak mengubah status booking selain `paid`.
+
+---
+
+### **Task 4.5: Integrasi Pembayaran & Job Otomatisasi (Cron)**
+- **ID**: `feature/4.5-payment-and-jobs`
+- **Deskripsi**: Membuat simulasi form pembayaran (upload bukti / tombol bayar) dan Scheduler pembersih transaksi expired.
+- **Assignee**: Indra Suryadilaga
+- **Dependencies**: `feature/3.7-booking-checkout`
+
+**Langkah Teknis:**
+1. Buat antarmuka bagi pengguna untuk melakukan simulasi pembayaran (menyimpan entri ke tabel payments).
+2. Jika tabel payments berhasil dibuat, update status bookings menjadi paid.
+3. Buat Command/Job via `php artisan make:command ExpireBookings`.
+4. Buat query yang mencari bookings berstatus pending di mana waktu `expires_at < now()`. Ubah statusnya jadi `expired`.
+5. Daftarkan di `routes/console.php` agar berjalan otomatis setiap menit.
+
+**Acceptance Criteria:**
+- [ ] Pesanan berubah menjadi paid setelah user menyelesaikan pembayaran.
+- [ ] Transaksi yang diabaikan otomatis berubah jadi expired melewati batas waktu.
+
+---
+
+### **Task 4.6: Sistem Ulasan (Reviews)**
+- **ID**: `feature/4.6-reviews-system`
+- **Deskripsi**: Membangun form bagi user untuk memberi nilai pada tempat yang telah selesai dimainkan.
+- **Assignee**: Indra Suryadilaga
+- **Dependencies**: `feature/4.4-job-completion`
+
+**Langkah Teknis:**
+1. Pada halaman "Riwayat Booking" User, munculkan tombol "Beri Ulasan" khusus untuk pesanan berstatus completed.
+2. Buat form ulasan (rating 1-5 dan teks komentar).
+3. Simpan data ke tabel reviews. Pastikan validasi uq_rev_booking (1 booking hanya boleh 1 kali review).
+
+**Acceptance Criteria:**
+- [ ] User tidak bisa me-review pesanan yang belum selesai (completed).
+- [ ] Menyimpan review otomatis memperbarui cache `rating_avg` dan `review_count` pada Venue (melalui Trigger MySQL atau Observer).
