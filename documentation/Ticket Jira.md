@@ -383,38 +383,39 @@
 
 ### **Task 4.2: Simulasi Sistem Pembayaran**
 - **ID**: `feature/4.2-payment-system`
-- **Deskripsi**: Membuat halaman simulasi pembayaran dan logika untuk mengubah status booking.
-- **Assignee**: Anggota B (Fullstack)
+- **Deskripsi**: Membuat antarmuka pengguna untuk melakukan simulasi pembayaran pesanan dan memperbarui status transaksinya (Peleburan Task 4.2 & 4.5).
+- **Assignee**: Ndzul
+- **Dependencies**: `feature/4.1-db-payments`, `feature/3.3-booking-checkout`
 
 **Langkah Teknis:**
 1. Buat `PaymentController` dengan metode `show` dan `update`.
-2. Buat view `resources/views/dashboard/payments/show.blade.php`.
-3. Sediakan tombol "Bayar Sekarang" dan "Batalkan".
-4. Logika `update`: Buat entri di tabel `payments`, lalu update status di tabel `bookings` menjadi `paid` atau `cancelled`.
-5. Redirect pengguna ke halaman riwayat transaksi.
+2. Buat view simulasi di `resources/views/dashboard/payments/show.blade.php`.
+3. Sediakan tombol "Bayar Sekarang" (berhasil) dan "Batalkan" (gagal/batal).
+4. Logika update: Buat entri baru di tabel `payments`. Jika berhasil, perbarui status di tabel `bookings` menjadi `paid` (atau `cancelled` jika dibatalkan).
+5. Redirect pengguna kembali ke halaman riwayat transaksi dengan flash message.
 
 **Acceptance Criteria:**
-- [ ] Menekan "Bayar Sekarang" mengubah status booking menjadi `paid`.
-- [ ] Entri baru dibuat di tabel `payments` untuk setiap upaya transaksi.
-- [ ] Pengguna mendapat feedback visual (pesan sukses/gagal) setelah aksi.
+- [ ] Menekan tombol "Bayar Sekarang" berhasil membuat entri di tabel `payments` dan mengubah status pesanan menjadi `paid`.
+- [ ] Pengguna mendapatkan feedback visual (pesan sukses/gagal) setelah melakukan aksi pembayaran.
 
 ---
 
 ### **Task 4.3: Job Otomatisasi: Kedaluwarsa**
 - **ID**: `feature/4.3-job-expiration`
-- **Deskripsi**: Membuat job terjadwal untuk membatalkan booking yang tidak dibayar.
-- **Assignee**: Anggota A (Backend)
+- **Deskripsi**: Membuat Command/Job terjadwal untuk membatalkan pesanan yang melewati batas waktu pembayaran secara otomatis.
+- **Assignee**: Indra Suryadilaga
+- **Dependencies**: `feature/3.3-booking-checkout`
 
 **Langkah Teknis:**
-1. Buat job `php artisan make:job ExpireUnpaidBookings`.
-2. Logika di `handle()`: Cari booking `pending` yang dibuat lebih dari X menit/jam yang lalu, lalu ubah statusnya menjadi `expired`.
-3. **Penting**: Hapus juga `booking_slots` terkait atau buat mekanisme agar slot tersebut tersedia kembali.
-4. Daftarkan job di `app/Console/Kernel.php` untuk berjalan periodik (misal: `everyFiveMinutes()`).
+1. Buat Job via `php artisan make:job ExpireUnpaidBookings`.
+2. Tulis query di dalam `handle()`: Cari semua tabel `bookings` yang berstatus `pending` di mana `expires_at < now()`.
+3. Ubah status pesanan yang ditemukan menjadi `expired`.
+4. **Krusial**: Bebaskan kembali slot waktu tersebut dengan menghapus baris terkait di tabel `booking_slots` agar pengguna lain bisa memesannya lagi.
+5. Daftarkan tugas ini di `routes/console.php` agar berjalan otomatis setiap menit (`->everyMinute()`).
 
 **Acceptance Criteria:**
-- [ ] Booking `pending` yang sudah lama otomatis berubah menjadi `expired`.
-- [ ] Slot dari booking yang kedaluwarsa kembali tersedia untuk dipesan.
-
+- [ ] Pesanan `pending` yang melewati batas waktu otomatis berubah menjadi `expired` saat scheduler dijalankan.
+- [ ] Data slot dari pesanan yang kedaluwarsa berhasil dihapus dari tabel `booking_slots` (slot kembali tersedia).
 ---
 
 ### **Task 4.4: Job Otomatisasi: Selesai**
@@ -430,25 +431,6 @@
 **Acceptance Criteria:**
 - [ ] Booking `paid` yang sudah lewat jamnya otomatis berubah menjadi `completed`.
 - [ ] Job tidak mengubah status booking selain `paid`.
-
----
-
-### **Task 4.5: Integrasi Pembayaran & Job Otomatisasi (Cron)**
-- **ID**: `feature/4.5-payment-and-jobs`
-- **Deskripsi**: Membuat simulasi form pembayaran (upload bukti / tombol bayar) dan Scheduler pembersih transaksi expired.
-- **Assignee**: Indra Suryadilaga
-- **Dependencies**: `feature/3.7-booking-checkout`
-
-**Langkah Teknis:**
-1. Buat antarmuka bagi pengguna untuk melakukan simulasi pembayaran (menyimpan entri ke tabel payments).
-2. Jika tabel payments berhasil dibuat, update status bookings menjadi paid.
-3. Buat Command/Job via `php artisan make:command ExpireBookings`.
-4. Buat query yang mencari bookings berstatus pending di mana waktu `expires_at < now()`. Ubah statusnya jadi `expired`.
-5. Daftarkan di `routes/console.php` agar berjalan otomatis setiap menit.
-
-**Acceptance Criteria:**
-- [ ] Pesanan berubah menjadi paid setelah user menyelesaikan pembayaran.
-- [ ] Transaksi yang diabaikan otomatis berubah jadi expired melewati batas waktu.
 
 ---
 
