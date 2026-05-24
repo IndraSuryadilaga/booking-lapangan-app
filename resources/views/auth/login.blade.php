@@ -5,29 +5,29 @@
     </div>
 
     <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <x-molecules.auth-session-status class="mb-4" :status="session('status')" />
 
     <form method="POST" action="{{ route('login') }}" class="space-y-5">
         @csrf
 
         <!-- Email Address -->
         <div class="space-y-1.5">
-            <x-input-label for="email" :value="__('Email')" class="font-semibold text-gray-700" />
-            <x-text-input id="email"
+            <x-atoms.input-label for="email" :value="__('Email')" class="font-semibold text-gray-700" />
+            <x-atoms.text-input id="email"
                           class="block w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-200 transition duration-150"
                           type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-1" />
+            <x-atoms.input-error :messages="$errors->get('email')" class="mt-1" />
         </div>
 
         <!-- Password -->
         <div class="space-y-1.5">
-            <x-input-label for="password" :value="__('Password')" class="font-semibold text-gray-700" />
-            <x-text-input id="password"
+            <x-atoms.input-label for="password" :value="__('Password')" class="font-semibold text-gray-700" />
+            <x-atoms.text-input id="password"
                           class="block w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-200 transition duration-150"
                           type="password"
                           name="password"
                           required autocomplete="current-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-1" />
+            <x-atoms.input-error :messages="$errors->get('password')" class="mt-1" />
         </div>
 
         <!-- Remember Me -->
@@ -47,9 +47,9 @@
 
         <!-- Route Button -->
         <div class="pt-2">
-            <x-primary-button class="w-full justify-center bg-primary-600 hover:bg-primary-700 py-3 rounded-lg text-base shadow-sm">
+            <x-atoms.primary-button class="w-full justify-center bg-primary-600 hover:bg-primary-700 py-3 rounded-lg text-base shadow-sm">
                 {{ __('Log in') }}
-            </x-primary-button>
+            </x-atoms.primary-button>
         </div>
 
         <div class="mt-6 pt-6 border-t border-gray-100 text-center">
