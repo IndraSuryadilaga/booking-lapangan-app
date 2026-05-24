@@ -19,9 +19,9 @@
         <form method="POST" action="{{ route('verification.send') }}" class="w-full sm:w-auto">
             @csrf
 
-            <x-primary-button class="w-full justify-center bg-primary-600 hover:bg-primary-700 py-2.5 rounded-lg">
+            <x-atoms.primary-button class="w-full justify-center bg-primary-600 hover:bg-primary-700 py-2.5 rounded-lg">
                 Kirim Ulang Email Verifikasi
-            </x-primary-button>
+            </x-atoms.primary-button>
         </form>
 
         <form method="POST" action="{{ route('logout') }}" class="w-full sm:w-auto text-center">

@@ -14,18 +14,18 @@
 
         <!-- Email Address -->
         <div class="space-y-1.5">
-            <x-input-label for="email" :value="__('Alamat Email')" class="font-semibold text-gray-700" />
-            <x-text-input id="email"
+            <x-atoms.input-label for="email" :value="__('Alamat Email')" class="font-semibold text-gray-700" />
+            <x-atoms.text-input id="email"
                           class="block w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-200 transition duration-150"
                           type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <x-atoms.input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <!-- Route Button -->
         <div class="flex items-center justify-end mt-6">
-            <x-primary-button class="w-full justify-center bg-primary-600 hover:bg-primary-700 py-2.5 rounded-lg">
+            <x-atoms.primary-button class="w-full justify-center bg-primary-600 hover:bg-primary-700 py-2.5 rounded-lg">
                 {{ __('Kirim Tautan Reset Kata Sandi') }}
-            </x-primary-button>
+            </x-atoms.primary-button>
         </div>
 
         <!-- Route Button -->
