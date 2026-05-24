@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('field_pricing', function (Blueprint $table) {
+        Schema::create('field_pricings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('field_id')->constrained()->cascadeOnDelete();
             $table->enum('day_type', ['weekday', 'weekend', 'holiday']);
