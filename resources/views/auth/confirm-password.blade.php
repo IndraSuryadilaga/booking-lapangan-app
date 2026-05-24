@@ -22,13 +22,14 @@
                           type="password"
                           name="password"
                           required autocomplete="current-password" />
-            <x-atoms.input-error :messages="$errors->get('password')" class="mt-2" />
+            <x-atoms.input-error :messages="$errors->get('password')" class="mt-1" />
         </div>
 
-        <div class="flex justify-end mt-6">
-            <x-atoms.primary-button class="bg-primary-600 hover:bg-primary-700 px-6 py-2.5 rounded-lg shadow-sm">
+        <!-- Route Button -->
+        <div class="pt-2 mt-6">
+            <x-atoms.button type="primary" class="w-full">
                 {{ __('Konfirmasi Kata Sandi') }}
-            </x-atoms.primary-button>
+            </x-atoms.button>
         </div>
     </form>
 </x-guest-layout>

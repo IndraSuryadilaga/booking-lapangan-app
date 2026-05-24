@@ -42,16 +42,19 @@
             <x-atoms.input-error :messages="$errors->get('password_confirmation')" class="mt-1" />
         </div>
 
-        <div class="pt-2 flex flex-col gap-4">
-            <x-atoms.primary-button class="w-full justify-center bg-primary-600 hover:bg-primary-700 py-3 rounded-lg text-sm font-bold shadow-sm">
-                Daftar Sekarang
-            </x-atoms.primary-button>
+        <div class="pt-2">
+            <x-atoms.button type="primary" class="w-full">
+                {{ __('Daftar Sekarang') }}
+            </x-atoms.button>
+        </div>
 
-            <div class="text-center">
-                <a class="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors" href="{{ route('login') }}">
-                    Sudah punya akun? Masuk
+        <div class="mt-6 pt-6 border-t border-gray-100 text-center">
+            <p class="text-sm text-gray-600">
+                {{ __("Sudah punya akun?") }}
+                <a href="{{ route('login') }}" class="font-bold text-primary-600 hover:text-primary-700 transition-colors">
+                    {{ __('Masuk') }}
                 </a>
-            </div>
+            </p>
         </div>
     </form>
 </x-guest-layout>

@@ -22,10 +22,10 @@
         </div>
 
         <!-- Route Button -->
-        <div class="flex items-center justify-end mt-6">
-            <x-atoms.primary-button class="w-full justify-center bg-primary-600 hover:bg-primary-700 py-2.5 rounded-lg">
+        <div class="pt-2 mt-6">
+            <x-atoms.button type="primary" class="w-full">
                 {{ __('Kirim Tautan Reset Kata Sandi') }}
-            </x-atoms.primary-button>
+            </x-atoms.button>
         </div>
 
         <!-- Route Button -->
