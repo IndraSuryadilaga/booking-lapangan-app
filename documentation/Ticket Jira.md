@@ -4,109 +4,110 @@
 
 ## Epic 1: Infrastruktur Dasar & Autentikasi
 
-### **Task 1: Setup Proyek & Environment**
+### Task 1.1: Setup Proyek & Environment
 - **ID**: `feature/01-setup-base`
-- **Deskripsi**: Membuat proyek Laravel 13 baru, mengintegrasikan Tailwind CSS v4, Alpine.js, dan Vite.
-- **Assignee**: Indra Suryadilaga
-
-**Langkah Teknis:**
+- **Assignee**: **Kamu**
+- **Story Points**: `3` — Tooling familiar, tapi mencakup dua layout (publik + admin) dan konfigurasi Vite + Tailwind.
+  **Langkah Teknis:**
 1. Jalankan `composer create-project laravel/laravel .`
 2. Instal dependensi frontend: `npm install -D tailwindcss postcss autoprefixer alpinejs`
 3. Inisialisasi konfigurasi: `npx tailwindcss init -p`
 4. Konfigurasikan `tailwind.config.js` dan `resources/css/app.css`.
 5. Buat layout master `resources/views/layouts/app.blade.php` yang memanggil direktif `@vite()`.
-
-**Acceptance Criteria:**
-- [ ] Proyek berhasil di-clone dan dijalankan oleh anggota tim lain.
-- [ ] Halaman welcome Laravel menampilkan gaya dari Tailwind dan interaksi dari Alpine.js.
-
+6. Buat layout admin `resources/views/layouts/admin.blade.php` dengan sidebar.
+   **Acceptance Criteria:**
+- [ ] Proyek berhasil di-clone dan dijalankan oleh semua anggota tim.
+- [ ] Halaman welcome menampilkan gaya dari Tailwind dan interaksi dari Alpine.js.
+- [ ] Dua layout utama (`app.blade.php` dan `admin.blade.php`) sudah tersedia.
 ---
 
-### **Task 2: Setup Database & User Role**
+### Task 1.2: Setup Database & Tabel Users
 - **ID**: `feature/02-setup-db-users`
-- **Deskripsi**: Mengonfigurasi database MySQL dan menambahkan kolom `role` pada tabel `users`.
-- **Assignee**: Orlando Sugian
-
-**Langkah Teknis:**
+- **Assignee**: **Kamu**
+- **Story Points**: `2` — Konfigurasi `.env` + revisi migration + dua seeder. Tidak ada logika kompleks.
+  **Langkah Teknis:**
 1. Konfigurasikan koneksi database di file `.env`.
-2. Modifikasi migration `create_users_table.php` untuk menambahkan kolom `role` dengan tipe `ENUM('user', 'admin')` dan default `'user'`.
-3. Buat `UserSeeder` untuk menambahkan 1 akun Admin dan 1 akun User.
+2. Modifikasi migration `create_users_table.php` sesuai skema terbaru:
+   ```sql
+   id, name, email, password,
+   role ENUM('user','admin') DEFAULT 'user',
+   phone VARCHAR(20) NULL,
+   avatar VARCHAR(255) NULL,
+   email_verified_at, remember_token, timestamps
+   ```
+3. Buat `AdminUserSeeder` (1 akun Admin) dan `UserSeeder` (1 akun User biasa).
 4. Jalankan `php artisan migrate --seed`.
-
-**Acceptance Criteria:**
+   **Acceptance Criteria:**
 - [ ] Migrasi berjalan tanpa error.
-- [ ] Tabel `users` di database memiliki kolom `role` dan berisi data dari seeder.
-
+- [ ] Tabel `users` memiliki kolom `role`, `phone`, dan `avatar`.
+- [ ] Database berisi data seed admin dan user.
 ---
 
-### **Task 3: Implementasi Autentikasi**
+### Task 1.3: Implementasi Autentikasi (Laravel Breeze)
 - **ID**: `feature/03-setup-breeze`
-- **Deskripsi**: Menginstal Laravel Breeze untuk fungsionalitas Register, Login, dan Logout.
-- **Assignee**: Indra Suryadilaga
-
-**Langkah Teknis:**
+- **Assignee**: **Kamu**
+- **Story Points**: `2` — Mayoritas di-generate oleh Breeze. Effort utama: translasi UI dan tambah field `phone` di form registrasi.
+  **Langkah Teknis:**
 1. Jalankan `composer require laravel/breeze --dev`.
 2. Jalankan `php artisan breeze:install blade`.
-3. (Opsional) Terjemahkan teks UI di `resources/views/auth/` ke Bahasa Indonesia.
-
-**Acceptance Criteria:**
-- [ ] Pengguna dapat mendaftar dan datanya tersimpan di database.
-- [ ] Pengguna dapat login dan diarahkan ke `/dashboard`.
-- [ ] Pengguna dapat logout.
-
+3. Terjemahkan teks UI di `resources/views/auth/` ke Bahasa Indonesia.
+4. Sesuaikan form registrasi untuk menyertakan field `phone` (opsional).
+   **Acceptance Criteria:**
+- [ ] Pengguna dapat mendaftar, login, dan logout.
+- [ ] Pengguna baru secara otomatis mendapat `role = 'user'`.
+- [ ] Setelah login, pengguna diarahkan ke `/dashboard`.
 ---
 
-### **Task 4: Middleware & Proteksi Rute Admin**
+### Task 1.4: Middleware & Proteksi Rute Admin
 - **ID**: `feature/04-middleware-admin`
-- **Deskripsi**: Membuat middleware `IsAdmin` untuk melindungi rute-rute khusus admin.
-- **Assignee**: Indra Suryadilaga
-
-**Langkah Teknis:**
-1. Buat middleware `php artisan make:middleware IsAdmin`.
-2. Implementasikan logika di `app/Http/Middleware/IsAdmin.php` untuk memeriksa `auth()->user()->role === 'admin'`.
+- **Assignee**: **Kamu**
+- **Story Points**: `2` — Satu file middleware + registrasi di `bootstrap/app.php` + group rute. Scope kecil dan terdefinisi jelas.
+  **Langkah Teknis:**
+1. Buat middleware: `php artisan make:middleware IsAdmin`.
+2. Implementasikan logika di `app/Http/Middleware/IsAdmin.php`:
+   ```php
+   if (auth()->user()?->role !== 'admin') {
+       abort(403);
+   }
+   ```
 3. Daftarkan middleware di `bootstrap/app.php`.
-4. Buat rute `/admin/test` yang dibungkus oleh middleware ini untuk pengujian.
-
-**Acceptance Criteria:**
-- [ ] Akun `user` menerima response 403 (Forbidden) saat mengakses `/admin/test`.
-- [ ] Akun `admin` berhasil mengakses `/admin/test`.
-
-### **Task 5: Implementasi Base UI Components & Design System**
-- **ID**: `feature/05-design-system`
-- **Deskripsi**: Membuat standarisasi identitas visual ke dalam proyek berdasarkan Design Guideline.
-- **Assignee**: Indra Suryadilaga
-
-**Langkah Teknis:**
-1. Konfigurasi Warna: Update resources/css/app.css untuk mendefinisikan variabel warna primer (Green/Emerald), sekunder (Indigo/Dark), dan aksen sesuai dokumen panduan.
-2. Base Layout: Modifikasi resources/views/components/layout.blade.php agar mencerminkan prinsip "Modern & Efisien" (Background neutral, tipografi bersih).
-3. Pembuatan Komponen Blade: Buat folder resources/views/components/ui/ dan buat komponen dasar berikut:
-    - button.blade.php: Mendukung varian primary, secondary, dan outline.
-    - card.blade.php: Kartu dengan shadow tipis dan border halus untuk katalog lapangan.
-    - badge.blade.php: Untuk penanda status (Tersedia, Penuh, Booking).
-4. Halaman Styleguide: Buat satu rute sementara /styleguide untuk mendemokan semua komponen tersebut dalam satu halaman.
-
-**Acceptance Criteria:**
-- [ ] Palet warna di app.css sesuai dengan identitas "Energik & Terpercaya".
-- [ ] Komponen Button memiliki hover state dan active state yang konsisten.
-- [ ] Layout utama sudah bersifat Mobile-first (Responsif di layar HP).
-- [ ] Halaman /styleguide menampilkan semua elemen UI yang telah dibuat.
+4. Proteksi semua rute group `/admin` dengan middleware ini.
+   **Acceptance Criteria:**
+- [ ] Akun `user` menerima response 403 saat mengakses rute `/admin/*`.
+- [ ] Akun `admin` dapat mengakses semua rute `/admin/*`.
 ---
 
-### **Task 6: Update Navigasi, Dashboard, & Test Refactoring**
+### Task 1.5: Implementasi Design System & UI Components
+- **ID**: `feature/05-design-system`
+- **Assignee**: **Kamu**
+- **Story Points**: `5` — Empat komponen Blade reusable (button, card, badge, modal), CSS variables, dan halaman styleguide. Keputusan desain di sini berdampak ke seluruh proyek.
+  **Langkah Teknis:**
+1. Definisikan variabel warna (primary, secondary, aksen) di `resources/css/app.css`.
+2. Buat folder `resources/views/components/ui/` dan buat komponen:
+    - `button.blade.php` — varian `primary`, `secondary`, `outline`, `danger`.
+    - `card.blade.php` — untuk katalog venue dan lapangan.
+    - `badge.blade.php` — untuk status booking dan ketersediaan slot.
+    - `modal.blade.php` — komponen modal Alpine.js reusable untuk konfirmasi destruktif.
+3. Buat rute sementara `/styleguide` untuk mendemokan semua komponen.
+   **Acceptance Criteria:**
+- [ ] Semua komponen UI tersedia dan dapat dipakai di seluruh modul.
+- [ ] Komponen `modal` dapat dipanggil dengan Alpine.js dari halaman manapun.
+- [ ] Layout bersifat mobile-first dan responsif.
+- [ ] Halaman `/styleguide` menampilkan semua elemen UI.
+---
+
+### Task 1.6: Navigasi, Dashboard User, & Test Refactoring
 - **ID**: `feature/06-auth-ui-refactor`
-- **Deskripsi**: Menyesuaikan navigasi untuk berbagai role, memutakhirkan tampilan dashboard, dan memperbarui assertions pada test.
-- **Assignee**: Indra Suryadilaga
-
-**Langkah Teknis:**
-1. Modifikasi `layouts.navigation`: Tampilkan menu "Kelola Lapangan" hanya untuk Admin dan "Riwayat Booking" untuk User.
-2. Update `dashboard.blade.php`: Tambahkan ringkasan statistik (misal: jumlah booking aktif).
-3. Tambahkan rute `Route::resource('bookings', BookingController::class)` di `web.php`.
-4. Refaktor `tests/Feature/Auth/RegistrationTest.php` dan `AuthenticationTest.php` agar mencakup pengecekan kolom `role`.
-
-**Acceptance Criteria:**
-- [ ] Navbar menampilkan link yang relevan sesuai role yang sedang login.
-- [ ] Pengguna baru secara otomatis memiliki role `user` dan terverifikasi di unit test.
-- [ ] Rute booking dapat diakses oleh user terautentikasi.
+- **Assignee**: **Kamu**
+- **Story Points**: `3` — Modifikasi navbar kondisional per role + update view dashboard + refactor dua file test.
+- **Dependencies**: `feature/05-design-system`
+  **Langkah Teknis:**
+1. Modifikasi `layouts/navigation.blade.php`: tampilkan menu "Panel Admin" untuk `admin` dan "Riwayat Booking" untuk `user`.
+2. Update `dashboard/index.blade.php`: tampilkan ringkasan aktivitas booking user.
+3. Refaktor `tests/Feature/Auth/RegistrationTest.php` agar memvalidasi kolom `role`, `phone`.
+   **Acceptance Criteria:**
+- [ ] Navbar menampilkan link yang sesuai berdasarkan role.
+- [ ] Unit test autentikasi mencakup validasi kolom `role`.
 
 ---
 
