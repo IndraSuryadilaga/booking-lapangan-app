@@ -13,10 +13,10 @@
 
         <div class="space-y-4">
             <h2 class="text-xl font-semibold">Cards</h2>
-            <x-atoms.card class="max-w-sm p-6">
+            <x-molecules.card class="max-w-sm p-6">
                 <h3 class="font-bold text-lg">Nama Lapangan</h3>
                 <p class="text-slate-600">Deskripsi singkat lapangan olahraga.</p>
-            </x-atoms.card>
+            </x-molecules.card>
         </div>
 
         <div class="space-y-4">
