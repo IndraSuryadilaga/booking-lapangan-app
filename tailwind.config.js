@@ -1,4 +1,3 @@
-import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
 
 /** @type {import('tailwindcss').Config} */
@@ -12,7 +11,7 @@ export default {
         "./resources/**/*.blade.php",
         "./resources/**/*.js",
         "./resources/**/*.vue",
-        ],
+    ],
 
     theme: {
         extend: {
@@ -90,16 +89,35 @@ export default {
             fontFamily: {
                 sans: ['Plus Jakarta Sans', 'Inter', 'ui-sans-serif', 'system-ui'],
             },
+            fontSize: {
+                '12': ['0.75rem', { lineHeight: '1.125rem', letterSpacing: '0.01em' }],    // 12px
+                '14': ['0.875rem', { lineHeight: '1.25rem', letterSpacing: '0.01em' }],     // 14px
+                '16': ['1rem', { lineHeight: '1.5rem', letterSpacing: '0' }],             // 16px
+                '18': ['1.125rem', { lineHeight: '1.75rem', letterSpacing: '-0.01em' }],    // 18px
+                '20': ['1.25rem', { lineHeight: '1.75rem', letterSpacing: '-0.015em' }],    // 20px
+                '24': ['1.5rem', { lineHeight: '2rem', letterSpacing: '-0.02em' }],        // 24px
+                '30': ['1.875rem', { lineHeight: '2.25rem', letterSpacing: '-0.02em' }],   // 30px
+                '36': ['2.25rem', { lineHeight: '2.75rem', letterSpacing: '-0.025em' }],   // 36px
+                '48': ['3rem', { lineHeight: '3.5rem', letterSpacing: '-0.025em' }],       // 48px
+            },
+            borderRadius: {
+                'xl': '12px',
+                '2xl': '16px',
+            },
+            boxShadow: {
+                'sm': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+                'md': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+            },
         },
     },
     plugins: [
+        forms,
         function ({ addBase }) {
             addBase({
                 'button:focus, [type="button"]:focus, [type="reset"]:focus, [type="submit"]:focus': {
                     outline: 'none',
                     'box-shadow': 'none',
                 },
-
                 'button:focus-visible, [type="button"]:focus-visible': {
                     outline: '2px solid currentColor',
                     'outline-offset': '2px',
