@@ -4,6 +4,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminSportsCategoryController;
+use App\Http\Controllers\Admin\AdminFieldController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -27,6 +28,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('sports-categories', AdminSportsCategoryController::class);
 });
 
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    
+    Route::resource('sports-categories', AdminSportsCategoryController::class);
+    
+    Route::resource('fields', AdminFieldController::class);
+    
+});
+
 Route::get('/admin/test', function () {
     return 'Halo Admin! Anda berhasil masuk ke benteng pertahanan.';
 })->middleware('admin');
@@ -34,5 +43,7 @@ Route::get('/admin/test', function () {
 Route::get('/styleguide', function () {
     return view('styleguide');
 });
+
+
 
 require __DIR__.'/auth.php';

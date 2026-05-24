@@ -4,10 +4,10 @@
             <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
             </svg>
-            <span class="text-sm font-bold uppercase tracking-wider">Secure Area</span>
+            <span class="text-sm font-bold uppercase tracking-wider">Area Aman</span>
         </div>
         <p class="text-sm text-gray-600 leading-relaxed">
-            {{ __('Please confirm your password before continuing to this protected section.') }}
+            {{ __('Harap konfirmasi kata sandi Anda sebelum melanjutkan ke bagian yang dilindungi ini.') }}
         </p>
     </div>
 
@@ -16,7 +16,7 @@
 
         <!-- Password -->
         <div class="space-y-1.5">
-            <x-input-label for="password" :value="__('Password')" class="font-semibold text-gray-700" />
+            <x-input-label for="password" :value="__('Kata Sandi')" class="font-semibold text-gray-700" />
             <x-text-input id="password"
                           class="block w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-200 transition duration-150"
                           type="password"
@@ -27,7 +27,7 @@
 
         <div class="flex justify-end mt-6">
             <x-primary-button class="bg-primary-600 hover:bg-primary-700 px-6 py-2.5 rounded-lg shadow-sm">
-                {{ __('Confirm Password') }}
+                {{ __('Konfirmasi Kata Sandi') }}
             </x-primary-button>
         </div>
     </form>
