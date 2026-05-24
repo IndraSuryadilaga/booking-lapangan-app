@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="mb-6">
-        <h2 class="text-2xl font-bold text-gray-900 text-center">Welcome Back</h2>
-        <p class="text-sm text-gray-500 text-center mt-1">Please enter your details to access the arena.</p>
+        <h2 class="text-2xl font-bold text-gray-900 text-center">Selamat Datang Kembali</h2>
+        <p class="text-sm text-gray-500 text-center mt-1">Silakan masukkan detail Anda untuk mengakses arena.</p>
     </div>
 
     <!-- Session Status -->
