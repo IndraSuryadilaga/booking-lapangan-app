@@ -3,6 +3,8 @@ import forms from '@tailwindcss/forms';
 
 /** @type {import('tailwindcss').Config} */
 export default {
+    darkMode: 'class',
+
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
@@ -88,11 +90,21 @@ export default {
             fontFamily: {
                 sans: ['Plus Jakarta Sans', 'Inter', 'ui-sans-serif', 'system-ui'],
             },
-            borderRadius: {
-                'xl': '12px',
-                '2xl': '16px',
-            }
         },
     },
-    plugins: [forms],
+    plugins: [
+        function ({ addBase }) {
+            addBase({
+                'button:focus, [type="button"]:focus, [type="reset"]:focus, [type="submit"]:focus': {
+                    outline: 'none',
+                    'box-shadow': 'none',
+                },
+
+                'button:focus-visible, [type="button"]:focus-visible': {
+                    outline: '2px solid currentColor',
+                    'outline-offset': '2px',
+                },
+            });
+        },
+    ],
 };
