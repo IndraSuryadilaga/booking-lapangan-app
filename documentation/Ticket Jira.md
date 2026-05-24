@@ -180,64 +180,172 @@
 
 ---
 
-## Epic 3: Sistem Booking (Core Logic)
+### **Task 2.5: Implementasi Standarisasi UI/UX Admin & Navigasi**
+- **ID**: `feature/2.5-admin-ui-enhancement`
+- **Deskripsi**: Menyempurnakan tampilan halaman CRUD Kategori Olahraga dan Lapangan agar sesuai dengan Design Guideline, termasuk penerapan tabel responsif, modal konfirmasi penghapusan, empty state, validasi form, serta penyempurnaan navigasi pada Navbar.
+- **Assignee**: Anggota C (Frontend) atau Anggota B (Fullstack)
+- **Dependencies**: `feature/08-crud-categories`, `feature/10-crud-fields`
 
-### **Task 1: Migration untuk bookings dan booking_slots**
-- **ID**: `feature/11-db-bookings`
-- **Deskripsi**: Membuat skema database untuk menyimpan data pesanan dan detail slot waktu yang dipesan.
+**Langkah Teknis:**
+1. **Layout & Navigasi (Navbar, Sidebar, Breadcrumb)**:
+    - **Navbar**: Implementasikan navigasi atas (Navbar) yang bersifat sticky dengan utilitas `backdrop-blur-sm bg-white/80` saat halaman di-scroll ke bawah. Pastikan tinggi navbar tetap (h-16). Untuk pengguna layar kecil (mobile), buat menu hamburger fungsional menggunakan Alpine.js (`x-show` beserta slide transition). Berikan indikator visual pada menu yang sedang aktif menggunakan teks `text-primary-600 font-semibold` dan garis bawah `border-b-2 border-primary-600`.
+    - **Sidebar Admin**: Pastikan menggunakan warna latar `bg-gray-900` dengan teks `text-gray-300`, dan menu aktif ditandai dengan `bg-gray-800 text-white rounded-lg`.
+    - **Breadcrumb**: Implementasikan di bagian atas halaman detail dan manajemen admin sebagai panduan lokasi halaman bagi pengguna.
+2. **Tabel Responsif & Ikon**: Buat tabel daftar kategori dan lapangan menggunakan wrapper `overflow-x-auto` dan `min-w-full` untuk tampilan seluler. Gunakan komponen tombol ukuran sm (`px-3 py-1.5 text-xs`) di dalam baris tabel untuk aksi. Tambahkan Heroicons berjenis outline (ukuran `size-4` di dalam tombol), seperti `PencilSquareIcon` untuk Edit dan `TrashIcon` untuk Hapus.
+3. **Modal Konfirmasi (Aksesibilitas)**: Buat komponen Modal Konfirmasi menggunakan Alpine.js (dengan durasi transisi masuk 300ms). Modal ini wajib dipanggil dan ditampilkan pada setiap aksi destruktif (seperti menghapus kategori atau lapangan) sebelum data benar-benar dihapus. Tombol hapus di dalam modal harus menggunakan `variant-danger`.
+4. **Form & Pesan Kesalahan**: Terapkan error state visual yang jelas pada form input apabila validasi Laravel gagal, dan pastikan setiap input memiliki `<label>` yang terhubung dengan baik via `for` / `id`.
+5. **Empty State & Flash Message**: Buat tampilan Empty State yang informatif apabila data kategori atau lapangan masih kosong di tabel. Sempurnakan tampilan Flash Message (Alert) menggunakan warna semantic (misalnya token warna success dengan hex `#16a34a` atau kelas `green-600`) untuk operasi CRUD yang berhasil.
+
+**Acceptance Criteria:**
+- [ ] Navigasi Navbar terimplementasi dengan baik, merespons scroll (sticky), memiliki menu hamburger interaktif pada ukuran layar mobile, dan menyoroti menu halaman yang sedang aktif.
+- [ ] Tampilan tabel dapat digeser (scroll) secara horizontal pada layar mobile tanpa merusak layout halaman.
+- [ ] Menekan tombol "Hapus" pada data kategori atau lapangan tidak langsung menghapus data, melainkan memunculkan Modal Konfirmasi terlebih dahulu.
+- [ ] Pesan error dan flash message sukses muncul dengan warna dan desain yang sesuai guideline.
+- [ ] Halaman menampilkan Empty State (bukan layar kosong atau error) jika database kategori/lapangan tidak memiliki isi.
+- [ ] Sidebar dan Breadcrumb berfungsi sebagai indikator navigasi yang jelas.
+
+---
+
+### **Task 2.6: Setup Database Fasilitas & Venue (Master Data)**
+- **ID**: `feature/2.6-db-facilities-venues`
+- **Deskripsi**: Membuat migrasi, model, dan seeder untuk tabel facilities, venues, serta tabel pivot venue_sport_categories dan venue_facilities.
 - **Assignee**: Orlando Sugian
 
 **Langkah Teknis:**
-1. Buat migration `bookings` (id, user_id, field_id, total_price, status [pending, paid, cancelled, expired, completed], booking_date).
-2. Buat migration `booking_slots` (id, booking_id, start_time, end_time).
-3. Tambahkan Unique Key `uq_slot` pada `booking_slots` yang menggabungkan `booking_id` (atau `field_id`), `booking_date`, dan `start_time` untuk mencegah double booking di level database.
+1. Buat migration untuk facilities (id, name, icon).
+2. Buat migration untuk venues (id, name, slug, address, city, province, latitude, longitude, rating_avg, review_count, refund_policy, reschedule_policy, logo, rating_avg, review_count).
+3. Buat migration untuk tabel pivot venue_sport_categories (venue_id, sports_category_id).
+4. Buat migration untuk tabel pivot venue_facilities (venue_id, facility_id).
+5. Buat Model Facility dan Venue.
+6. Definisikan relasi belongsToMany di Model Venue untuk menghubungkannya dengan Facility dan SportsCategory.
+7. Buat VenueSeeder beserta data fasilitas penunjangnya.
 
 **Acceptance Criteria:**
-- [ ] Tabel `bookings` dan `booking_slots` berhasil dibuat.
-- [ ] Constraint Unique Key mencegah duplikasi jadwal pada hari dan jam yang sama.
+- [ ] Keempat tabel berhasil dibuat di database dengan tipe data dan constraint Foreign Key yang tepat.
+- [ ] Relasi Eloquent belongsToMany dapat memanggil fasilitas dan kategori olahraga dari sebuah Venue tanpa error.
+- [ ] Seeder berjalan sukses dan mengisi data awal.
 
 ---
 
-### **Task 2: API Ketersediaan Slot**
-- **ID**: `feature/12-api-availability`
-- **Deskripsi**: Membuat endpoint API untuk mengecek ketersediaan slot secara dinamis.
-- **Assignee**: Anggota B (Fullstack)
+### **Task 2.7: Setup Database Lapangan (Fields, Images, Hours, Pricing)**
+- **ID**: `feature/2.7-db-fields-module`
+- **Deskripsi**: Membuat migrasi, model, dan seeder untuk tabel fields, field_images, field_operating_hours, dan field_pricing.
+- **Assignee**: Ndzul (Anggota Tim)
+- **Dependencies**: `feature/2.6-db-facilities-venues` (Harus menunggu selesai membuat Venue).
 
 **Langkah Teknis:**
-1. Buat rute API `GET /api/fields/{field}/availability` di `routes/api.php`.
-2. Buat `AvailabilityController` untuk menangani logika.
-3. Logika: Ambil jam operasional, ambil slot yang sudah di-booking, lalu generate daftar slot beserta status ketersediaannya.
-4. Kembalikan response JSON seperti `{"time": "09:00", "available": false}`.
+1. Buat migration untuk fields (pastikan ada venue_id dan sports_category_id).
+2. Buat migration untuk field_images (tambahkan logic/trigger atau Observer Eloquent untuk handle is_primary).
+3. Buat migration untuk field_operating_hours (0 = Minggu hingga 6 = Sabtu).
+4. Buat migration untuk field_pricing (berisi ENUM weekday, weekend, holiday).
+5. Definisikan relasi Eloquent di Model Field (belongsTo Venue, hasMany Images, Hours, dan Pricing).
+6. Buat FieldSeeder yang mengaitkan lapangan ke Venue pertama di database.
 
 **Acceptance Criteria:**
-- [ ] Endpoint mengembalikan response JSON 200.
-- [ ] Response berisi semua slot dari jam buka hingga tutup.
-- [ ] Properti `available` bernilai `false` untuk slot yang sudah dipesan atau di luar jam operasional.
+- [ ] Keempat tabel berhasil di-migrate tanpa masalah Foreign Key.
+- [ ] Model Field dapat memanggil semua data relasinya dengan sukses.
 
 ---
 
-### **Task 3: Service & Validasi Booking**
-- **ID**: `feature/13-booking-service`
-- **Deskripsi**: Mengembangkan `BookingService` untuk menangani semua logika bisnis booking secara atomik.
-- **Assignee**: Lead / Anggota A (Backend)
+### **Task 2.8: CRUD Lapangan & Galeri Foto**
+- **ID**: `feature/2.8-crud-fields-images`
+- **Deskripsi**: Membangun antarmuka untuk Admin mengelola data utama lapangan dan mengunggah galeri foto lapangan.
+- **Assignee**: Ndzul (Anggota Tim)
+
+**Langkah Teknis:**
+1. Buat AdminFieldController (metode index, create, store, edit, update, destroy).
+2. Modifikasi form create/edit agar Admin wajib memilih venue_id tempat lapangan ini berada.
+3. Buat fitur upload multiple foto untuk field_images menggunakan Laravel Storage (jangan lupa jalankan php artisan storage:link).
+4. Berikan tombol antarmuka untuk mengatur foto mana yang menjadi is_primary = 1.
+
+**Acceptance Criteria:**
+- [ ] Admin dapat menambah, mengedit, dan menghapus Lapangan.
+- [ ] Admin dapat mengunggah banyak foto sekaligus untuk satu lapangan.
+- [ ] Hanya ada satu foto yang berstatus primary per lapangan.
+- [ ] Menghapus lapangan akan otomatis menghapus file fotonya dari storage lokal.
+
+---
+
+### **Task 2.9: Manajemen Jam Operasional & Harga Lapangan**
+- **ID**: `feature/2.9-crud-fields-hours-pricing`
+- **Deskripsi**: Membangun form antarmuka dinamis untuk menetapkan jam buka-tutup (7 hari) dan menetapkan 3 skema harga (Weekday, Weekend, Holiday) per lapangan.
+- **Assignee**: Ndzul (Anggota Tim)
+- **Dependencies**: `feature/2.8-crud-fields-images`
+
+**Langkah Teknis:**
+1. Buat view manajemen khusus (atau tab terpisah di halaman detail lapangan) untuk Hours dan Pricing.
+2. Pada jam operasional, buat form looping untuk 7 hari (Minggu s/d Sabtu) yang memungkinkan input open_time, close_time, dan toggle is_open.
+3. Pada harga, sediakan 3 input tetap (Weekday, Weekend, Holiday) yang akan disimpan ke tabel field_pricing.
+4. Bungkus proses insert/update menggunakan DB::transaction() agar data tersimpan secara atomik.
+
+**Acceptance Criteria:**
+- [ ] Admin dapat mengatur jam buka dan tutup spesifik untuk tiap hari dalam seminggu.
+- [ ] Admin dapat mengisi 3 jenis harga, dan harga tersebut tersimpan dengan benar di tabel field_pricing.
+- [ ] Terdapat validasi backend yang memastikan close_time harus lebih besar dari open_time.
+
+---
+
+## Epic 3: Sistem Booking (Core Logic)
+
+### **Task 3.1: Setup Database Transaksi, Users (Revisi), & Holidays**
+- **ID**: `feature/3.1-db-core-transactions`
+- **Deskripsi**: Melakukan revisi tabel users, serta membuat migrasi untuk public_holidays, bookings, booking_slots, payments, dan reviews.
+- **Assignee**: Orlandos
+- **Dependencies**: `feature/09-db-fields-module`
+
+**Langkah Teknis:**
+1. Revisi migration users sesuai skema terbaru (tambah phone, avatar).
+2. Buat migration `public_holidays`.
+3. Buat migration `bookings` dan `booking_slots`. Pastikan menambahkan Constraint Unique Key di `booking_slots` untuk mencegah double-booking.
+4. Buat migration `payments` dan `reviews`.
+5. Di migration `reviews`, tambahkan `DB::unprepared()` untuk menjalankan eksekusi Trigger MySQL pengubah `rating_avg` di tabel `venues`. (Alternatif: Gunakan Eloquent Observer pada Model Review).
+6. Definisikan semua relasi Model (User, Booking, BookingSlot, Payment, Review).
+
+**Acceptance Criteria:**
+- [ ] Semua tabel terbentuk sempurna tanpa error Foreign Key.
+- [ ] Relasi antar-Model berfungsi dengan baik.
+---
+
+### **Task 3.2: API Ketersediaan Slot**
+- **ID**: `feature/3.2-api-availability-pricing`
+- **Deskripsi**: Membuat servis backend untuk mengecek jam kosong dan menghitung harga otomatis (Weekday/Weekend/Holiday).
+- **Assignee**: Indra Suryadilaga
+
+**Langkah Teknis:**
+1. Buat rute API internal (misal: `/api/fields/{field}/slots`).
+2. Buat fungsi logika di Controller/Service yang:
+    - Mengecek hari dari tanggal yang dipilih (`day_of_week`).
+    - Mengecek apakah tanggal tersebut ada di tabel `public_holidays`.
+    - Mengambil `open_time` dan `close_time` dari `field_operating_hours`.
+    - Mengecek tabel `booking_slots` pada tanggal tersebut.
+3. Kembalikan data JSON berupa daftar slot jam, status `available` (true/false), dan harga spesifik (`price_per_slot`) pada hari tersebut.
+
+**Acceptance Criteria:**
+- [ ] API mengembalikan status `false` pada jam yang sudah dipesan (berada di tabel `booking_slots`).
+- [ ] Harga yang dikembalikan otomatis berubah menjadi harga Holiday jika tanggal cocok dengan tabel `public_holidays`.
+
+---
+
+### **Task 3.3: Service & Validasi Booking**
+- **ID**: `feature/3.3-booking-checkout`
+- **Deskripsi**: Membangun logika pembuatan pesanan yang aman dari Race Condition.
+- **Assignee**: Indra Suryadilaga
 
 **Langkah Teknis:**
 1. Buat `app/Services/BookingService.php`.
-2. Buat metode `createBooking(User $user, Field $field, array $slots)`.
-3. Bungkus semua logika dengan `DB::transaction()`.
-4. Di dalam transaksi, gunakan `lockForUpdate()` pada slot yang akan dipesan untuk mencegah *race condition*.
-5. Lakukan validasi (slot tersedia, dalam jam operasional, bukan waktu lampau).
-6. Jika valid, buat data di tabel `bookings` dan `booking_slots`.
+2. Buat fungsi `createBooking()`.
+3. Bungkus eksekusi penyimpanan ke tabel `bookings` dan `booking_slots` dalam `DB::transaction()`.
+4. Implementasikan Pessimistic Locking (menggunakan `lockForUpdate()`) saat memverifikasi ulang apakah slot yang dipilih masih kosong.
+5. Set `expires_at` pesanan (misal 30 menit dari waktu pembuatan).
 
 **Acceptance Criteria:**
-- [ ] Memanggil `createBooking` dengan data valid akan menyimpan data ke database.
-- [ ] Memanggil `createBooking` dengan slot yang sama secara bersamaan akan menyebabkan salah satunya gagal (melempar Exception).
-- [ ] Tidak ada data "yatim" yang tersisa di database jika proses gagal di tengah jalan.
+- [ ] Pesanan berhasil masuk ke database beserta detail slotnya.
+- [ ] Menekan tombol "Booking" dua kali di detik yang sama (atau oleh dua user berbeda) tidak menyebabkan bentrok data berkat validasi `uq_slot` dan Locking.
 
 ---
 
-### **Task 4: UI Booking & Interaksi Pengguna**
-- **ID**: `feature/14-ui-booking`
+### **Task 3.4: UI Booking & Interaksi Pengguna**
+- **ID**: `feature/3.4-ui-booking`
 - **Deskripsi**: Membangun antarmuka halaman detail lapangan tempat pengguna memilih slot.
 - **Assignee**: Anggota B (Frontend/Fullstack)
 
@@ -257,8 +365,8 @@
 
 ## Epic 4: Transaksi & Otomatisasi
 
-### **Task 1: Buat Migration dan relasi untuk payments**
-- **ID**: `feature/15-db-payments`
+### **Task 4.1: Buat Migration dan relasi untuk payments**
+- **ID**: `feature/4.1-db-payments`
 - **Deskripsi**: Membuat skema database untuk menyimpan riwayat transaksi pembayaran.
 - **Assignee**: Orlando Sugian
 
@@ -273,44 +381,45 @@
 
 ---
 
-### **Task 2: Simulasi Sistem Pembayaran**
-- **ID**: `feature/16-payment-system`
-- **Deskripsi**: Membuat halaman simulasi pembayaran dan logika untuk mengubah status booking.
-- **Assignee**: Anggota B (Fullstack)
+### **Task 4.2: Simulasi Sistem Pembayaran**
+- **ID**: `feature/4.2-payment-system`
+- **Deskripsi**: Membuat antarmuka pengguna untuk melakukan simulasi pembayaran pesanan dan memperbarui status transaksinya (Peleburan Task 4.2 & 4.5).
+- **Assignee**: Ndzul
+- **Dependencies**: `feature/4.1-db-payments`, `feature/3.3-booking-checkout`
 
 **Langkah Teknis:**
 1. Buat `PaymentController` dengan metode `show` dan `update`.
-2. Buat view `resources/views/dashboard/payments/show.blade.php`.
-3. Sediakan tombol "Bayar Sekarang" dan "Batalkan".
-4. Logika `update`: Buat entri di tabel `payments`, lalu update status di tabel `bookings` menjadi `paid` atau `cancelled`.
-5. Redirect pengguna ke halaman riwayat transaksi.
+2. Buat view simulasi di `resources/views/dashboard/payments/show.blade.php`.
+3. Sediakan tombol "Bayar Sekarang" (berhasil) dan "Batalkan" (gagal/batal).
+4. Logika update: Buat entri baru di tabel `payments`. Jika berhasil, perbarui status di tabel `bookings` menjadi `paid` (atau `cancelled` jika dibatalkan).
+5. Redirect pengguna kembali ke halaman riwayat transaksi dengan flash message.
 
 **Acceptance Criteria:**
-- [ ] Menekan "Bayar Sekarang" mengubah status booking menjadi `paid`.
-- [ ] Entri baru dibuat di tabel `payments` untuk setiap upaya transaksi.
-- [ ] Pengguna mendapat feedback visual (pesan sukses/gagal) setelah aksi.
+- [ ] Menekan tombol "Bayar Sekarang" berhasil membuat entri di tabel `payments` dan mengubah status pesanan menjadi `paid`.
+- [ ] Pengguna mendapatkan feedback visual (pesan sukses/gagal) setelah melakukan aksi pembayaran.
 
 ---
 
-### **Task 3: Job Otomatisasi: Kedaluwarsa**
-- **ID**: `feature/17-job-expiration`
-- **Deskripsi**: Membuat job terjadwal untuk membatalkan booking yang tidak dibayar.
-- **Assignee**: Anggota A (Backend)
+### **Task 4.3: Job Otomatisasi: Kedaluwarsa**
+- **ID**: `feature/4.3-job-expiration`
+- **Deskripsi**: Membuat Command/Job terjadwal untuk membatalkan pesanan yang melewati batas waktu pembayaran secara otomatis.
+- **Assignee**: Indra Suryadilaga
+- **Dependencies**: `feature/3.3-booking-checkout`
 
 **Langkah Teknis:**
-1. Buat job `php artisan make:job ExpireUnpaidBookings`.
-2. Logika di `handle()`: Cari booking `pending` yang dibuat lebih dari X menit/jam yang lalu, lalu ubah statusnya menjadi `expired`.
-3. **Penting**: Hapus juga `booking_slots` terkait atau buat mekanisme agar slot tersebut tersedia kembali.
-4. Daftarkan job di `app/Console/Kernel.php` untuk berjalan periodik (misal: `everyFiveMinutes()`).
+1. Buat Job via `php artisan make:job ExpireUnpaidBookings`.
+2. Tulis query di dalam `handle()`: Cari semua tabel `bookings` yang berstatus `pending` di mana `expires_at < now()`.
+3. Ubah status pesanan yang ditemukan menjadi `expired`.
+4. **Krusial**: Bebaskan kembali slot waktu tersebut dengan menghapus baris terkait di tabel `booking_slots` agar pengguna lain bisa memesannya lagi.
+5. Daftarkan tugas ini di `routes/console.php` agar berjalan otomatis setiap menit (`->everyMinute()`).
 
 **Acceptance Criteria:**
-- [ ] Booking `pending` yang sudah lama otomatis berubah menjadi `expired`.
-- [ ] Slot dari booking yang kedaluwarsa kembali tersedia untuk dipesan.
-
+- [ ] Pesanan `pending` yang melewati batas waktu otomatis berubah menjadi `expired` saat scheduler dijalankan.
+- [ ] Data slot dari pesanan yang kedaluwarsa berhasil dihapus dari tabel `booking_slots` (slot kembali tersedia).
 ---
 
-### **Task 4: Job Otomatisasi: Selesai**
-- **ID**: `feature/18-job-completion`
+### **Task 4.4: Job Otomatisasi: Selesai**
+- **ID**: `feature/4.4-job-completion`
 - **Deskripsi**: Membuat job terjadwal untuk mengubah status booking yang telah selesai.
 - **Assignee**: Anggota A (Backend)
 
@@ -322,3 +431,20 @@
 **Acceptance Criteria:**
 - [ ] Booking `paid` yang sudah lewat jamnya otomatis berubah menjadi `completed`.
 - [ ] Job tidak mengubah status booking selain `paid`.
+
+---
+
+### **Task 4.6: Sistem Ulasan (Reviews)**
+- **ID**: `feature/4.6-reviews-system`
+- **Deskripsi**: Membangun form bagi user untuk memberi nilai pada tempat yang telah selesai dimainkan.
+- **Assignee**: Indra Suryadilaga
+- **Dependencies**: `feature/4.4-job-completion`
+
+**Langkah Teknis:**
+1. Pada halaman "Riwayat Booking" User, munculkan tombol "Beri Ulasan" khusus untuk pesanan berstatus completed.
+2. Buat form ulasan (rating 1-5 dan teks komentar).
+3. Simpan data ke tabel reviews. Pastikan validasi uq_rev_booking (1 booking hanya boleh 1 kali review).
+
+**Acceptance Criteria:**
+- [ ] User tidak bisa me-review pesanan yang belum selesai (completed).
+- [ ] Menyimpan review otomatis memperbarui cache `rating_avg` dan `review_count` pada Venue (melalui Trigger MySQL atau Observer).
