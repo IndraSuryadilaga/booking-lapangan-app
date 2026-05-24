@@ -31,10 +31,10 @@
             <x-atoms.input-error :messages="$errors->get('password_confirmation')" class="mt-1" />
         </div>
 
-        <div class="pt-4">
-            <x-atoms.primary-button class="w-full justify-center bg-primary-600 hover:bg-primary-700 py-3 rounded-lg font-bold">
-                Atur Ulang Kata Sandi
-            </x-atoms.primary-button>
+        <div class="pt-2">
+            <x-atoms.button type="primary">
+                {{ __('Atur Ulang Kata Sandi') }}
+            </x-atoms.button>
         </div>
     </form>
 </x-guest-layout>

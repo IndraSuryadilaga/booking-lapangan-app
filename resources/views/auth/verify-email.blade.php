@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="mb-6">
-        <h3 class="text-xl font-bold text-gray-900">{{ __('Verifikasi Email Anda') }}</h3>
-        <p class="mt-2 text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
+        <h3 class="text-2xl font-bold text-gray-900">{{ __('Verifikasi Email Anda') }}</h3>
+        <p class="mt-2 text-sm text-gray-500 leading-relaxed">
             Terima kasih telah mendaftar! Sebelum memulai, bisakah Anda memverifikasi alamat email Anda dengan mengklik tautan yang baru saja kami kirimkan melalui email kepada Anda? Jika Anda tidak menerima email tersebut, kami akan dengan senang hati mengirimkan yang lain.
         </p>
     </div>
@@ -15,18 +15,18 @@
         </div>
     @endif
 
-    <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-6">
         <form method="POST" action="{{ route('verification.send') }}" class="w-full sm:w-auto">
             @csrf
 
-            <x-atoms.button type="primary" class="w-full sm:w-auto">
+            <x-atoms.button variant="primary">
                 {{ __('Kirim Ulang Email Verifikasi') }}
             </x-atoms.button>
         </form>
 
         <form method="POST" action="{{ route('logout') }}" class="w-full sm:w-auto text-center">
             @csrf
-            <button type="submit" class="text-sm font-medium text-neutral-500 hover:text-danger-600 transition-colors">
+            <button type="submit" class="w-full">
                 {{ __('Keluar') }}
             </button>
         </form>
