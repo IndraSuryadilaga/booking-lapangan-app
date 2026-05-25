@@ -48,10 +48,6 @@
                         <label class="block mb-2 font-medium">Nama Lapangan</label>
                         <input type="text" name="name" class="w-full border rounded px-3 py-2" placeholder="Contoh: Lapangan Futsal Utama" required>
                     </div>
-                    <div>
-                        <label class="block mb-2 font-medium">Harga per Slot (Rp)</label>
-                        <input type="number" name="price_per_slot" min="0" class="w-full border rounded px-3 py-2" required>
-                    </div>
                 </div>
 
                 <div class="mb-4">

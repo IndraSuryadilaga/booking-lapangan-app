@@ -35,8 +35,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     
     Route::resource('fields', AdminFieldController::class);
 
-    Route::patch('/field-images/{image}/primary', [\App\Http\Controllers\Admin\AdminFieldController::class, 'setPrimaryImage'])->name('fields.images.primary');
+    Route::get('/field-images/{image}/primary', [\App\Http\Controllers\Admin\AdminFieldController::class, 'setPrimaryImage'])->name('fields.images.primary');
     
+    Route::get('/field-images/{image}/delete', [\App\Http\Controllers\Admin\AdminFieldController::class, 'deleteImage'])->name('fields.images.delete');
 });
 
 Route::get('/admin/test', function () {

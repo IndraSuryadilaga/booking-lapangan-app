@@ -51,7 +51,7 @@ class AdminFieldController extends Controller
             'name'               => 'required|string|max:255',
             'description'        => 'nullable|string',            
             'images'             => 'required|array',
-            'images.*'           => 'image|mimes:jpeg,png,jpg|max:10000',
+            'images.*'           => 'image|mimes:jpeg,png,jpg,webp|max:10000',
         ]);
 
         DB::transaction(function () use ($request) {
@@ -116,16 +116,15 @@ class AdminFieldController extends Controller
             'name'               => 'required|string|max:255',
             'description'        => 'nullable|string',
             'images'             => 'nullable|array',
-            'images.*'           => 'image|mimes:jpeg,png,jpg|max:10000',
+            'images.*'           => 'image|mimes:jpeg,png,jpg,webp|max:10000',
         ]);
 
         DB::transaction(function () use ($request, $field) {            
             $field->update([
-                'venue_id'           => $request->venue_id,
+                'venue_id' => $request->venue_id,
                 'sports_category_id' => $request->sports_category_id,
-                'name'               => $request->name,
-                'slug'               => Str::slug($request->name) . '-' . uniqid(),
-                'description'        => $request->description,
+                'name' => $request->name,
+                'description' => $request->description,
             ]);
 
             if ($request->hasFile('images')) {
@@ -172,5 +171,26 @@ class AdminFieldController extends Controller
             'success',
             'Foto primary berhasil diubah!'
         );
+    }
+
+    public function deleteImage(FieldImage $image)
+    {
+        if (Storage::disk('public')->exists($image->image_path)) {
+            Storage::disk('public')->delete($image->image_path);
+        }
+
+        $fieldId = $image->field_id;
+        $wasPrimary = $image->is_primary;
+        $image->delete();
+
+        if ($wasPrimary) {
+            $newPrimary = FieldImage::where('field_id', $fieldId)->first();
+            if ($newPrimary) {
+                $newPrimary->update([
+                    'is_primary' => true
+                ]);
+            }
+        }
+        return back()->with('success', 'Foto berhasil dihapus!');
     }
 }
