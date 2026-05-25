@@ -53,6 +53,9 @@
                         <label class="block mb-2 font-medium">
                         Tambah Foto Baru
                         </label>
+                        <p class="text-sm text-yellow-600 mb-2">
+                            Perubahan pada foto (hapus / jadikan primary) akan langsung tersimpan otomatis.
+                        </p>
                         <input
                         type="file"
                         name="images[]"

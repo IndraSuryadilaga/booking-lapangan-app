@@ -13,43 +13,43 @@ class SportsCategorySeeder extends Seeder
         $categories = [
             [
                 'name' => 'Futsal',
-                'icon' => 'images/sports/futsal.png',
+                'icon' => 'images/sports-icon/futsal-icon.png',
             ],
             [
                 'name' => 'Badminton',
-                'icon' => 'images/sports/badminton.jpg',
+                'icon' => 'images/sports-icon/badminton-icon.png',
             ],
             [
                 'name' => 'Basket',
-                'icon' => 'images/sports/basket.jpg',
+                'icon' => 'images/sports-icon/basket-icon.png',
             ],
             [
                 'name' => 'Voli',
-                'icon' => 'images/sports/voli.jpg',
+                'icon' => 'images/sports-icon/voli-icon.png',
             ],
             [
                 'name' => 'Tenis',
-                'icon' => 'images/sports/tenis.jpg',
+                'icon' => 'images/sports-icon/tenis-icon.png',
             ],
             [
                 'name' => 'Mini Soccer',
-                'icon' => 'images/sports/minisoccer.jpg',
+                'icon' => 'images/sports-icon/minisoccer-icon.png',
             ],
             [
                 'name' => 'Sepak Bola',
-                'icon' => 'images/sports/sepakbola.png',
+                'icon' => 'images/sports-icon/sepakbola-icon.png',
             ],
             [
                 'name' => 'Padel',
-                'icon' => 'images/sports/padel.png',
+                'icon' => 'images/sports-icon/padel-icon.png',
             ],
             [
                 'name' => 'Tenis Meja',
-                'icon' => 'images/sports/tenismeja.jpg',
+                'icon' => 'images/sports-icon/tenismeja-icon.png',
             ],
             [
                 'name' => 'Billiard',
-                'icon' => 'images/sports/billiard.jpg',
+                'icon' => 'images/sports-icon/billiard-icon.pngg',
             ],
         ];
 
