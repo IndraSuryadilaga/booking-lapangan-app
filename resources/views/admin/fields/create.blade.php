@@ -19,6 +19,21 @@
         @endif
 
                 <div class="mb-4">
+                    <label class="block mb-2 font-medium">Venue</label>
+                    <select
+                        name="venue_id"
+                        class="w-full border rounded px-3 py-2"
+                        required>
+                        <option value="">-- Pilih Venue --</option>
+                        @foreach($venues as $venue)
+                            <option value="{{ $venue->id }}">
+                                {{ $venue->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-4">
                     <label class="block mb-2 font-medium">Kategori Olahraga</label>
                     <select name="sports_category_id" class="w-full border rounded px-3 py-2" required>
                         <option value="">-- Pilih Kategori --</option>
@@ -40,9 +55,19 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block mb-2 font-medium">Foto Lapangan Maks : 10MB</label>
-                    <input type="file" name="photo" accept="image/png, image/jpeg, image/jpg" class="w-full border rounded px-3 py-2">
-                </div>
+                        <label class="block mb-2 font-medium">
+                            Galeri Foto Lapangan (Bisa Banyak)
+                        </label>
+                        <input
+                            type="file"
+                            name="images[]"
+                            multiple
+                            accept="image/png, image/jpeg, image/jpg"
+                            class="w-full border rounded px-3 py-2">
+                        <p class="text-sm text-gray-500 mt-1">
+                            Foto pertama otomatis menjadi foto utama.
+                        </p>
+                    </div>
 
                 <div class="mb-6">
                     <label class="block mb-2 font-medium">Deskripsi Singkat</label>

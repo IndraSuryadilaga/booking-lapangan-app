@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-feature/2.7-db-fields-module
 use App\Models\SportsCategory;
 use App\Models\Facility;
 use App\Models\Venue;
