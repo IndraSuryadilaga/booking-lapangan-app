@@ -25,14 +25,14 @@
         <div class="hidden md:flex items-center h-8 space-x-3 shrink-0">
             @guest
                 <a href="{{ route('register') }}">
-                    <button class="px-5 py-2 rounded-full border border-primary-500 text-sm font-semibold text-white hover:bg-primary-700 transition-colors">
+                    <x-atoms.button type="primary" class="px-5 py-2 text-sm">
                         Daftar
-                    </button>
+                    </x-atoms.button>
                 </a>
                 <a href="{{ route('login') }}">
-                    <button class="px-5 py-2 rounded-full bg-white text-sm font-bold text-primary-900 hover:bg-primary-100 transition-colors">
+                    <x-atoms.button type="secondary" class="px-5 py-2 text-sm">
                         Masuk
-                    </button>
+                    </x-atoms.button>
                 </a>
             @else
                 <div class="flex items-center space-x-5">
@@ -44,14 +44,14 @@
 
                     <x-molecules.dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            <button class="flex items-center gap-2 px-1.5 py-1.5 rounded-full bg-primary-800 hover:bg-primary-700 border border-primary-700 transition-colors focus:outline-none">
+                            <x-atoms.button type="secondary" class="flex items-center gap-2 !px-1.5 !py-1.5 rounded-full focus:outline-none">
                                 <div class="w-7 h-7 rounded-full bg-primary-500 flex items-center justify-center text-white font-bold text-xs">
                                     {{ substr(Auth::user()->name, 0, 1) }}
                                 </div>
                                 <svg class="fill-current h-4 w-4 text-primary-100 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                                 </svg>
-                            </button>
+                            </x-atoms.button>
                         </x-slot>
 
                         <x-slot name="content">
@@ -91,7 +91,7 @@
              x-transition:leave="transition ease-in duration-150"
              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
              x-transition:leave-end="opacity-0 -translate-y-4 scale-95"
-             class="absolute top-[calc(100%+0.75rem)] left-0 w-full bg-primary-600 border border-primary-700/80 rounded-2xl shadow-2xl overflow-hidden md:hidden z-50 py-2"
+             class="absolute top-[calc(100%+0.75rem)] left-0 w-full bg-primary-600 rounded-2xl shadow-2xl overflow-hidden md:hidden z-50 py-2"
              style="display: none;">
 
             <div class="px-2 space-y-1">
@@ -105,10 +105,10 @@
             @guest
                 <div class="mt-4 pt-4 border-t border-primary-800 px-4 pb-4 flex flex-col gap-3">
                     <a href="{{ route('register') }}" class="w-full">
-                        <button class="w-full px-5 py-2.5 rounded-full border border-primary-500 text-sm font-semibold text-white hover:bg-primary-700 transition-colors">Daftar</button>
+                        <x-atoms.button type="primary" class="w-full">Daftar</x-atoms.button>
                     </a>
                     <a href="{{ route('login') }}" class="w-full">
-                        <button class="w-full px-5 py-2.5 rounded-full bg-white text-sm font-bold text-primary-900 hover:bg-primary-100 transition-colors">Masuk</button>
+                        <x-atoms.button type="secondary" class="w-full">Masuk</x-atoms.button>
                     </a>
                 </div>
             @else
