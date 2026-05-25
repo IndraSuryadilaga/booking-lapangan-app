@@ -12,6 +12,8 @@ return new class extends Migration
     public function up(): void
 {
     Schema::create('venue_facilities', function (Blueprint $table) {
+        $table->id();
+
         $table->foreignId('venue_id')
             ->constrained()
             ->onDelete('cascade');
@@ -20,9 +22,10 @@ return new class extends Migration
             ->constrained()
             ->onDelete('cascade');
 
-        $table->primary(['venue_id', 'facility_id']);
+        $table->timestamps();
     });
 }
+
     /**
      * Reverse the migrations.
      */
