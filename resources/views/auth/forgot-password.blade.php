@@ -7,25 +7,25 @@
     </div>
 
     <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <x-molecules.auth-session-status class="mb-4" :status="session('status')" />
 
     <form method="POST" action="{{ route('password.email') }}">
         @csrf
 
         <!-- Email Address -->
         <div class="space-y-1.5">
-            <x-input-label for="email" :value="__('Alamat Email')" class="font-semibold text-gray-700" />
-            <x-text-input id="email"
+            <x-atoms.input-label for="email" :value="__('Alamat Email')" class="font-semibold text-gray-700" />
+            <x-atoms.text-input id="email"
                           class="block w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-200 transition duration-150"
                           type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <x-atoms.input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
         <!-- Route Button -->
-        <div class="flex items-center justify-end mt-6">
-            <x-primary-button class="w-full justify-center bg-primary-600 hover:bg-primary-700 py-2.5 rounded-lg">
+        <div class="pt-2 mt-6">
+            <x-atoms.button type="primary" class="w-full">
                 {{ __('Kirim Tautan Reset Kata Sandi') }}
-            </x-primary-button>
+            </x-atoms.button>
         </div>
 
         <!-- Route Button -->
