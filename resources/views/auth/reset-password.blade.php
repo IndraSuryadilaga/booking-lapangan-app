@@ -12,29 +12,29 @@
 
         <!-- Email Address -->
         <div class="space-y-1.5">
-            <x-input-label for="email" :value="__('Email')" class="font-semibold text-gray-700" />
-            <x-text-input id="email" class="block w-full rounded-lg border-gray-300 bg-gray-50 focus:border-primary-500 focus:ring-primary-200 transition duration-150" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-1" />
+            <x-atoms.input-label for="email" :value="__('Email')" class="font-semibold text-gray-700" />
+            <x-atoms.text-input id="email" class="block w-full rounded-lg border-gray-300 bg-gray-50 focus:border-primary-500 focus:ring-primary-200 transition duration-150" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
+            <x-atoms.input-error :messages="$errors->get('email')" class="mt-1" />
         </div>
 
         <!-- Password -->
         <div class="space-y-1.5">
-            <x-input-label for="password" :value="__('Kata Sandi Baru')" class="font-semibold text-gray-700" />
-            <x-text-input id="password" class="block w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-200 transition duration-150" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-1" />
+            <x-atoms.input-label for="password" :value="__('Kata Sandi Baru')" class="font-semibold text-gray-700" />
+            <x-atoms.text-input id="password" class="block w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-200 transition duration-150" type="password" name="password" required autocomplete="new-password" />
+            <x-atoms.input-error :messages="$errors->get('password')" class="mt-1" />
         </div>
 
         <!-- Confirm Password -->
         <div class="space-y-1.5">
-            <x-input-label for="password_confirmation" :value="__('Konfirmasi Kata Sandi Baru')" class="font-semibold text-gray-700" />
-            <x-text-input id="password_confirmation" class="block w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-200 transition duration-150" type="password" name="password_confirmation" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1" />
+            <x-atoms.input-label for="password_confirmation" :value="__('Konfirmasi Kata Sandi Baru')" class="font-semibold text-gray-700" />
+            <x-atoms.text-input id="password_confirmation" class="block w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-200 transition duration-150" type="password" name="password_confirmation" required autocomplete="new-password" />
+            <x-atoms.input-error :messages="$errors->get('password_confirmation')" class="mt-1" />
         </div>
 
-        <div class="pt-4">
-            <x-primary-button class="w-full justify-center bg-primary-600 hover:bg-primary-700 py-3 rounded-lg font-bold">
-                Atur Ulang Kata Sandi
-            </x-primary-button>
+        <div class="pt-2">
+            <x-atoms.button type="primary">
+                {{ __('Atur Ulang Kata Sandi') }}
+            </x-atoms.button>
         </div>
     </form>
 </x-guest-layout>
