@@ -13,16 +13,14 @@ return new class extends Migration
     {
         Schema::create('fields', function (Blueprint $table) {
             $table->id();
-            
-            $table->foreignId('sports_category_id')->constrained('sports_categories')->cascadeOnDelete();
-            
+            $table->foreignId('venue_id')->constrained('venues')->cascadeOnDelete();
+            $table->foreignId('sports_category_id')->constrained('sports_categories');
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->decimal('price_per_slot', 10, 2);
-            $table->string('photo')->nullable();
+            $table->enum('type', ['indoor', 'outdoor', 'semi-indoor']);
+            $table->string('surface_material', 100)->nullable();
             $table->boolean('is_active')->default(true);
-            
             $table->timestamps();
         });
     }

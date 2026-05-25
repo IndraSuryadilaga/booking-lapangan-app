@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+feature/2.7-db-fields-module
+use App\Models\SportsCategory;
 use App\Models\Facility;
 use App\Models\Venue;
 
@@ -10,6 +12,19 @@ class VenueSeeder extends Seeder
 {
     public function run(): void
     {
+        // Ambil sports category pertama
+        $sportsCategory = SportsCategory::first();
+
+        // Kalau belum ada, buat default category
+        if (!$sportsCategory) {
+            $sportsCategory = SportsCategory::create([
+                'name' => 'Futsal',
+                'slug' => 'futsal',
+                'is_active' => true,
+            ]);
+        }
+
+        // Facilities
         $wifi = Facility::create([
             'name' => 'WiFi',
             'icon' => 'wifi',
@@ -30,6 +45,7 @@ class VenueSeeder extends Seeder
             'icon' => 'utensils',
         ]);
 
+        // Venues
         $venues = [
             [
                 'name' => 'Arena Sport Center',
@@ -99,6 +115,7 @@ class VenueSeeder extends Seeder
         foreach ($venues as $venueData) {
             $venue = Venue::create($venueData);
 
+            // Attach facilities
             $venue->facilities()->attach([
                 $wifi->id,
                 $parking->id,
@@ -106,7 +123,8 @@ class VenueSeeder extends Seeder
                 $canteen->id,
             ]);
 
-            $venue->sportsCategories()->attach([1]);
+            // Attach sports category dynamically
+            $venue->sportsCategories()->attach($sportsCategory->id);
         }
     }
 }
