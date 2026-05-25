@@ -20,10 +20,11 @@ class AdminFieldController extends Controller
      */
     public function index()
     {
-        $fields = Field::with([
-            'sportsCategory',
-            'images'
-        ])->latest()->get();
+        // Tambahkan 'venue' dan ganti ->get() jadi ->paginate(10)
+        $fields = Field::with(['venue', 'sportsCategory', 'images'])
+            ->latest()
+            ->paginate(10);
+
         return view('admin.fields.index', compact('fields'));
     }
 
@@ -48,14 +49,13 @@ class AdminFieldController extends Controller
             'venue_id'           => 'required|exists:venues,id',
             'sports_category_id' => 'required|exists:sports_categories,id',
             'name'               => 'required|string|max:255',
-            'description'        => 'nullable|string',
-            'images'             => 'nullable|array',
+            'description'        => 'nullable|string',            
+            'images'             => 'required|array',
             'images.*'           => 'image|mimes:jpeg,png,jpg|max:10000',
-            'operating_hours'    => 'required|array|size:7',
         ]);
 
         DB::transaction(function () use ($request) {
-
+            
             $field = Field::create([
                 'venue_id'           => $request->venue_id,
                 'sports_category_id' => $request->sports_category_id,
@@ -65,30 +65,22 @@ class AdminFieldController extends Controller
                 'is_active'          => true,
             ]);
 
-                if ($request->hasFile('images')) {
-                    foreach ($request->file('images') as $index => $image) {
-                        $imagePath = $image->store('fields', 'public');
-                        FieldImage::create([
-                            'field_id'   => $field->id,
-                            'image_path' => $imagePath,
-                            'is_primary' => $index === 0,
-                            'sort_order' => $index,
-                        ]);
-                    }
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $index => $image) {
+                    $imagePath = $image->store('fields', 'public');
+                    
+                    FieldImage::create([
+                        'field_id'   => $field->id,
+                        'image_path' => $imagePath,
+                        'is_primary' => $index === 0,
+                        'sort_order' => $index,
+                    ]);
                 }
-
-            foreach ($request->operating_hours as $dayOfWeek => $hours) {
-                $field->operatingHours()->create([
-                    'day_of_week' => $dayOfWeek,
-                    'open_time'   => $hours['open_time'] ?? '08:00',
-                    'close_time'  => $hours['close_time'] ?? '22:00',
-                    'is_open'     => isset($hours['is_open']),
-                ]);
             }
+            
         });
 
-        return redirect()->route('fields.index')
-            ->with('success', 'Lapangan dan 7 hari jam operasional berhasil disimpan bersamaan!');
+        return redirect()->route('fields.index')->with('success', 'Lapangan berhasil ditambahkan!');
     }
 
     /**
@@ -119,16 +111,15 @@ class AdminFieldController extends Controller
     public function update(Request $request, Field $field)
     {
         $request->validate([
-                'venue_id'           => 'required|exists:venues,id',
-                'sports_category_id' => 'required|exists:sports_categories,id',
-                'name'               => 'required|string|max:255',
-                'description'        => 'nullable|string',
-                'images'             => 'nullable|array',
-                'images.*'           => 'image|mimes:jpeg,png,jpg|max:10000',
-                'operating_hours'    => 'required|array|size:7',
-            ]);
+            'venue_id'           => 'required|exists:venues,id',
+            'sports_category_id' => 'required|exists:sports_categories,id',
+            'name'               => 'required|string|max:255',
+            'description'        => 'nullable|string',
+            'images'             => 'nullable|array',
+            'images.*'           => 'image|mimes:jpeg,png,jpg|max:10000',
+        ]);
 
-        DB::transaction(function () use ($request, $field) {
+        DB::transaction(function () use ($request, $field) {            
             $field->update([
                 'venue_id'           => $request->venue_id,
                 'sports_category_id' => $request->sports_category_id,
@@ -140,6 +131,7 @@ class AdminFieldController extends Controller
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $index => $image) {
                     $imagePath = $image->store('fields', 'public');
+                    
                     FieldImage::create([
                         'field_id'   => $field->id,
                         'image_path' => $imagePath,
@@ -148,21 +140,10 @@ class AdminFieldController extends Controller
                     ]);
                 }
             }
-
-            foreach ($request->operating_hours as $dayOfWeek => $hours) {
-                $field->operatingHours()->updateOrCreate(
-                    ['day_of_week' => $dayOfWeek], // Cari berdasarkan hari
-                    [
-                        'open_time'   => $hours['open_time'] ?? '08:00',
-                        'close_time'  => $hours['close_time'] ?? '22:00',
-                        'is_open'     => isset($hours['is_open']),
-                    ]
-                );
-            }
         });
 
         return redirect()->route('fields.index')
-            ->with('success', 'Data Lapangan dan jam operasional berhasil diperbarui!');
+            ->with('success', 'Data lapangan dan galeri berhasil diperbarui!');
     }
 
     public function destroy(Field $field)

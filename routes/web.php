@@ -21,8 +21,8 @@ Route::get('/pesan', [BookingController::class, 'create'])
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::patch('/admin/field-images/{image}/primary', [AdminFieldController::class, 'setPrimaryImage'])->name('fields.images.primary');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // RUTE PRIMARY IMAGE SEBELUMNYA DI SINI -> HAPUS DARI SINI
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
@@ -34,6 +34,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::resource('sports-categories', AdminSportsCategoryController::class);
     
     Route::resource('fields', AdminFieldController::class);
+
+    Route::patch('/field-images/{image}/primary', [\App\Http\Controllers\Admin\AdminFieldController::class, 'setPrimaryImage'])->name('fields.images.primary');
     
 });
 
