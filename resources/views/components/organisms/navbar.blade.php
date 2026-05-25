@@ -1,5 +1,5 @@
 <div class="relative top-4 inset-x-0 z-50 px-4 h-16 sm:px-6 lg:px-8 flex justify-center">
-    <nav x-data="{ open: false }" class="w-full max-w-7xl bg-primary-600/95 backdrop-blur-md text-white rounded-full px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-2xl relative transition-all duration-300">
+    <nav x-data="{ open: false }" class="w-full max-w-7xl bg-primary-600 backdrop-blur-md text-white rounded-full px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-2xl relative transition-all duration-300">
 
         <div class="flex h-8 items-center shrink-0">
             <a href="/" class="h-full">
@@ -103,7 +103,7 @@
             </div>
 
             @guest
-                <div class="mt-4 pt-4 border-t border-primary-800 px-4 pb-4 flex flex-col gap-3">
+                <div class="mt-4 pt-4 border-t border-primary-200 px-4 pb-4 flex flex-col gap-3">
                     <a href="{{ route('register') }}" class="w-full">
                         <x-atoms.button type="primary" class="w-full">Daftar</x-atoms.button>
                     </a>
@@ -112,7 +112,7 @@
                     </a>
                 </div>
             @else
-                <div class="mt-2 pt-4 border-t border-primary-800 px-2 pb-2">
+                <div class="mt-2 pt-4 border-t border-primary-200 px-2 pb-2">
                     <div class="px-4 mb-4">
                         <div class="font-bold text-base text-white">{{ Auth::user()->name }}</div>
                         <div class="font-medium text-sm text-primary-100">{{ Auth::user()->email }}</div>

@@ -13,30 +13,35 @@
         <!-- Email Address -->
         <div class="space-y-1.5">
             <x-atoms.input-label for="email" :value="__('Alamat Email')" class="font-semibold text-gray-700" />
-            <x-atoms.text-input id="email"
-                          class="block w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-200 transition duration-150"
-                          type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-atoms.input-error :messages="$errors->get('email')" class="mt-1" />
+            <x-atoms.input
+                id="email"
+                type="email"
+                placeholder="nama@email.com"
+                name="email"
+                :value="old('email')"
+                :error="$errors->has('email')"
+                required
+                autofocus
+                autocomplete="username"
+            />
         </div>
 
         <!-- Password -->
         <div class="space-y-1.5">
             <x-atoms.input-label for="password" :value="__('Kata Sandi')" class="font-semibold text-gray-700" />
-            <x-atoms.text-input id="password"
-                          class="block w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-200 transition duration-150"
-                          type="password"
-                          name="password"
-                          required autocomplete="current-password" />
-            <x-atoms.input-error :messages="$errors->get('password')" class="mt-1" />
+            <x-atoms.input
+                id="password"
+                type="password"
+                name="password"
+                :error="$errors->has('password')"
+                required
+                autocomplete="current-password"
+            />
         </div>
 
         <!-- Remember Me -->
         <div class="flex items-center justify-between">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox"
-                       class="rounded border-gray-300 text-primary-600 shadow-sm focus:ring-primary-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Ingat saya') }}</span>
-            </label>
+            <x-atoms.select-checkbox id="remember_me" name="remember" :label="__('Ingat saya')" />
 
             @if (Route::has('password.request'))
                 <a class="text-sm font-medium text-primary-600 hover:text-primary-700 transition-colors" href="{{ route('password.request') }}">
