@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('booking_slots', function (Blueprint $table) {
             $table->id();
             $table->foreignId('booking_id')->constrained()->onDelete('cascade');
+            $table->foreignId('field_id')->constrained();
             $table->date('booking_date');
             $table->time('start_time');
             $table->time('end_time');
@@ -21,7 +22,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Mencegah double-booking pada slot yang sama untuk pemesanan yang sama
-            $table->unique(['booking_id', 'start_time']);
+            $table->unique(['field_id', 'booking_date', 'start_time'], 'uq_slot');
         });
     }
 
