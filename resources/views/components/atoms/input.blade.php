@@ -6,15 +6,34 @@
     'value' => '',
     'placeholder' => '',
     'iconLeft' => null,
-    'isSearch' => false, // Boolean khusus untuk Search
+    'isSearch' => false,
     'error' => false,
     'errorMessage' => '',
+    'messages' => [],
 ])
 
 @php
     $id = $id ?? $name ?? uniqid('input-');
     $isPassword = $type === 'password';
     $isSearchMode = $type === 'search' || $isSearch;
+
+    // Ambil error validasi otomatis dari Laravel berdasarkan 'name'
+    $laravelErrors = $name && $errors->has($name) ? $errors->get($name) : [];
+
+    // Gabungkan semua kemungkinan sumber pesan error menjadi satu array
+    $allErrors = [];
+    if ($errorMessage) {
+        $allErrors[] = $errorMessage;
+    }
+    if (!empty($messages)) {
+        $allErrors = array_merge($allErrors, (array) $messages);
+    }
+    if (!empty($laravelErrors)) {
+        $allErrors = array_merge($allErrors, $laravelErrors);
+    }
+
+    // Tentukan status error final
+    $hasError = $error || count($allErrors) > 0;
 
     // Responsive padding logic
     // Base padding (no icon) for small screens and up
@@ -23,18 +42,16 @@
 
     // Override for left icon
     if ($iconLeft || $isSearchMode) {
-        // Increase left padding to make space for the icon
         $paddingLeft = 'pl-10 sm:pl-12';
     }
 
     // Override for right icon (password toggle, search clear)
     if ($isPassword || $isSearchMode) {
-        // Increase right padding to make space for the icon/button
         $paddingRight = 'pr-10 sm:pr-12';
     }
 
     // Logika warna border jika ada error
-    $borderClass = $error
+    $borderClass = $hasError
         ? 'border-danger-500 focus:border-danger-500 focus:ring-danger-500 dark:border-danger-500'
         : 'border-neutral-300 focus:border-primary-500 focus:ring-primary-500 dark:border-neutral-700 dark:focus:border-primary-400';
 @endphp
@@ -42,7 +59,7 @@
 <div class="w-full">
     <div x-data="{
             showPassword: false,
-            hasValue: '{{ $value }}'.length > 0,
+            hasValue: '{{ (string) $value }}'.length > 0,
             clearSearch() {
                 this.$refs.inputField.value = '';
                 this.hasValue = false;
@@ -101,7 +118,11 @@
         @endif
     </div>
 
-    @if($error && $errorMessage)
-        <p class="mt-1.5 text-14 text-danger-500 font-medium">{{ $errorMessage }}</p>
+    @if($hasError && count($allErrors) > 0)
+        <ul class="mt-1.5 text-sm text-danger-500 font-medium space-y-1">
+            @foreach ($allErrors as $msg)
+                <li>{{ $msg }}</li>
+            @endforeach
+        </ul>
     @endif
 </div>
