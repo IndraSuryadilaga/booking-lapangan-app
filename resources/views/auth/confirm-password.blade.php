@@ -17,12 +17,11 @@
         <!-- Password -->
         <div class="space-y-1.5">
             <x-atoms.input-label for="password" :value="__('Kata Sandi')" class="font-semibold text-gray-700" />
-            <x-atoms.text-input id="password"
+            <x-atoms.input id="password"
                           class="block w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-200 transition duration-150"
                           type="password"
                           name="password"
                           required autocomplete="current-password" />
-            <x-atoms.input-error :messages="$errors->get('password')" class="mt-1" />
         </div>
 
         <!-- Route Button -->
