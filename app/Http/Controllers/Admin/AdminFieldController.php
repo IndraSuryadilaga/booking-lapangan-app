@@ -204,53 +204,81 @@ class AdminFieldController extends Controller
     }
 
     /**
-     * Update Operating Hours & Pricing for the Field.
+     * Update all field settings: Main Info, Operating Hours, Pricing, and Gallery.
      */
     public function updateSettings(Request $request, Field $field)
     {
-        // 1. Validate Form Input
+        // 1. Validation for all sections
         $request->validate([
+            // Section 1: Main Info
+            'name'             => 'required|string|max:255',
+            'type'             => 'required|in:Indoor,Outdoor,Semi-Indoor',
+            'surface_material' => 'required|string|max:255',
+            'description'      => 'nullable|string',
+            'is_active'        => 'nullable|boolean',
+
+            // Section 2: Operating Hours
             'operating_hours'              => 'required|array|size:7',
             'operating_hours.*.open_time'  => 'required|date_format:H:i',
-            // Special validation: close_time must be strictly after open_time
             'operating_hours.*.close_time' => 'required|date_format:H:i|after:operating_hours.*.open_time',
             
+            // Section 3: Pricing
             'pricings'          => 'required|array',
             'pricings.weekday'  => 'required|numeric|min:0',
             'pricings.weekend'  => 'required|numeric|min:0',
             'pricings.holiday'  => 'required|numeric|min:0',
-        ], [
-            // Custom error message for the UI
-            'operating_hours.*.close_time.after' => 'Jam tutup harus lebih besar dari jam buka.',
+
+            // Section 4: Images
+            'images'   => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5000',
         ]);
 
-        // 2. Wrap the save process in a Database Transaction for atomicity
         DB::transaction(function () use ($request, $field) {
             
-            // A. Save/Update Operating Hours (Looping through 7 days)
+            // Update Section 1: Main Info
+            $field->update([
+                'name'             => $request->name,
+                'slug'             => Str::slug($request->name) . '-' . $field->id, // Simple reactive slug logic
+                'type'             => $request->type,
+                'surface_material' => $request->surface_material,
+                'description'      => $request->description,
+                'is_active'        => $request->has('is_active'),
+            ]);
+
+            // Update Section 2: Operating Hours
             foreach ($request->operating_hours as $dayOfWeek => $hours) {
                 $field->operatingHours()->updateOrCreate(
-                    ['day_of_week' => $dayOfWeek], // Find by day of week
+                    ['day_of_week' => $dayOfWeek],
                     [
                         'open_time'  => $hours['open_time'],
                         'close_time' => $hours['close_time'],
-                        // If the checkbox is checked, it exists in the request. Otherwise, set to false (closed).
-                        'is_open'    => isset($hours['is_open']) ? true : false, 
+                        'is_open'    => isset($hours['is_open']), 
                     ]
                 );
             }
 
-            // B. Save/Update Pricing Scheme
+            // Update Section 3: Pricing Scheme
             foreach ($request->pricings as $type => $price) {
                 $field->pricing()->updateOrCreate(
-                    ['day_type' => $type], // MENGGUNAKAN 'day_type' SESUAI MIGRATION
-                    ['price_per_slot' => $price] // MENGGUNAKAN 'price_per_slot' SESUAI MIGRATION
+                    ['day_type' => $type],
+                    ['price_per_slot' => $price]
                 );
+            }
+
+            // Update Section 4: New Images Upload
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    $path = $image->store('fields', 'public');
+                    $field->images()->create([
+                        'image_path' => $path,
+                        'is_primary' => false,
+                        'sort_order' => $field->images()->count(),
+                    ]);
+                }
             }
         });
 
-        // 3. Redirect back to the settings page with a success message
         return redirect()->route('fields.settings', $field->id)
-            ->with('success', 'Pengaturan Jam Operasional dan Skema Harga berhasil diperbarui!');
+            ->with('success', 'All field configurations updated successfully!');
     }
 }
