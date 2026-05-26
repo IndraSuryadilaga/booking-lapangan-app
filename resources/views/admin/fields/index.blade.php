@@ -45,7 +45,15 @@
                             
                             <td class="p-4 border-b font-medium">{{ $field->name }}</td>
                             <td class="p-4 border-b">{{ $field->sportsCategory->name ?? 'Kategori Dihapus' }}</td>
-                            <td class="p-4 border-b">Rp {{ number_format($field->price_per_slot, 0, ',', '.') }}</td>
+                            <td class="p-4 border-b text-sm">
+                                @if($field->pricing && $field->pricing->isNotEmpty())
+                                    <span class="block text-xs text-gray-500">Weekday: Rp {{ number_format($field->pricing->where('day_type', 'weekday')->first()->price_per_slot ?? 0, 0, ',', '.') }}</span>
+                                    <span class="block text-xs text-gray-500">Weekend: Rp {{ number_format($field->pricing->where('day_type', 'weekend')->first()->price_per_slot ?? 0, 0, ',', '.') }}</span>
+                                    <span class="block text-xs text-gray-500">Holiday: Rp {{ number_format($field->pricing->where('day_type', 'holiday')->first()->price_per_slot ?? 0, 0, ',', '.') }}</span>
+                                @else
+                                    <span class="text-gray-400 italic">Belum ada skema harga</span>
+                                @endif
+                            </td>
                             
                             <td class="p-4 border-b text-center">
                                 <div class="flex justify-center gap-2">

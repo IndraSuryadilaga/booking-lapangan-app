@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class FieldPricing extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'field_id',
         'day_type',

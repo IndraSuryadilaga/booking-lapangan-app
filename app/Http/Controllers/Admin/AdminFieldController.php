@@ -150,7 +150,7 @@ class AdminFieldController extends Controller
      */
     public function settings(Field $field)
     {
-        $field->Load(['operatingHours', 'pricing']);
+        $field->load(['operatingHours', 'pricing']); 
         return view('admin.fields.settings', compact('field'));
     }
 
@@ -227,10 +227,22 @@ class AdminFieldController extends Controller
             'pricings.weekday'  => 'required|numeric|min:0',
             'pricings.weekend'  => 'required|numeric|min:0',
             'pricings.holiday'  => 'required|numeric|min:0',
-
+            
             // Section 4: Images
             'images'   => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:5000',
+        ], [
+            'operating_hours.*.close_time.after' => 'Jam tutup tidak boleh sama atau lebih awal dari jam buka.',
+            'operating_hours.*.open_time.required' => 'Jam buka wajib diisi jika hari tersebut beroperasi.',
+            'operating_hours.*.close_time.required' => 'Jam tutup wajib diisi jika hari tersebut beroperasi.',
+            
+            'pricings.weekday.required' => 'Harga sewa hari biasa (Weekday) tidak boleh kosong.',
+            'pricings.weekend.required' => 'Harga sewa akhir pekan (Weekend) tidak boleh kosong.',
+            'pricings.holiday.required' => 'Harga sewa hari libur tidak boleh kosong.',
+            
+            'name.required' => 'Nama lapangan wajib diisi.',
+            'type.required' => 'Tipe lapangan wajib dipilih.',
+            'surface_material.required' => 'Jenis karpet/material lapangan wajib diisi.'
         ]);
 
         DB::transaction(function () use ($request, $field) {
@@ -277,6 +289,8 @@ class AdminFieldController extends Controller
                 }
             }
         });
+
+        dd($field->load(['operatingHours', 'pricing'])->toArray());
 
         return redirect()->route('fields.settings', $field->id)
             ->with('success', 'All field configurations updated successfully!');

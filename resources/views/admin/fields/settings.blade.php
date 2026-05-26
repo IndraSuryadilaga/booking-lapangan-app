@@ -1,6 +1,26 @@
 <x-app-layout>
     <div class="py-12 bg-neutral-50 dark:bg-neutral-900 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+        @if ($errors->any())
+                <div class="mb-8 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl shadow-sm">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-bold text-red-800">Terdapat {{ $errors->count() }} kesalahan validasi:</h3>
+                            <div class="mt-2 text-sm text-red-700">
+                                <ul class="list-disc pl-5 space-y-1">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
             
             <form action="{{ route('fields.settings.update', $field->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -145,11 +165,15 @@
                 <div class="mt-8 flex justify-end space-x-4">
                     <a href="{{ route('fields.index') }}" class="px-8 py-2.5 bg-neutral-200 text-neutral-700 rounded-full hover:bg-neutral-300 transition-colors font-bold text-sm flex items-center">Batal</a>
                     <button type="submit" class="px-8 py-2.5 bg-primary-500 text-white rounded-full hover:bg-primary-600 shadow-lg shadow-primary-500/30 transition-all font-bold text-sm">
-                        Simpan Semua Perubahan
+                        Simpan Perubahan
                     </button>
                 </div>
 
-            <</form> @foreach($field->images as $image)
+                <form action="{{ route('fields.settings.update', $field->id) }}" method="POST" enctype="multipart/form-data"></form>
+
+            </form>
+
+            @foreach($field->images as $image)
                 <form id="delete-image-{{ $image->id }}" action="{{ route('fields.images.delete', $image->id) }}" method="POST" class="hidden">
                     @csrf
                     @method('DELETE')
