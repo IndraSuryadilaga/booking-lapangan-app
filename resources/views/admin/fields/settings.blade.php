@@ -52,11 +52,17 @@
                                     <div class="relative group aspect-square">
                                         <img src="{{ asset('storage/' . $image->image_path) }}" class="w-full h-full object-cover rounded-lg border {{ $image->is_primary ? 'border-primary-500 ring-2 ring-primary-500' : 'border-neutral-200' }}">
                                         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center space-x-1">
-                                            <a href="{{ route('fields.images.delete', $image->id) }}" class="p-1 bg-white rounded-full text-red-500 hover:bg-red-50"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></a>
+                                            
+                                            <button type="button" onclick="if(confirm('Apakah Anda yakin ingin menghapus foto ini?')) document.getElementById('delete-image-{{ $image->id }}').submit();" class="p-1 bg-white rounded-full text-red-500 hover:bg-red-50 flex items-center justify-center cursor-pointer">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            </button>
+                                            
                                         </div>
                                     </div>
                                 @endforeach
                             </div>
+
+
 
                             <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Tambah Foto Baru</label>
                             <input type="file" name="images[]" multiple class="block w-full text-sm text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100">
@@ -143,7 +149,12 @@
                     </button>
                 </div>
 
-            </form>
+            <</form> @foreach($field->images as $image)
+                <form id="delete-image-{{ $image->id }}" action="{{ route('fields.images.delete', $image->id) }}" method="POST" class="hidden">
+                    @csrf
+                    @method('DELETE')
+                </form>
+            @endforeach
 
         </div>
     </div>
