@@ -34,7 +34,7 @@ return new class extends Migration
                     rating_avg = (SELECT AVG(rating) FROM reviews WHERE venue_id = NEW.venue_id),
                     review_count = (SELECT COUNT(*) FROM reviews WHERE venue_id = NEW.venue_id)
                 WHERE id = NEW.venue_id;
-            END
+            END;
         ');
 
         // Trigger untuk memperbarui rating_avg dan review_count di tabel venues setelah delete
@@ -48,7 +48,7 @@ return new class extends Migration
                     rating_avg = IFNULL((SELECT AVG(rating) FROM reviews WHERE venue_id = OLD.venue_id), 0),
                     review_count = (SELECT COUNT(*) FROM reviews WHERE venue_id = OLD.venue_id)
                 WHERE id = OLD.venue_id;
-            END
+            END;
         ');
 
         // Trigger untuk memperbarui rating_avg di tabel venues setelah update rating
@@ -56,11 +56,12 @@ return new class extends Migration
             CREATE TRIGGER update_venue_rating_after_update
             AFTER UPDATE ON reviews
             FOR EACH ROW
-            WHEN OLD.rating <> NEW.rating
             BEGIN
-                UPDATE venues
-                SET rating_avg = (SELECT AVG(rating) FROM reviews WHERE venue_id = NEW.venue_id)
-                WHERE id = NEW.venue_id;
+                IF OLD.rating <> NEW.rating THEN
+                    UPDATE venues
+                    SET rating_avg = (SELECT AVG(rating) FROM reviews WHERE venue_id = NEW.venue_id)
+                    WHERE id = NEW.venue_id;
+                END IF;
             END;
         ');
     }

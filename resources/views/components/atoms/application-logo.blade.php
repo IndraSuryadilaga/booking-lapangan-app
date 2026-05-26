@@ -1,3 +1,5 @@
+@props(['colorClass' => ''])
+
 <span {{ $attributes->merge(['class' => 'inline-block ' . $colorClass]) }}>
     {{-- Inject the SVG content and ensure it fills its parent --}}
     @php

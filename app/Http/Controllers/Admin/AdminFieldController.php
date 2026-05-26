@@ -145,6 +145,15 @@ class AdminFieldController extends Controller
             ->with('success', 'Data lapangan dan galeri berhasil diperbarui!');
     }
 
+    /**
+     * Display the settings form for Operating Hours & Pricing.
+     */
+    public function settings(Field $field)
+    {
+        $field->Load(['operatingHours', 'pricing']);
+        return view('admin.fields.settings', compact('field'));
+    }
+
     public function destroy(Field $field)
     {
         $field->load('images');
@@ -192,5 +201,56 @@ class AdminFieldController extends Controller
             }
         }
         return back()->with('success', 'Foto berhasil dihapus!');
+    }
+
+    /**
+     * Update Operating Hours & Pricing for the Field.
+     */
+    public function updateSettings(Request $request, Field $field)
+    {
+        // 1. Validate Form Input
+        $request->validate([
+            'operating_hours'              => 'required|array|size:7',
+            'operating_hours.*.open_time'  => 'required|date_format:H:i',
+            // Special validation: close_time must be strictly after open_time
+            'operating_hours.*.close_time' => 'required|date_format:H:i|after:operating_hours.*.open_time',
+            
+            'pricings'          => 'required|array',
+            'pricings.weekday'  => 'required|numeric|min:0',
+            'pricings.weekend'  => 'required|numeric|min:0',
+            'pricings.holiday'  => 'required|numeric|min:0',
+        ], [
+            // Custom error message for the UI
+            'operating_hours.*.close_time.after' => 'Jam tutup harus lebih besar dari jam buka.',
+        ]);
+
+        // 2. Wrap the save process in a Database Transaction for atomicity
+        DB::transaction(function () use ($request, $field) {
+            
+            // A. Save/Update Operating Hours (Looping through 7 days)
+            foreach ($request->operating_hours as $dayOfWeek => $hours) {
+                $field->operatingHours()->updateOrCreate(
+                    ['day_of_week' => $dayOfWeek], // Find by day of week
+                    [
+                        'open_time'  => $hours['open_time'],
+                        'close_time' => $hours['close_time'],
+                        // If the checkbox is checked, it exists in the request. Otherwise, set to false (closed).
+                        'is_open'    => isset($hours['is_open']) ? true : false, 
+                    ]
+                );
+            }
+
+            // B. Save/Update Pricing Scheme
+            foreach ($request->pricings as $type => $price) {
+                $field->pricing()->updateOrCreate(
+                    ['day_type' => $type], // MENGGUNAKAN 'day_type' SESUAI MIGRATION
+                    ['price_per_slot' => $price] // MENGGUNAKAN 'price_per_slot' SESUAI MIGRATION
+                );
+            }
+        });
+
+        // 3. Redirect back to the settings page with a success message
+        return redirect()->route('fields.settings', $field->id)
+            ->with('success', 'Pengaturan Jam Operasional dan Skema Harga berhasil diperbarui!');
     }
 }
