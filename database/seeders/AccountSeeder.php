@@ -14,21 +14,36 @@ class AccountSeeder extends Seeder
     public function run(): void
     {
         DB::table('users')->insert([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
+            'name' => 'Super Administrator',
+            'email' => 'superadmin@booking.com',
+            'password' => bcrypt('password'),
+            'role' => 'super-admin',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        DB::table('users')->insert([
-            'name' => 'Regular User',
-            'email' => 'user@example.com',
-            'password' => Hash::make('password'),
-            'role' => 'user',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Admin Users for 2 venues
+        for ($i = 1; $i <= 2; $i++) {
+            DB::table('users')->insert([
+                'name' => "Admin Venue $i",
+                'email' => "admin$i@example.com",
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
+        // Regular Users for demo booking
+        for ($i = 1; $i <= 3; $i++) {
+            DB::table('users')->insert([
+                'name' => "Regular User $i",
+                'email' => "user$i@example.com",
+                'password' => Hash::make('password'),
+                'role' => 'user',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }
