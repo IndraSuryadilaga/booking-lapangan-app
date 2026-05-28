@@ -28,10 +28,18 @@
                     @forelse($fields as $field)
                         <tr>
                             <td class="p-4 border-b">
-                                @if($field->photo)
-                                    <img src="{{ asset('storage/' . $field->photo) }}" alt="Foto Lapangan" class="w-16 h-16 object-cover rounded">
+                                @php
+                                    $primaryImage = $field->images->where('is_primary', true)->first();
+                                @endphp
+                                @if($primaryImage)
+                                    <img
+                                        src="{{ asset('storage/' . $primaryImage->image_path) }}"
+                                        alt="Foto Lapangan"
+                                        class="w-16 h-16 object-cover rounded">
                                 @else
-                                    <span class="text-gray-400 text-sm italic">Belum ada foto</span>
+                                    <span class="text-gray-400 text-sm italic">
+                                        Belum ada foto
+                                    </span>
                                 @endif
                             </td>
                             

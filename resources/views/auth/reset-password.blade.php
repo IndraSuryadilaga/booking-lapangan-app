@@ -13,22 +13,19 @@
         <!-- Email Address -->
         <div class="space-y-1.5">
             <x-atoms.input-label for="email" :value="__('Email')" class="font-semibold text-gray-700" />
-            <x-atoms.text-input id="email" class="block w-full rounded-lg border-gray-300 bg-gray-50 focus:border-primary-500 focus:ring-primary-200 transition duration-150" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
-            <x-atoms.input-error :messages="$errors->get('email')" class="mt-1" />
+            <x-atoms.input id="email" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
         </div>
 
         <!-- Password -->
         <div class="space-y-1.5">
             <x-atoms.input-label for="password" :value="__('Kata Sandi Baru')" class="font-semibold text-gray-700" />
-            <x-atoms.text-input id="password" class="block w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-200 transition duration-150" type="password" name="password" required autocomplete="new-password" />
-            <x-atoms.input-error :messages="$errors->get('password')" class="mt-1" />
+            <x-atoms.input id="password" type="password" name="password" required autocomplete="new-password" />
         </div>
 
         <!-- Confirm Password -->
         <div class="space-y-1.5">
             <x-atoms.input-label for="password_confirmation" :value="__('Konfirmasi Kata Sandi Baru')" class="font-semibold text-gray-700" />
-            <x-atoms.text-input id="password_confirmation" class="block w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-200 transition duration-150" type="password" name="password_confirmation" required autocomplete="new-password" />
-            <x-atoms.input-error :messages="$errors->get('password_confirmation')" class="mt-1" />
+            <x-atoms.input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password" />
         </div>
 
         <div class="pt-2">

@@ -10,8 +10,15 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="md:col-span-2 bg-white rounded-lg shadow p-6">
                 <div class="mb-4">
-                    @if($field->photo)
-                        <img src="{{ asset('storage/' . $field->photo) }}" alt="Foto {{ $field->name }}" class="w-full h-64 object-cover rounded-lg border">
+                    @php
+                        $primaryImage = $field->images->where('is_primary', true)->first();
+                    @endphp
+                    @if($primaryImage)
+                        <img
+                            src="{{ asset('storage/' . $primaryImage->image_path) }}"
+                            alt="Foto {{ $field->name }}"
+                            class="w-full h-64 object-cover rounded-lg border"
+                        >
                     @else
                         <div class="w-full h-64 bg-gray-200 flex items-center justify-center rounded-lg border">
                             <span class="text-gray-500">Tidak ada foto</span>
@@ -51,6 +58,36 @@
                         <td class="py-2 whitespace-pre-wrap">{{ $field->description ?? '-' }}</td>
                     </tr>
                 </table>
+
+                <div class="grid grid-cols-4 gap-3 mt-4">
+                    @foreach($field->images as $image)
+                        <div class="border rounded p-2">
+                            <img
+                                src="{{ asset('storage/' . $image->image_path) }}"
+                                class="w-full h-24 object-cover rounded">
+                            @if($image->is_primary)
+                                <div class="mt-2 text-center">
+                                    <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
+                                        Primary
+                                    </span>
+                                </div>
+                            @else
+                                <form
+                                    action="{{ route('fields.images.primary', $image->id) }}"
+                                    method="POST"
+                                    class="mt-2">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button
+                                        type="submit"
+                                        class="w-full bg-blue-500 hover:bg-blue-600 text-white text-xs py-1 rounded">
+                                        Jadikan Primary
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
             </div>
 
             <div class="bg-white rounded-lg shadow p-6">
