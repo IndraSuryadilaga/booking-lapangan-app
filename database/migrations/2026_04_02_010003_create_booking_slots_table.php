@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payments', function (Blueprint $table) {
+        Schema::create('booking_slots', function (Blueprint $table) {
             $table->id();
             $table->foreignId('booking_id')->constrained()->onDelete('cascade');
-            $table->decimal('amount', 10, 2);
-            $table->string('method');
-            $table->enum('status', ['pending', 'paid', 'failed'])->default('pending');
-            $table->timestamp('paid_at')->nullable();
-            $table->string('reference_code')->unique()->nullable();
+            $table->foreignId('field_id')->constrained()->onDelete('restrict');
+            $table->date('booking_date');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->decimal('price', 10, 2);
             $table->timestamps();
+
+            $table->unique(['field_id', 'booking_date', 'start_time'], 'uq_slot');
         });
     }
 
@@ -28,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('payments');
+        Schema::dropIfExists('booking_slots');
     }
 };
