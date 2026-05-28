@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AccountSeeder extends Seeder
@@ -13,37 +13,38 @@ class AccountSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('users')->insert([
-            'name' => 'Super Administrator',
-            'email' => 'superadmin@booking.com',
-            'password' => bcrypt('password'),
-            'role' => 'super-admin',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Super Admin
+        User::firstOrCreate(
+            ['email' => 'superadmin@booking.com'],
+            [
+                'name' => 'Super Administrator',
+                'password' => Hash::make('password'),
+                'role' => 'super-admin',
+            ]
+        );
 
         // Admin Users for 2 venues
         for ($i = 1; $i <= 2; $i++) {
-            DB::table('users')->insert([
-                'name' => "Admin Venue $i",
-                'email' => "admin$i@example.com",
-                'password' => Hash::make('password'),
-                'role' => 'admin',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            User::firstOrCreate(
+                ['email' => "admin{$i}@example.com"],
+                [
+                    'name' => "Admin Venue {$i}",
+                    'password' => Hash::make('password'),
+                    'role' => 'admin',
+                ]
+            );
         }
 
         // Regular Users for demo booking
         for ($i = 1; $i <= 3; $i++) {
-            DB::table('users')->insert([
-                'name' => "Regular User $i",
-                'email' => "user$i@example.com",
-                'password' => Hash::make('password'),
-                'role' => 'user',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            User::firstOrCreate(
+                ['email' => "user{$i}@example.com"],
+                [
+                    'name' => "Regular User {$i}",
+                    'password' => Hash::make('password'),
+                    'role' => 'user',
+                ]
+            );
         }
     }
 }
