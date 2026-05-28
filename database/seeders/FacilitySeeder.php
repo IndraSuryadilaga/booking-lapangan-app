@@ -12,24 +12,35 @@ class FacilitySeeder extends Seeder
         $facilities = [
             [
                 'name' => 'Toilet',
-                'icon' => 'images/facilities/toilet.jpg',
+                'icon' => 'icon/toilet.svg',
             ],
             [
-                'name' => 'Parkir',
-                'icon' => 'images/facilities/parkir.jpg',
+                'name' => 'Cafe & Resto',
+                'icon' => 'icon/cafe-resto.svg',
             ],
             [
-                'name' => 'Mushola',
-                'icon' => 'images/facilities/mushola.png',
+                'name' => 'Changing Room',
+                'icon' => 'icon/user.svg',
             ],
             [
-                'name' => 'Kantin',
-                'icon' => 'images/facilities/kantin.jpg',
+                'name' => 'Free WiFi',
+                'icon' => 'icon/wifi.svg',
+            ],
+            [
+                'name' => 'Parking Car',
+                'icon' => 'icon/parking-car.svg',
+            ],
+            [
+                'name' => 'Shower',
+                'icon' => 'icon/shower.svg',
             ],
         ];
 
         foreach ($facilities as $facility) {
-            Facility::create($facility);
+            Facility::firstOrCreate(
+                ['name' => $facility['name']],
+                ['icon' => $facility['icon']]
+            );
         }
     }
 }
