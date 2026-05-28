@@ -13,53 +13,51 @@ class SportsCategorySeeder extends Seeder
         $categories = [
             [
                 'name' => 'Futsal',
-                'icon' => 'images/sports-icon/futsal-icon.png',
-            ],
-            [
-                'name' => 'Badminton',
-                'icon' => 'images/sports-icon/badminton-icon.png',
-            ],
-            [
-                'name' => 'Basket',
-                'icon' => 'images/sports-icon/basket-icon.png',
-            ],
-            [
-                'name' => 'Voli',
-                'icon' => 'images/sports-icon/voli-icon.png',
-            ],
-            [
-                'name' => 'Tenis',
-                'icon' => 'images/sports-icon/tenis-icon.png',
-            ],
-            [
-                'name' => 'Mini Soccer',
-                'icon' => 'images/sports-icon/minisoccer-icon.png',
+                'icon' => 'icon/football.svg',
             ],
             [
                 'name' => 'Sepak Bola',
-                'icon' => 'images/sports-icon/sepakbola-icon.png',
+                'icon' => 'icon/football.svg',
+            ],
+            [
+                'name' => 'Mini Soccer',
+                'icon' => 'icon/football.svg',
+            ],
+            [
+                'name' => 'Basket',
+                'icon' => 'icon/basketball.svg',
+            ],
+            [
+                'name' => 'Voli',
+                'icon' => 'icon/vollyball.svg',
+            ],
+            [
+                'name' => 'Badminton',
+                'icon' => 'icon/badminton.svg',
+            ],
+            [
+                'name' => 'Tenis',
+                'icon' => 'icon/badminton.svg',
             ],
             [
                 'name' => 'Padel',
-                'icon' => 'images/sports-icon/padel-icon.png',
+                'icon' => 'icon/badminton.svg',
             ],
             [
                 'name' => 'Tenis Meja',
-                'icon' => 'images/sports-icon/tenismeja-icon.png',
-            ],
-            [
-                'name' => 'Billiard',
-                'icon' => 'images/sports-icon/billiard-icon.pngg',
+                'icon' => 'icon/badminton.svg',
             ],
         ];
 
         foreach ($categories as $category) {
-            SportsCategory::create([
-                'name' => $category['name'],
-                'slug' => Str::slug($category['name']),
-                'icon' => $category['icon'],
-                'is_active' => true,
-            ]);
+            SportsCategory::firstOrCreate(
+                ['name' => $category['name']],
+                [
+                    'slug' => Str::slug($category['name']),
+                    'icon' => $category['icon'],
+                    'is_active' => true,
+                ]
+            );
         }
     }
 }
