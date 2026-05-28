@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('fields', function (Blueprint $table) {
             $table->id();
             $table->foreignId('venue_id')->constrained('venues')->cascadeOnDelete();
-            $table->foreignId('sports_category_id')->constrained('sports_categories');
+            $table->foreignId('sports_category_id')->constrained('sports_categories')->restrictOnDelete();
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
