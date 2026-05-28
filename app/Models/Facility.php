@@ -11,11 +11,15 @@ class Facility extends Model
         'icon',
     ];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
     public function venues()
-{
-    return $this->belongsToMany(
-        Venue::class,
-        'venue_facilities'
-    );
-}
+    {
+        return $this->belongsToMany(
+            Venue::class,
+            'venue_facilities'
+        );
+    }
 }

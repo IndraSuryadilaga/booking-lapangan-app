@@ -91,6 +91,12 @@ class AdminSportsCategoryController extends Controller
      */
     public function destroy(SportsCategory $sports_category)
     {
+        if ($sports_category->fields()->exists()) {
+            return redirect()
+                ->route('sports-categories.index')
+                ->with('error', 'Kategori masih digunakan oleh field.');
+        }
+
         $sports_category->delete();
 
         return redirect()
