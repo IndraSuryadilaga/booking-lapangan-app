@@ -49,70 +49,266 @@ Sistem ini membagi aktor menjadi empat entitas utama dengan batasan akses yang j
 ---
 ## 4. Skema Database
 
+Struktur database dirancang untuk menjadi normal, relasional, dan mendukung kebutuhan transaksional sistem.
+
 ##### 4.1 Daftar Tabel
 
-```
-users
-sports_categories
-fields
-field_operating_hours
-bookings
-booking_slots
-payments
-```
+-   `users`
+-   `sports_categories`
+-   `facilities`
+-   `public_holidays`
+-   `venues`
+-   `venue_sport_categories` (Pivot)
+-   `venue_facilities` (Pivot)
+-   `fields`
+-   `field_images`
+-   `field_operating_hours`
+-   `field_pricing`
+-   `bookings`
+-   `booking_slots`
+-   `payments`
+-   `reviews`
 
 ##### 4.2 Detail Skema
 
+Berikut adalah detail skema untuk setiap tabel, disajikan dalam format pseudo-SQL untuk kejelasan.
+
 ##### `users`
 ```sql
-id, name, email, password, role ENUM('user','admin'),
-email_verified_at, remember_token, timestamps
+CREATE TABLE users (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    email_verified_at TIMESTAMP NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('user', 'admin') NOT NULL DEFAULT 'user',
+    phone VARCHAR(20) NULL,
+    avatar VARCHAR(255) NULL,
+    remember_token VARCHAR(100) NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
+);
 ```
 
 ##### `sports_categories`
 ```sql
-id, name, slug, icon (nullable), is_active BOOLEAN, timestamps
+CREATE TABLE sports_categories (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    icon VARCHAR(255) NULL,
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
+);
+```
+
+##### `facilities`
+```sql
+CREATE TABLE facilities (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    icon VARCHAR(255) NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
+);
+```
+
+##### `public_holidays`
+```sql
+CREATE TABLE public_holidays (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    holiday_date DATE NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
+);
+```
+
+##### `venues`
+```sql
+CREATE TABLE venues (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT NULL,
+    rules TEXT NULL,
+    address TEXT NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    province VARCHAR(100) NOT NULL,
+    postal_code VARCHAR(10) NULL,
+    latitude DECIMAL(10, 8) NULL,
+    longitude DECIMAL(11, 8) NULL,
+    refund_policy TEXT NULL,
+    reschedule_policy TEXT NULL,
+    logo VARCHAR(255) NULL,
+    rating_avg DECIMAL(3, 2) NOT NULL DEFAULT 0.00,
+    review_count INT UNSIGNED NOT NULL DEFAULT 0,
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
+);
+```
+
+##### `venue_sport_categories` (Pivot)
+```sql
+CREATE TABLE venue_sport_categories (
+    venue_id BIGINT UNSIGNED NOT NULL,
+    sports_category_id BIGINT UNSIGNED NOT NULL,
+    PRIMARY KEY (venue_id, sports_category_id),
+    FOREIGN KEY (venue_id) REFERENCES venues(id) ON DELETE CASCADE,
+    FOREIGN KEY (sports_category_id) REFERENCES sports_categories(id) ON DELETE CASCADE
+);
+```
+
+##### `venue_facilities` (Pivot)
+```sql
+CREATE TABLE venue_facilities (
+    venue_id BIGINT UNSIGNED NOT NULL,
+    facility_id BIGINT UNSIGNED NOT NULL,
+    PRIMARY KEY (venue_id, facility_id),
+    FOREIGN KEY (venue_id) REFERENCES venues(id) ON DELETE CASCADE,
+    FOREIGN KEY (facility_id) REFERENCES facilities(id) ON DELETE CASCADE
+);
 ```
 
 ##### `fields`
 ```sql
-id, sports_category_id (FK), name, slug, description,
-price_per_slot (DECIMAL 10,2), photo (nullable),
-is_active BOOLEAN, timestamps
+CREATE TABLE fields (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    venue_id BIGINT UNSIGNED NOT NULL,
+    sports_category_id BIGINT UNSIGNED NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT NULL,
+    type ENUM('indoor', 'outdoor', 'semi-indoor') NOT NULL,
+    surface_material VARCHAR(100) NULL,
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (venue_id) REFERENCES venues(id) ON DELETE CASCADE,
+    FOREIGN KEY (sports_category_id) REFERENCES sports_categories(id)
+);
+```
+
+##### `field_images`
+```sql
+CREATE TABLE field_images (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    field_id BIGINT UNSIGNED NOT NULL,
+    image_path VARCHAR(255) NOT NULL,
+    is_primary BOOLEAN NOT NULL DEFAULT false,
+    sort_order TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (field_id) REFERENCES fields(id) ON DELETE CASCADE
+);
 ```
 
 ##### `field_operating_hours`
 ```sql
-id, field_id (FK), day_of_week TINYINT (0=Minggu..6=Sabtu),
-open_time TIME, close_time TIME, is_open BOOLEAN, timestamps
+CREATE TABLE field_operating_hours (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    field_id BIGINT UNSIGNED NOT NULL,
+    -- 0=Sunday, 1=Monday, ..., 6=Saturday
+    day_of_week TINYINT UNSIGNED NOT NULL,
+    open_time TIME NULL,
+    close_time TIME NULL,
+    is_open BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    UNIQUE KEY uq_field_day (field_id, day_of_week),
+    FOREIGN KEY (field_id) REFERENCES fields(id) ON DELETE CASCADE
+);
+-- Catatan: Relasi 1 lapangan → 7 baris (satu per hari).
 ```
 
-> Relasi: 1 lapangan → 7 baris (satu per hari).
+##### `field_pricing`
+```sql
+CREATE TABLE field_pricing (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    field_id BIGINT UNSIGNED NOT NULL,
+    day_type ENUM('weekday', 'weekend', 'holiday') NOT NULL,
+    price_per_slot DECIMAL(12, 2) NOT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    UNIQUE KEY uq_field_day_type (field_id, day_type),
+    FOREIGN KEY (field_id) REFERENCES fields(id) ON DELETE CASCADE
+);
+-- Catatan: Harga per slot dipisahkan untuk mendukung skema harga yang berbeda (misal: hari libur/akhir pekan).
+```
 
 ##### `bookings`
 ```sql
-id, user_id (FK), field_id (FK),
-booking_date DATE, total_slots TINYINT,
-total_price DECIMAL(10,2),
-status ENUM('pending','paid','completed','cancelled','expired'),
-notes (nullable), timestamps
+CREATE TABLE bookings (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    field_id BIGINT UNSIGNED NOT NULL,
+    booking_date DATE NOT NULL,
+    total_slots TINYINT UNSIGNED NOT NULL,
+    total_price DECIMAL(12, 2) NOT NULL,
+    status ENUM('pending', 'paid', 'completed', 'cancelled', 'expired') NOT NULL DEFAULT 'pending',
+    notes TEXT NULL,
+    expires_at TIMESTAMP NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (field_id) REFERENCES fields(id)
+);
 ```
 
 ##### `booking_slots`
 ```sql
-id, booking_id (FK), field_id (FK),
-booking_date DATE, start_time TIME, end_time TIME, timestamps
-
--- INDEX UNIK untuk mencegah double-booking:
-UNIQUE KEY uq_slot (field_id, booking_date, start_time)
+CREATE TABLE booking_slots (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    booking_id BIGINT UNSIGNED NOT NULL,
+    field_id BIGINT UNSIGNED NOT NULL,
+    booking_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
+    FOREIGN KEY (field_id) REFERENCES fields(id),
+    -- INDEX UNIK untuk mencegah double-booking (race condition)
+    UNIQUE KEY uq_slot (field_id, booking_date, start_time)
+);
 ```
 
 ##### `payments`
 ```sql
-id, booking_id (FK), amount DECIMAL(10,2),
-method VARCHAR(50), status ENUM('pending','success','failed'),
-paid_at (nullable TIMESTAMP), reference_code, timestamps
+CREATE TABLE payments (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    booking_id BIGINT UNSIGNED NOT NULL,
+    amount DECIMAL(12, 2) NOT NULL,
+    method VARCHAR(50) NOT NULL,
+    status ENUM('pending', 'success', 'failed') NOT NULL DEFAULT 'pending',
+    paid_at TIMESTAMP NULL,
+    reference_code VARCHAR(255) NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id)
+);
 ```
+
+##### `reviews`
+```sql
+CREATE TABLE reviews (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    venue_id BIGINT UNSIGNED NOT NULL,
+    field_id BIGINT UNSIGNED NULL,
+    booking_id BIGINT UNSIGNED NOT NULL,
+    rating TINYINT UNSIGNED NOT NULL, -- 1 to 5
+    comment TEXT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (venue_id) REFERENCES venues(id) ON DELETE CASCADE,
+    FOREIGN KEY (field_id) REFERENCES fields(id) ON DELETE SET NULL,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id),
+    UNIQUE KEY uq_user_booking (user_id, booking_id) -- Memastikan 1 user hanya bisa review 1 booking sekali.
+);
 
 ---
 ## 5. Struktur Proyek Laravel
@@ -125,25 +321,36 @@ project-root/
 │   ├── Http/
 │   │   ├── Controllers/
 │   │   │   ├── Auth/               ← LoginController, RegisterController
+│   │   │   ├── VenueController.php
 │   │   │   ├── BookingController.php
-│   │   │   ├── FieldController.php
 │   │   │   ├── PaymentController.php
 │   │   │   ├── DashboardController.php
+│   │   │   └── ReviewController.php
 │   │   │   └── Admin/
 │   │   │       ├── AdminDashboardController.php
-│   │   │       ├── AdminFieldController.php
+│   │   │       ├── AdminVenueController.php
+│   │   │       ├── AdminFieldController.php      ← Nested under Venue
+│   │   │       ├── AdminFacilityController.php
 │   │   │       ├── AdminBookingController.php
-│   │   │       └── AdminSportsCategoryController.php
+│   │   │       ├── AdminSportsCategoryController.php
+│   │   │       └── AdminPublicHolidayController.php
 │   │   ├── Middleware/
 │   │   │   └── IsAdmin.php         ← Middleware proteksi rute admin
 │   │   └── Requests/
 │   │       ├── StoreBookingRequest.php
-│   │       └── StoreFieldRequest.php
+│   │       ├── StoreVenueRequest.php
+│   │       └── StoreFieldRequest.php   ← Disesuaikan untuk konteks venue
 │   ├── Models/
 │   │   ├── User.php
+│   │   ├── Venue.php
 │   │   ├── Field.php
-│   │   ├── SportsCategory.php
+│   │   ├── FieldImage.php
 │   │   ├── FieldOperatingHour.php
+│   │   ├── FieldPricing.php
+│   │   ├── SportsCategory.php
+│   │   ├── Facility.php
+│   │   ├── PublicHoliday.php
+│   │   ├── Review.php
 │   │   ├── Booking.php
 │   │   ├── BookingSlot.php
 │   │   └── Payment.php
@@ -157,8 +364,10 @@ project-root/
 │   └── seeders/
 │       ├── DatabaseSeeder.php
 │       ├── AdminUserSeeder.php
+│       ├── VenueSeeder.php
+│       ├── FieldSeeder.php
 │       ├── SportsCategorySeeder.php
-│       └── FieldSeeder.php
+│       └── FacilitySeeder.php
 ├── resources/
 │   ├── views/
 │   │   ├── layouts/
@@ -167,15 +376,17 @@ project-root/
 │   │   ├── auth/
 │   │   ├── pages/
 │   │   │   ├── home.blade.php
-│   │   │   ├── catalog.blade.php
-│   │   │   └── field-detail.blade.php
+│   │   │   ├── venue-catalog.blade.php
+│   │   │   └── venue-detail.blade.php  ← Menampilkan detail venue & field-nya
 │   │   ├── dashboard/
 │   │   │   ├── index.blade.php
 │   │   │   ├── bookings/
 │   │   │   └── transactions/
 │   │   ├── admin/
 │   │   │   ├── dashboard.blade.php
-│   │   │   ├── fields/
+│   │   │   ├── venues/
+│   │   │   │   └── fields/             ← Manajemen field di dalam venue
+│   │   │   ├── facilities/
 │   │   │   ├── categories/
 │   │   │   └── bookings/
 │   │   └── errors/
@@ -229,7 +440,7 @@ project-root/
 | Path            | Halaman                          |
 | --------------- | -------------------------------- |
 | `*` (404)       | Not Found — "Bola Keluar Garis!" |
-| Akses terlarang | Forbidden 403 — "Area Terbatas"  |
+| Akses terlarang | Forbidden 403 — "Area Terbatas"  |[Ticket Jira.md](Ticket%20Jira.md)
 
 ---
 ## 7. Alur Konversi (User Journey)

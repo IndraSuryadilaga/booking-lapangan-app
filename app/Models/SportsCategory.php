@@ -12,4 +12,12 @@ class SportsCategory extends Model
         'icon',
         'is_active',
     ];
+    
+    public function venues()
+{
+    return $this->belongsToMany(
+        Venue::class,
+        'venue_sport_categories'
+    );
+}
 }
