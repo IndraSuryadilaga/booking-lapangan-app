@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('booking_date');
             $table->integer('total_slots');
             $table->decimal('total_price', 10, 2);
-            $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending');
+            $table->enum('status', ['pending', 'paid', 'completed', 'cancelled', 'expired'])->default('pending');
             $table->text('notes')->nullable();
             $table->timestamp('expires_at')->nullable();
             $table->timestamps();

@@ -11,18 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('booking_slots', function (Blueprint $table) {
+        Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('booking_id')->constrained()->onDelete('cascade');
-            $table->foreignId('field_id')->constrained();
-            $table->date('booking_date');
-            $table->time('start_time');
-            $table->time('end_time');
-            $table->decimal('price', 10, 2);
+            $table->decimal('amount', 10, 2);
+            $table->string('method');
+            $table->enum('status', ['pending', 'success', 'failed'])->default('pending');
+            $table->timestamp('paid_at')->nullable();
+            $table->string('reference_code')->unique()->nullable();
             $table->timestamps();
 
-            // Mencegah double-booking pada slot yang sama untuk pemesanan yang sama
-            $table->unique(['field_id', 'booking_date', 'start_time'], 'uq_slot');
+            $table->unique('booking_id', 'uq_pay_booking');
         });
     }
 
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('booking_slots');
+        Schema::dropIfExists('payments');
     }
 };
