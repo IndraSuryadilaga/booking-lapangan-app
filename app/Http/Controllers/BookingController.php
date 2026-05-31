@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBookingRequest;
 use App\Models\Booking;
 use App\Services\BookingService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
+    use AuthorizesRequests;
     protected $bookingService;
 
     public function __construct(BookingService $bookingService)
@@ -56,10 +58,8 @@ class BookingController extends Controller
         return view('bookings.index', ['bookings' => $bookings]);
     }
 
-    private function authorize(string $string, Booking $booking)
+    public function history()
     {
-    }    public function history()
-{
     $bookings = Booking::where('user_id', auth()->id())
         ->whereIn('status', ['completed', 'cancelled'])
         ->with('field.venue')
@@ -67,7 +67,7 @@ class BookingController extends Controller
         ->paginate(10);
 
     return view('bookings.history', compact('bookings'));
-}
+    }
 
     public function show(Booking $booking)
     {
