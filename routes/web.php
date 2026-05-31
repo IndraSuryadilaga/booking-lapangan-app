@@ -27,7 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware(['auth', 'isAdminOrSuperAdmin', 'isSuperAdmin'])
+Route::middleware(['auth', 'isSuperAdmin'])
     ->prefix('admin')
     ->group(function () {
 
@@ -39,8 +39,6 @@ Route::middleware(['auth', 'isAdminOrSuperAdmin', 'isSuperAdmin'])
 });
 
 Route::middleware(['auth', 'isAdminOrSuperAdmin'])->prefix('admin')->group(function () {
-
-    Route::resource('sports-categories', AdminSportsCategoryController::class);
 
     Route::resource('fields', AdminFieldController::class);
 
