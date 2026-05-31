@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminFieldController;
+use App\Http\Controllers\Admin\AdminFieldImageController;
+use App\Http\Controllers\Admin\AdminSportsCategoryController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\FieldController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\AdminSportsCategoryController;
-use App\Http\Controllers\Admin\AdminFieldController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -14,6 +16,8 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
+Route::get('/fields/{field:slug}', [FieldController::class, 'show'])->name('fields.show');
+
 Route::get('/pesan', [BookingController::class, 'create'])
     ->middleware('auth')
     ->name('booking.create');
@@ -22,22 +26,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    // RUTE PRIMARY IMAGE SEBELUMNYA DI SINI -> HAPUS DARI SINI
 });
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('sports-categories', AdminSportsCategoryController::class);
-});
-
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-
-    Route::resource('sports-categories', AdminSportsCategoryController::class);
-
     Route::resource('fields', AdminFieldController::class);
 
-    Route::get('/field-images/{image}/primary', [\App\Http\Controllers\Admin\AdminFieldController::class, 'setPrimaryImage'])->name('fields.images.primary');
-
-    Route::get('/field-images/{image}/delete', [\App\Http\Controllers\Admin\AdminFieldController::class, 'deleteImage'])->name('fields.images.delete');
+    Route::post('fields/{field}/images', [AdminFieldImageController::class, 'store'])->name('fields.images.store');
+    Route::put('fields/{field}/images/{image}', [AdminFieldImageController::class, 'setPrimary'])->name('fields.images.primary');
+    Route::delete('fields/images/{image}', [AdminFieldImageController::class, 'destroy'])->name('fields.images.destroy');
 });
 
 Route::get('/admin/test', function () {
@@ -48,6 +45,4 @@ Route::get('/styleguide', function () {
     return view('styleguide');
 });
 
-
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
