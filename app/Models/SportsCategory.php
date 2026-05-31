@@ -12,12 +12,21 @@ class SportsCategory extends Model
         'icon',
         'is_active',
     ];
-    
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
     public function venues()
-{
-    return $this->belongsToMany(
-        Venue::class,
-        'venue_sport_categories'
-    );
-}
+    {
+        return $this->belongsToMany(
+            Venue::class,
+            'venue_sport_categories'
+        );
+    }
+
+    public function fields()
+    {
+        return $this->hasMany(Field::class);
+    }
 }

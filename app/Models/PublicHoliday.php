@@ -11,10 +11,10 @@ class PublicHoliday extends Model
 
     protected $fillable = [
         'name',
-        'date',
+        'holiday_date',
     ];
 
     protected $casts = [
-        'date' => 'date',
+        'holiday_date' => 'date',
     ];
 }
