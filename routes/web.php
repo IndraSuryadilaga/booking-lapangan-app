@@ -21,6 +21,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // User Booking Routes
+    Route::prefix('bookings')->name('bookings.')->controller(BookingController::class)->group(function () {
+        Route::get('/confirm', 'confirm')->name('confirm');
+        Route::post('/', 'store')->name('store');
+        Route::get('/', 'index')->name('index');
+        Route::get('/history', 'history')->name('history');
+        Route::get('/{booking}', 'show')->name('show');
+        Route::patch('/{booking}/cancel', 'cancel')->name('cancel');
+    });
 });
 
 Route::middleware(['auth', 'isAdminOrSuperAdmin'])->prefix('admin')->name('admin.')->group(function () {
