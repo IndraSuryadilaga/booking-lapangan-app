@@ -3,9 +3,11 @@
 use App\Http\Controllers\Admin\AdminFieldController;
 use App\Http\Controllers\Admin\AdminFieldImageController;
 use App\Http\Controllers\Admin\AdminSportsCategoryController;
+use App\Http\Controllers\Admin\AdminVenueController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\VenueController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,11 +29,23 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+Route::get(
+    '/venues',
+    [VenueController::class, 'index']
+)->name('venues.index');
+
+Route::get(
+    '/venues/{venue:slug}',
+    [VenueController::class, 'show']
+)->name('venues.show');
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('sports-categories', AdminSportsCategoryController::class);
     Route::resource('fields', AdminFieldController::class);
-
+    Route::resource('venues', AdminVenueController::class);
+    Route::get('venues/{venue}/assign-admin', [AdminVenueController::class, 'assignAdmin'] )->name('venues.assign-admin');
+    Route::post('venues/{venue}/assign-admin', [AdminVenueController::class, 'storeAssignAdmin'])->name('venues.store-assign-admin');
+    Route::get('my-venue', [AdminVenueController::class, 'myVenue'])->name('venues.my-venue');
     Route::post('fields/{field}/images', [AdminFieldImageController::class, 'store'])->name('fields.images.store');
     Route::put('fields/{field}/images/{image}', [AdminFieldImageController::class, 'setPrimary'])->name('fields.images.primary');
     Route::delete('fields/images/{image}', [AdminFieldImageController::class, 'destroy'])->name('fields.images.destroy');
