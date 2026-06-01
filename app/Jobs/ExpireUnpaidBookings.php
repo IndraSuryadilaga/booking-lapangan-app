@@ -34,13 +34,11 @@ class ExpireUnpaidBookings implements ShouldQueue
             ->where('expires_at', '<', now())
             ->with('slots') // Eager load slots to avoid N+1 queries
             ->each(function (Booking $booking) use (&$expiredCount) {
-                // DB::transaction(function () use ($booking) {
-                    // 1. Delete associated slots to free them up
+                 DB::transaction(function () use ($booking) {
                     $booking->slots()->delete();
 
-                    // 2. Update the booking status to 'expired'
                     $booking->update(['status' => 'expired']);
-                // });
+                 });
                 $expiredCount++;
             });
 

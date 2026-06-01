@@ -24,10 +24,12 @@ class PaymentController extends Controller
             return redirect()->route('bookings.show', $booking)->with('info', 'Booking ini sudah tidak dapat dibayar.');
         }
 
-        // If booking has expired
         if ($booking->expires_at->isPast()) {
-            $booking->update(['status' => 'expired']);
-            return redirect()->route('bookings.show', $booking)->with('error', 'Waktu pembayaran untuk booking ini telah habis.');
+            DB::transaction(function () use ($booking) {
+                $booking->slots()->delete();
+                $booking->update(['status' => 'expired']);
+            });
+            return redirect()->route('bookings.show', $booking)->with('error', 'Waktu pembayaran untuk booking ini telah habis dan slot telah dilepaskan.');
         }
 
         $booking->load('field.venue');
