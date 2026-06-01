@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Booking;
 use App\Models\Field;
+use App\Policies\BookingPolicy;
 use App\Policies\FieldPolicy;
 use App\Models\Venue;
 use App\Policies\VenuePolicy;
@@ -15,6 +17,9 @@ class AuthServiceProvider extends ServiceProvider
     Field::class => FieldPolicy::class,
     Venue::class => VenuePolicy::class,
 ];
+        Field::class => FieldPolicy::class,
+        Booking::class => BookingPolicy::class,
+    ];
 
     /**
      * Register any authentication / authorization services.

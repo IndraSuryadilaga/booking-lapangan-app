@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminFacilityController;
 use App\Http\Controllers\Admin\AdminFieldController;
 use App\Http\Controllers\Admin\AdminFieldImageController;
+use App\Http\Controllers\Admin\AdminPublicHolidayController;
 use App\Http\Controllers\Admin\AdminSportsCategoryController;
 use App\Http\Controllers\Admin\AdminVenueController;
+use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\ProfileController;
@@ -11,23 +14,25 @@ use App\Http\Controllers\VenueController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('dashboard');
-});
-
-Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
 Route::get('/fields/{field:slug}', [FieldController::class, 'show'])->name('fields.show');
 
-Route::get('/pesan', [BookingController::class, 'create'])
-    ->middleware('auth')
-    ->name('booking.create');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // User Booking Routes
+    Route::prefix('bookings')->name('bookings.')->controller(BookingController::class)->group(function () {
+        Route::get('/confirm', 'confirm')->name('confirm');
+        Route::post('/', 'store')->name('store');
+        Route::get('/', 'index')->name('index');
+        Route::get('/history', 'history')->name('history');
+        Route::get('/{booking}', 'show')->name('show');
+        Route::patch('/{booking}/cancel', 'cancel')->name('cancel');
+    });
 });
 Route::get(
     '/venues',
@@ -39,8 +44,7 @@ Route::get(
     [VenueController::class, 'show']
 )->name('venues.show');
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('sports-categories', AdminSportsCategoryController::class);
+Route::middleware(['auth', 'isAdminOrSuperAdmin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('fields', AdminFieldController::class);
     Route::resource('venues', AdminVenueController::class);
     Route::get('venues/{venue}/assign-admin', [AdminVenueController::class, 'assignAdmin'] )->name('venues.assign-admin');
@@ -49,8 +53,21 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('fields/{field}/images', [AdminFieldImageController::class, 'store'])->name('fields.images.store');
     Route::put('fields/{field}/images/{image}', [AdminFieldImageController::class, 'setPrimary'])->name('fields.images.primary');
     Route::delete('fields/images/{image}', [AdminFieldImageController::class, 'destroy'])->name('fields.images.destroy');
+
+    Route::get('bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
+    Route::get('bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');
+    Route::patch('bookings/{booking}/status', [AdminBookingController::class, 'updateStatus'])->name('bookings.updateStatus');
 });
 
+Route::middleware(['auth', 'isSuperAdmin'])
+    ->prefix('admin')
+    ->group(function () {
+    Route::resource('categories', AdminSportsCategoryController::class);
+    Route::resource('facilities', AdminFacilityController::class);
+    Route::resource('holidays', AdminPublicHolidayController::class);
+});
+
+//testign routes
 Route::get('/admin/test', function () {
     return 'Halo Admin! Anda berhasil masuk ke benteng pertahanan.';
 })->middleware('isAdminOrSuperAdmin');
