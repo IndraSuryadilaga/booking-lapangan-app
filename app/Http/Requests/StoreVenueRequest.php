@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreVenueRequest extends FormRequest
 {
@@ -21,26 +22,35 @@ class StoreVenueRequest extends FormRequest
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-{
-    return [
-        'name' => 'required|string|max:255|unique:venues,name',
-        'address' => 'required|string',
-        'city' => 'required|string|max:255',
-        'province' => 'required|string|max:255',
+    {
+        $venue = $this->route('venue');
 
-        'latitude' => 'nullable|numeric',
-        'longitude' => 'nullable|numeric',
+        if ($venue) {
+            $venueId = is_object($venue) ? $venue->id : $venue;
+            $nameRule = ['required', 'string', 'max:255', Rule::unique('venues', 'name')->ignore($venueId)];
+        } else {
+            $nameRule = ['required', 'string', 'max:255', Rule::unique('venues', 'name')];
+        }
 
-        'refund_policy' => 'nullable|string',
-        'reschedule_policy' => 'nullable|string',
+        return [
+            'name' => $nameRule,
+            'address' => 'required|string',
+            'city' => 'required|string|max:255',
+            'province' => 'required|string|max:255',
 
-        'logo' => 'nullable|image|max:5120',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
 
-        'facility_ids' => 'nullable|array',
-        'facility_ids.*' => 'exists:facilities,id',
+            'refund_policy' => 'nullable|string',
+            'reschedule_policy' => 'nullable|string',
 
-        'sports_category_ids' => 'nullable|array',
-        'sports_category_ids.*' => 'exists:sports_categories,id',
-    ];
-}
+            'logo' => 'nullable|image|max:5120',
+
+            'facility_ids' => 'nullable|array',
+            'facility_ids.*' => 'exists:facilities,id',
+
+            'sports_category_ids' => 'nullable|array',
+            'sports_category_ids.*' => 'exists:sports_categories,id',
+        ];
+    }
 }

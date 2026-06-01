@@ -187,7 +187,16 @@ class AdminVenueController extends Controller
 
     public function destroy(Venue $venue)
 {
-    $this->authorize('update', $venue);
+    $this->authorize('delete', $venue);
+
+    // Prevent deleting a venue that still has bookings for its fields.
+    $fieldIds = $venue->fields()->pluck('id');
+    $hasBookings = \App\Models\Booking::whereIn('field_id', $fieldIds)->exists();
+    if ($hasBookings) {
+        return back()->withErrors([
+            'venue' => 'Venue cannot be deleted because there are existing bookings for its fields.'
+        ]);
+    }
 
     if ($venue->logo) {
         Storage::disk('public')
@@ -204,6 +213,7 @@ class AdminVenueController extends Controller
 
     public function assignAdmin(Venue $venue)
 {
+    $this->authorize('assignAdmin', $venue);
     $admins = User::query()
         ->where('role', 'admin')
         ->whereDoesntHave('venue')
@@ -223,6 +233,7 @@ class AdminVenueController extends Controller
     Venue $venue
 )
 {
+    $this->authorize('assignAdmin', $venue);
     $request->validate([
     'admin_id' => [
         'required',
@@ -256,7 +267,8 @@ class AdminVenueController extends Controller
 
     public function myVenue()
 {
-    $venue = auth()->user()->venue;
+    $user = auth()->user();
+    $venue = $user ? $user->venue : null;
 
     if (!$venue) {
         abort(404);

@@ -13,7 +13,7 @@ class VenuePolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isSuperAdmin() || $user->isAdmin();
     }
 
     /**
@@ -21,7 +21,7 @@ class VenuePolicy
      */
     public function view(User $user, Venue $venue): bool
     {
-        return false;
+        return $user->isSuperAdmin() || $venue->admin_id === $user->id;
     }
 
     /**
@@ -29,23 +29,21 @@ class VenuePolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isSuperAdmin() || $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Venue $venue): bool
-    {
-        return false;
-    }
+   public function update(User $user, Venue $venue): bool
+{
+    return $user->isSuperAdmin()
+        || $venue->admin_id === $user->id;
+}
 
     /**
      * Determine whether the user can delete the model.
      */
     public function delete(User $user, Venue $venue): bool
     {
-        return false;
+        return $user->isSuperAdmin() || $venue->admin_id === $user->id;
     }
 
     /**
@@ -53,7 +51,7 @@ class VenuePolicy
      */
     public function restore(User $user, Venue $venue): bool
     {
-        return false;
+        return $user->isSuperAdmin() || $venue->admin_id === $user->id;
     }
 
     /**
@@ -61,6 +59,14 @@ class VenuePolicy
      */
     public function forceDelete(User $user, Venue $venue): bool
     {
-        return false;
+        return $user->isSuperAdmin() || $venue->admin_id === $user->id;
+    }
+
+    /**
+     * Determine whether the user can assign an admin to the venue.
+     */
+    public function assignAdmin(User $user, Venue $venue): bool
+    {
+        return $user->isSuperAdmin();
     }
 }
