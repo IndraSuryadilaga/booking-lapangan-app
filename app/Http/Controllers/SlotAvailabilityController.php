@@ -22,7 +22,7 @@ class SlotAvailabilityController extends Controller
 
         $slotsData = Cache::remember($cacheKey, 60, function () use ($field, $date) {
             $dayOfWeek = $date->dayOfWeek;
-            $isHoliday = PublicHoliday::where('date', $date->format('Y-m-d'))->exists();
+            $isHoliday = PublicHoliday::where('holiday_date', $date->format('Y-m-d'))->exists();
             $isWeekend = $date->isSaturday() || $date->isSunday();
 
             $dayType = 'regular';
@@ -46,13 +46,13 @@ class SlotAvailabilityController extends Controller
             $pricing = $field->pricings()->where('tier', $dayType)->first();
             $price = $pricing ? $pricing->price : $field->pricings()->where('tier', 'regular')->first()->price;
 
-            $startTime = Carbon::parse($operatingHour->start_time);
-            $endTime = Carbon::parse($operatingHour->end_time);
+            $startTime = Carbon::parse($operatingHour->open_time);
+            $endTime = Carbon::parse($operatingHour->close_time);
             $slotDuration = config('app.slot_duration', 60);
 
             $slots = [];
             $bookedSlots = $field->bookingSlots()
-                ->where('date', $date->format('Y-m-d'))
+                ->where('booking_date', $date->format('Y-m-d'))
                 ->pluck('start_time')
                 ->map(fn ($time) => Carbon::parse($time)->format('H:i'))
                 ->toArray();
