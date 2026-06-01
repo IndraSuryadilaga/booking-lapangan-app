@@ -92,6 +92,16 @@ Untuk menjalankan proyek ini di lingkungan lokal Anda, ikuti langkah-langkah ber
     php artisan storage:link
     ```
 
+## Menjalankan Scheduler (Penting untuk Otomatisasi)
+
+Sistem ini menggunakan job terjadwal untuk mengelola status booking secara otomatis (misalnya, membatalkan booking yang kedaluwarsa). Untuk menjalankannya di lingkungan lokal, buka terminal baru dan jalankan perintah berikut:
+
+```bash
+php artisan schedule:work
+```
+
+Biarkan proses ini berjalan di background selama Anda mengembangkan atau menguji fitur yang bergantung pada waktu.
+
 ## User Roles & Hak Akses
 
 Sistem ini membagi aktor menjadi tiga entitas utama dengan batasan akses yang jelas:
