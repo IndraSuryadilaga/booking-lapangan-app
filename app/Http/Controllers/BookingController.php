@@ -5,13 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBookingRequest;
 use App\Models\Booking;
 use App\Services\BookingService;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
-    use AuthorizesRequests;
     protected $bookingService;
 
     public function __construct(BookingService $bookingService)
@@ -60,13 +58,13 @@ class BookingController extends Controller
 
     public function history()
     {
-    $bookings = Booking::where('user_id', auth()->id())
-        ->whereIn('status', ['completed', 'cancelled'])
-        ->with('field.venue')
-        ->latest()
-        ->paginate(10);
+        $bookings = Booking::where('user_id', auth()->id())
+            ->whereIn('status', ['completed', 'cancelled'])
+            ->with('field.venue')
+            ->latest()
+            ->paginate(10);
 
-    return view('bookings.history', compact('bookings'));
+        return view('bookings.history', compact('bookings'));
     }
 
     public function show(Booking $booking)
@@ -90,8 +88,7 @@ class BookingController extends Controller
 
         DB::transaction(function () use ($booking) {
             $booking->update(['status' => 'cancelled']);
-            // The related booking_slots will be deleted automatically by the database cascade rule
-            // If not, you would do it here: $booking->slots()->delete();
+            $booking->slots()->delete();
         });
 
         return redirect()->route('bookings.index')->with('success', 'Booking berhasil dibatalkan.');
