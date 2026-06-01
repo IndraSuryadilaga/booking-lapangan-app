@@ -9,15 +9,17 @@ use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('dashboard');
-})->name('dashboard');
+// Dashboard route handled by controller (requires authentication)
 
 Route::get('/fields/{field:slug}', [FieldController::class, 'show'])->name('fields.show');
 
 Route::middleware('auth')->group(function () {
+    // Dashboard (user/admin) - shows personalized aggregates
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -31,6 +33,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/{booking}', 'show')->name('show');
         Route::patch('/{booking}/cancel', 'cancel')->name('cancel');
     });
+
+    // Review Routes (authenticated, booking model-bound)
+    Route::get('/bookings/{booking}/review/create', [ReviewController::class, 'create'])->name('reviews.create');
+    Route::post('/bookings/{booking}/review', [ReviewController::class, 'store'])->name('reviews.store');
 });
 
 Route::middleware(['auth', 'isAdminOrSuperAdmin'])->prefix('admin')->name('admin.')->group(function () {

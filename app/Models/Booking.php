@@ -25,9 +25,7 @@ class Booking extends Model
         'expires_at' => 'datetime',
     ];
 
-    public static function where(string $string, int|string|null $id)
-    {
-    }    public function scopePending($query)
+    public function scopePending($query)
     {
         return $query->where('status', 'pending');
     }

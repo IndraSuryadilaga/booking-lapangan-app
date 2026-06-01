@@ -36,4 +36,9 @@ class Venue extends Model
         'venue_sport_categories'
     );
 }
+
+    public function reviews()
+{
+    return $this->hasMany(Review::class);
+}
 }
