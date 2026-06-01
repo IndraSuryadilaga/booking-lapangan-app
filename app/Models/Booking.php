@@ -25,12 +25,30 @@ class Booking extends Model
         'expires_at' => 'datetime',
     ];
 
-    public function user()
+    public static function where(string $string, int|string|null $id)
+    {
+    }    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeConfirmed($query)
+    {
+        return $query->where('status', 'confirmed');
+    }
+
+    public function scopeCancelled($query)
+    {
+        return $query->where('status', 'cancelled');
+    }
+
+
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function field()
+    public function field(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Field::class);
     }

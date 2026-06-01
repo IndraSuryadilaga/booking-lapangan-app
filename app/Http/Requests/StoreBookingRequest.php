@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreBookingRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        // Anyone can attempt to create a booking, further logic is in the service/controller
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'field_id' => 'required|exists:fields,id',
+            'booking_date' => 'required|date|after_or_equal:today',
+            'slots' => 'required|array|min:1',
+            'slots.*.start_time' => 'required|date_format:H:i:s',
+            'total_price' => 'required|numeric|min:0',
+        ];
+    }
+
+    /**
+     * Get the custom messages for validation errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'booking_date.after_or_equal' => 'Tanggal pemesanan tidak boleh di masa lampau.',
+            'slots.required' => 'Anda harus memilih setidaknya satu slot waktu.',
+            'slots.min' => 'Anda harus memilih setidaknya satu slot waktu.',
+        ];
+    }
+}
