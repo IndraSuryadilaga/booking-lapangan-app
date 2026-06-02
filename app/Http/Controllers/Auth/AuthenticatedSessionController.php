@@ -16,6 +16,10 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
+        // Simpan URL redirect dari query parameter ke session
+        if (request()->has('redirect')) {
+            session(['url.intended' => request('redirect')]);
+        }
         return view('auth.login');
     }
 
@@ -28,6 +32,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Gunakan URL yang sudah kita simpan, atau fallback ke dashboard
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
