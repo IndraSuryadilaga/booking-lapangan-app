@@ -13,6 +13,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\VenueController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 // Dashboard route handled by controller (requires authentication)
@@ -21,7 +22,8 @@ Route::get('/fields/{field:slug}', [FieldController::class, 'show'])->name('fiel
 
 Route::middleware('auth')->group(function () {
     // Dashboard (user/admin) - shows personalized aggregates
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    // Keep the route name `dashboard` but move path to `/dashboard`
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -83,3 +85,6 @@ Route::get('/styleguide', function () {
 });
 
 require __DIR__ . '/auth.php';
+
+// Public home page (guest-facing)
+Route::get('/', [HomeController::class, 'index'])->name('home');
