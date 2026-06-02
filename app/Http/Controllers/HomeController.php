@@ -20,7 +20,6 @@ class HomeController extends Controller
     {
         // Popular venues: top 6 by rating, only active venues
         $popularVenues = Venue::query()
-            ->where('is_active', true)
             ->with(['sportsCategories', 'fields', 'facilities'])
             ->orderByDesc('rating_avg')
             ->limit(6)
@@ -28,10 +27,10 @@ class HomeController extends Controller
 
         // Data for quick-search filters
         $allCategories = SportsCategory::where('is_active', true)->orderBy('name')->get();
-        $cities = Venue::where('is_active', true)->distinct()->pluck('city')->filter()->values();
+        $cities = Venue::distinct()->pluck('city')->filter()->values();
 
         // Statistics
-        $totalVenues = Venue::where('is_active', true)->count();
+        $totalVenues = Venue::count();
         $totalFields = Field::count();
         $totalUsers = User::count();
         $totalCities = $cities->count();

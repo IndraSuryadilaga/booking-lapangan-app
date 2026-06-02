@@ -11,7 +11,6 @@ class VenueController extends Controller
     public function index(Request $request)
     {
         $query = Venue::query()
-            ->where('is_active', true)
             ->with([
                 'sportsCategories',
                 'facilities'
@@ -34,14 +33,14 @@ class VenueController extends Controller
 
         // Data for filter UI
         $allCategories = SportsCategory::where('is_active', true)->orderBy('name')->get();
-        $cities = Venue::where('is_active', true)->distinct()->pluck('city')->filter()->values();
+        $cities = Venue::distinct()->pluck('city')->filter()->values();
 
         return view('venues.index', compact('venues', 'allCategories', 'cities'));
     }
 
     public function show(Venue $venue)
     {
-        abort_if(!$venue->is_active, 404);
+        // Note: `is_active` column not present in venues table in current schema — skip active check
 
         // Eager-load nested relations to avoid N+1 queries
         $venue->load([
@@ -80,8 +79,7 @@ class VenueController extends Controller
 
         // Recommendations: other active venues sharing at least one sports category
         $categoryIds = $venue->sportsCategories->pluck('id')->toArray();
-        $recommendations = Venue::where('is_active', true)
-            ->where('id', '!=', $venue->id)
+        $recommendations = Venue::where('id', '!=', $venue->id)
             ->whereHas('sportsCategories', function ($q) use ($categoryIds) {
                 $q->whereIn('id', $categoryIds);
             })
