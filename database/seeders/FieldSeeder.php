@@ -75,7 +75,7 @@ class FieldSeeder extends Seeder
                 ];
 
                 foreach ($pricing as $dayType => $price) {
-                    $field->pricing()->create([
+                    $field->pricings()->create([
                         'day_type' => $dayType,
                         'price_per_slot' => $price, // Set harga per slot[cite: 3]
                     ]);
