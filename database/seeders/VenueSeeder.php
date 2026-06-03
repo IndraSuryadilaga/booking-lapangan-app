@@ -1,5 +1,4 @@
 <?php
-
 namespace Database\Seeders;
 
 use App\Models\Facility;
@@ -7,6 +6,7 @@ use App\Models\SportsCategory;
 use App\Models\User;
 use App\Models\Venue;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class VenueSeeder extends Seeder
 {
@@ -15,37 +15,66 @@ class VenueSeeder extends Seeder
      */
     public function run(): void
     {
-        $admins = User::where('role', 'admin')->take(2)->get();
-        if ($admins->count() < 2) {
-            $this->command->error('Please seed at least two admin users before running VenueSeeder.');
+        // Pastikan ada admin[cite: 4]
+        $admins = User::where('role', 'admin')->get();
+        if ($admins->count() < 1) {
+            $this->command->error('Please seed at least one admin user before running VenueSeeder.');
             $admins = User::factory()->count(2)->create(['role' => 'admin']);
         }
 
-        $facilities = Facility::take(4)->get();
-        $sportsCategories = SportsCategory::take(2)->get();
+        $facilities = Facility::all();
+        $sportsCategories = SportsCategory::all();
 
-        $venue1 = Venue::create([
-            'admin_id' => $admins[0]->id,
-            'name' => 'Arena Sport Center',
-            'slug' => 'arena-sport-center',
-            'address' => 'Jl. Sudirman No.1',
-            'city' => 'Jakarta',
-            'province' => 'DKI Jakarta',
-        ]);
+        // Data Venues tambahan
+        $venuesData = [
+            [
+                'name' => 'Arena Sport Center',
+                'address' => 'Jl. Sudirman No.1',
+                'city' => 'Jakarta',
+                'province' => 'DKI Jakarta',
+            ],
+            [
+                'name' => 'Victory Futsal',
+                'address' => 'Jl. Merdeka No.10',
+                'city' => 'Bandung',
+                'province' => 'Jawa Barat',
+            ],
+            [
+                'name' => 'Skyline Rooftop Hoops',
+                'address' => 'Jl. Thamrin No.55',
+                'city' => 'Surabaya',
+                'province' => 'Jawa Timur',
+            ],
+            [
+                'name' => 'Grand Slam Tennis Arena',
+                'address' => 'Jl. Gatsu No.12',
+                'city' => 'Denpasar',
+                'province' => 'Bali',
+            ],
+            [
+                'name' => 'Green Pitch Soccer Field',
+                'address' => 'Jl. Malioboro No.8',
+                'city' => 'Yogyakarta',
+                'province' => 'DI Yogyakarta',
+            ],
+        ];
 
-        $venue1->facilities()->attach($facilities->pluck('id'));
-        $venue1->sportsCategories()->attach($sportsCategories->pluck('id'));
+        foreach ($venuesData as $data) {
+            $venue = Venue::create([
+                'admin_id' => $admins->random()->id, // Assign ke admin secara acak
+                'name' => $data['name'],
+                'slug' => Str::slug($data['name']),
+                'address' => $data['address'],
+                'city' => $data['city'],
+                'province' => $data['province'],
+            ]);
 
-        $venue2 = Venue::create([
-            'admin_id' => $admins[1]->id,
-            'name' => 'Victory Futsal',
-            'slug' => 'victory-futsal',
-            'address' => 'Jl. Merdeka No.10',
-            'city' => 'Bandung',
-            'province' => 'Jawa Barat',
-        ]);
-
-        $venue2->facilities()->attach($facilities->random(2)->pluck('id'));
-        $venue2->sportsCategories()->attach($sportsCategories->random(1)->pluck('id'));
+            if ($facilities->count() > 0) {
+                $venue->facilities()->attach($facilities->random(rand(2, 4))->pluck('id'));
+            }
+            if ($sportsCategories->count() > 0) {
+                $venue->sportsCategories()->attach($sportsCategories->random(rand(1, 2))->pluck('id'));
+            }
+        }
     }
 }
