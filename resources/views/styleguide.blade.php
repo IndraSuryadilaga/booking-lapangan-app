@@ -393,98 +393,6 @@
         </section>
 
         <section>
-            <h2 class="text-xl font-bold text-neutral-800 dark:text-neutral-100 mb-4 border-l-4 border-primary-500 pl-3">Venue Cards</h2>
-            <div class="space-y-6">
-                <div class="bg-neutral-50 border border-slate-200 rounded-xl p-6">
-                    <h3 class="text-xs font-semibold text-neutral-500 mb-4 uppercase tracking-wider">Light Mode</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <x-molecules.cards.venue
-                            image="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            name="ASATU ARENA CIKINI"
-                            rating="4.8"
-                            sport="Mini Soccer"
-                            location="Jakarta Pusat"
-                            price="1650000"
-                            url="/venue/asatu-arena-cikini"
-                        />
-                        <x-molecules.cards.venue
-                            image="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            name="Gelora Bung Karno Indoor"
-                            rating="4.9"
-                            sport="Basket"
-                            location="Jakarta Selatan"
-                            price="2500000"
-                        />
-                    </div>
-                </div>
-
-                <div class="dark bg-neutral-900 border border-neutral-800 rounded-xl p-6">
-                    <h3 class="text-xs font-semibold text-neutral-400 mb-4 uppercase tracking-wider">Dark Mode</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <x-molecules.cards.venue
-                            image="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            name="ASATU ARENA CIKINI"
-                            rating="4.8"
-                            sport="Mini Soccer"
-                            location="Jakarta Pusat"
-                            price="1650000"
-                            url="/venue/asatu-arena-cikini"
-                        />
-                        <x-molecules.cards.venue
-                            image="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            name="Gelora Bung Karno Indoor"
-                            rating="4.9"
-                            sport="Basket"
-                            location="Jakarta Selatan"
-                            price="2500000"
-                        />
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <h2 class="text-xl font-bold text-neutral-800 dark:text-neutral-100 mb-4 border-l-4 border-primary-500 pl-3">Court Cards</h2>
-            @php
-                $dummySchedules = [
-                    ['time' => '19:00 - 20:00', 'status' => 'booked', 'price' => 150000],
-                    ['time' => '20:00 - 21:00', 'status' => 'booked', 'price' => 150000],
-                    ['time' => '21:00 - 22:00', 'status' => 'available', 'price' => 175000],
-                    ['time' => '22:00 - 23:00', 'status' => 'booked', 'price' => 150000],
-                    ['time' => '23:00 - 00:00', 'status' => 'available', 'price' => 120000],
-                ];
-            @endphp
-
-            <div class="gap-6">
-                <div class="bg-neutral-50 border border-slate-200 rounded-xl p-6">
-                    <h3 class="text-xs font-semibold text-neutral-500 mb-4 uppercase tracking-wider">Light Mode</h3>
-                    <x-molecules.cards.court
-                        image="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                        name="Court A (blue)"
-                        description="Lapangan A dengan karpet berwarna Biru"
-                        sport="Padel"
-                        type="Indoor"
-                        material="Rumput Sintetis"
-                        :schedules="$dummySchedules"
-                    />
-                </div>
-
-                <div class="dark bg-neutral-900 border border-neutral-800 rounded-xl p-6">
-                    <h3 class="text-xs font-semibold text-neutral-400 mb-4 uppercase tracking-wider">Dark Mode</h3>
-                    <x-molecules.cards.court
-                        image="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                        name="Court A (blue)"
-                        description="Lapangan A dengan karpet berwarna Biru"
-                        sport="Padel"
-                        type="Indoor"
-                        material="Rumput Sintetis"
-                        :schedules="$dummySchedules"
-                    />
-                </div>
-            </div>
-        </section>
-
-        <section>
             <h2 class="text-xl font-bold text-neutral-800 dark:text-neutral-100 mb-4 border-l-4 border-primary-500 pl-3">Status Badges</h2>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
@@ -506,6 +414,14 @@
                         <x-atoms.badge variant="info">Booking</x-atoms.badge>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        {{-- Menghapus pemanggilan lama dan menambahkannya di sini --}}
+        <section>
+            <h2 class="text-xl font-bold text-neutral-800 dark:text-neutral-100 mb-4 border-l-4 border-primary-500 pl-3">Schedule Browser</h2>
+            <div class="bg-neutral-50 border border-slate-200 rounded-xl p-6">
+                <x-organisms.schedule-browser />
             </div>
         </section>
 

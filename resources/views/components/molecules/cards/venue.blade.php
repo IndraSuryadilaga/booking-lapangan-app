@@ -1,12 +1,13 @@
 @props([
     'venue' => null,
     'image' => null,
-    'name' => null,
-    'rating' => null,
+    'name' => 'Nama Venue Default',
+    'rating' => 'N/A',
     'sport' => null,
-    'location' => null,
+    'sports' => [],
+    'location' => 'Lokasi Default',
     'price' => null,
-    'url' => null,
+    'url' => '#',
 ])
 
 @php
@@ -20,23 +21,16 @@
 
         $lowestPrice = $venue->fields
             ->flatMap(function ($field) {
-                return $field->pricing;
+                return $field->pricings;
             })
             ->min('price_per_slot');
-    } else {
-        $logo = $image;
-        $sports = [];
-        if ($sport) {
-            $sports = [
-                (object) [
-                    'name' => $sport,
-                    'icon' => null
-                ]
-            ];
-        }
+    @endphp
+@else
+    @php
+        $logo = $image ?? 'https://images.unsplash.com/photo-1527067829737-402993088e6b?w=150&h=150&fit=crop';
         $lowestPrice = $price;
-    }
-@endphp
+    @endphp
+@endif
 
 <a href="{{ $url }}" class="block group text-current decoration-transparent">
     <div {{ $attributes->merge(['class' => 'bg-white dark:bg-neutral-600 rounded-xl border border-slate-200 dark:border-neutral-500 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full']) }}>
@@ -55,7 +49,7 @@
             </h3>
 
             <div class="flex items-center justify-start text-14 text-neutral-500 dark:text-neutral-300 mb-4 gap-2">
-                @if($rating)
+                @if($rating && $rating !== 'N/A')
                     <svg class="w-3.5 h-3.5 text-warning-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                         <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
                     </svg>
@@ -63,7 +57,9 @@
                 @endif
 
                 <div class="flex items-center gap-1.5 min-w-0">
-                    <span class="text-neutral-300 dark:text-neutral-500 shrink-0">&bull;</span>
+                    @if($rating && $rating !== 'N/A')
+                        <span class="text-neutral-300 dark:text-neutral-500 shrink-0">&bull;</span>
+                    @endif
                     <span class="font-semibold truncate text-xs sm:text-sm">{{ $location }}</span>
                 </div>
             </div>
@@ -73,10 +69,14 @@
                     $sportsCollection = collect($sports);
                 @endphp
 
-                @foreach($sportsCollection->take(3) as $sport)
+                @if($sport)
+                    <x-atoms.badge-sport :name="$sport" />
+                @endif
+
+                @foreach($sportsCollection->take(3) as $sportItem)
                     <x-atoms.badge-sport
-                        :name="$sport->name"
-                        :icon="$sport->icon"
+                        :name="$sportItem->name"
+                        :icon="$sportItem->icon"
                     />
                 @endforeach
 
