@@ -1,33 +1,16 @@
 @props([
-    // Dummy Data Props
-    'image' => 'https://via.placeholder.com/800x600',
-    'images' => [], // Untuk carousel/gallery jika diperlukan nanti
-    'name' => 'Court Name',
-    'description' => 'Deskripsi lapangan',
-    'sport' => 'Jenis Olahraga',
-    'type' => 'Indoor/Outdoor',
-    'material' => 'Jenis Karpet/Lantai',
-    'schedules' => [], // Array jadwal: [['time' => '19:00 - 20:00', 'status' => 'booked', 'price' => 150000]]
+    'court'
 ])
 
-{{--
-    IMPLEMENTASI DATABASE ASLI (Dikomment)
-    @props(['court'])
-
-    @php
-        $image = $court->primary_image ?? 'https://via.placeholder.com/800x600';
-        $name = $court->name;
-        $description = $court->description;
-
-        // Asumsi relasi ke table categories/sports, types, materials
-        $sport = $court->sport->name ?? 'N/A';
-        $type = $court->type->name ?? 'N/A';
-        $material = $court->material->name ?? 'N/A';
-
-        // Asumsi relasi ke table schedules
-        $schedules = $court->schedules;
-    @endphp
---}}
+@php
+    $image = $court->primary_image_url ?? 'https://via.placeholder.com/800x600';
+    $name = $court->name;
+    $description = $court->description;
+    $sport = $court->sportsCategory->name ?? 'N/A';
+    $type = $court->type ?? 'N/A';
+    $material = $court->surface_material ?? 'N/A';
+    $schedules = $court->schedules ?? [];
+@endphp
 
 <div {{ $attributes->merge(['class' => 'bg-white dark:bg-neutral-800 rounded-xl border border-slate-200 dark:border-neutral-700 shadow-sm overflow-hidden flex flex-col md:flex-row gap-6 p-4 sm:p-6']) }}>
 
@@ -64,11 +47,6 @@
         <div class="flex flex-col gap-2.5 mb-6">
             <div class="flex items-center gap-3 text-sm text-neutral-600 dark:text-neutral-300">
                 <div class="w-5 flex justify-center text-neutral-400">
-                    {{--
-                         IMPLEMENTASI DB: Bisa diganti dengan
-                         <img src="{{ $court->sport->icon }}" class="w-4 h-4">
-                         jika menyimpan URL icon di DB.
-                     --}}
                     <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
                 <span>{{ $sport }}</span>

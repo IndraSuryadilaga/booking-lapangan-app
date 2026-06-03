@@ -28,11 +28,11 @@ return new class extends Migration
             $table->text('refund_policy')->nullable();
             $table->text('reschedule_policy')->nullable();
             $table->string('logo')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
-            $table->boolean('is_active')->default(true)->after('logo');
         });
     }
-    
+
 
     /**
      * Reverse the migrations.

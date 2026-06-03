@@ -1,11 +1,11 @@
 <?php
-
 namespace Database\Seeders;
 
 use App\Models\Field;
 use App\Models\SportsCategory;
 use App\Models\Venue;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class FieldSeeder extends Seeder
 {
@@ -14,30 +14,49 @@ class FieldSeeder extends Seeder
      */
     public function run(): void
     {
-        $venues = Venue::take(2)->get();
-        $category = SportsCategory::first();
+        $venues = Venue::all();
+        $categories = SportsCategory::all();
 
-        if ($venues->count() < 2 || !$category) {
-            $this->command->info('Please seed at least 2 Venues and 1 SportsCategory before running FieldSeeder.');
+        if ($venues->count() < 1 || $categories->count() < 1) {
+            $this->command->info('Please seed Venues and SportsCategories before running FieldSeeder.');
             return;
         }
 
-        $venues->each(function ($venue, $venueIndex) use ($category) {
-            for ($i = 1; $i <= 2; $i++) {
-                $fieldNumber = ($venueIndex * 2) + $i;
+        $unsplashUrls = [
+            'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1544698310-74ea9d1c8258?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1519861531473-9200262188bf?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=800&h=600&fit=crop',
+        ];
+
+        $venues->each(function ($venue, $venueIndex) use ($categories, $unsplashUrls) {
+
+            $numberOfFields = rand(3, 4);
+
+            for ($i = 1; $i <= $numberOfFields; $i++) {
+                $category = $categories->random();
+                $fieldNumber = ($venueIndex * 5) + $i;
+                $fieldName = "Field {$fieldNumber} - {$venue->name}";
+
                 $field = Field::create([
                     'venue_id' => $venue->id,
                     'sports_category_id' => $category->id,
-                    'name' => "Field {$fieldNumber} - {$venue->name}",
-                    'slug' => "field-{$fieldNumber}-{$venue->slug}",
-                    'description' => 'A great field for your sporting needs.',
-                    'type' => $i % 2 == 0 ? 'indoor' : 'outdoor',
-                    'surface_material' => 'Grass',
+                    'name' => $fieldName,
+                    'slug' => Str::slug($fieldName),
+                    'description' => 'A great, high-quality field for your sporting needs. Completely equipped and well maintained.',
+                    'type' => rand(0, 1) ? 'indoor' : 'outdoor',
+                    'surface_material' => rand(0, 1) ? 'Grass' : 'Synthetic',
                     'is_active' => true,
                 ]);
 
+                $randomUrl = $unsplashUrls[array_rand($unsplashUrls)];
+
                 $field->images()->create([
-                    'image_path' => "fields/dummy-field-{$field->id}.jpg",
+                    'image_path' => $randomUrl,
                     'is_primary' => true,
                     'sort_order' => 1,
                 ]);
@@ -52,9 +71,9 @@ class FieldSeeder extends Seeder
                 }
 
                 $pricing = [
-                    'weekday' => 120000,
-                    'weekend' => 180000,
-                    'holiday' => 220000,
+                    'weekday' => rand(10, 15) * 10000,
+                    'weekend' => rand(15, 20) * 10000,
+                    'holiday' => rand(20, 25) * 10000,
                 ];
 
                 foreach ($pricing as $dayType => $price) {
