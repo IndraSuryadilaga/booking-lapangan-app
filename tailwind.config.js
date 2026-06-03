@@ -13,6 +13,8 @@ export default {
         "./resources/**/*.vue",
     ],
 
+
+
     theme: {
         extend: {
             colors: {
@@ -124,5 +126,6 @@ export default {
                 },
             });
         },
+        require('tailwind-scrollbar-hide')
     ],
 };
