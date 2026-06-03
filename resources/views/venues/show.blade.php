@@ -148,8 +148,30 @@
             </div>
 
         </div>
-        {{-- Akhir dari Grid Kolom Kiri & Kanan (Kode kamu sebelumnya berakhir di sini) --}}
-        <div class="mt-12 bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-2xl p-6 sm:p-8 shadow-sm">
+        {{-- Akhir dari Grid Kolom Kiri & Kanan --}}
+
+        {{-- DAFTAR LAPANGAN --}}
+        <div id="fields-list" class="pt-12">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-neutral-900 dark:text-white">Pilih Lapangan</h2>
+                <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">Pilih lapangan dan lihat jadwal yang tersedia.</p>
+            </div>
+
+            <div class="space-y-6">
+                @forelse($venue->fields as $field)
+                    <x-molecules.cards.court :court="$field" />
+                @empty
+                    <div class="bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-xl p-8 text-center shadow-sm">
+                        <h3 class="text-xl font-semibold">Belum ada lapangan</h3>
+                        <p class="text-sm text-neutral-500 mt-2">Venue ini belum menambahkan lapangan yang bisa dipesan.</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+
+        {{-- Ulasan --}}
+        <div class="mt-16 bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-2xl p-6 sm:p-8 shadow-sm">
 
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-2">

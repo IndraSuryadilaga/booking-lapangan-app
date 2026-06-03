@@ -42,31 +42,18 @@ class VenueController extends Controller
             'fields.sportsCategory',
             'fields.images',
             'fields.pricing',
+            'fields.operatingHours',
             'sportsCategories',
             'facilities',
             'reviews.user',
         ]);
 
-        $venue->fields->each(function ($field) {
-            $primary = $field->images->first();
-            $field->primary_image_url = $primary ? ($primary->url ?? null) : null;
+        $priceStart = $venue->fields
+            ->map(fn ($field) => $field->cheapest_price)
+            ->filter()
+            ->min();
 
-            $weekdayPricing = $field->pricing->firstWhere('day_type', 'weekday');
-            $weekdayPrice = $weekdayPricing ? (float) $weekdayPricing->price_per_slot : null;
-            $field->weekday_price = $weekdayPrice;
-
-            if ($weekdayPrice) {
-                $field->schedules = [
-                    [
-                        'time' => '60 Menit',
-                        'status' => 'available',
-                        'price' => $weekdayPrice,
-                    ],
-                ];
-            } else {
-                $field->schedules = [];
-            }
-        });
+        $venue->price_start = $priceStart;
 
         $venues = Venue::where('id', '!=', $venue->id)
             ->with(['sportsCategories', 'fields.pricing'])

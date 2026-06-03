@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\FieldImage;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Carbon\Carbon;
 
 class Field extends Model
 {
@@ -63,4 +64,75 @@ class Field extends Model
         return $this->hasMany(FieldPricing::class);
     }
 
+    /**
+     * Get the primary image for the field.
+     *
+     * @return \App\Models\FieldImage|null
+     */
+    public function getPrimaryImageAttribute(): ?FieldImage
+    {
+        return $this->images()->where('is_primary', true)->first()
+            ?? $this->images()->orderBy('sort_order')->first();
+    }
+
+    /**
+     * Get the URL of the primary image.
+     *
+     * @return string|null
+     */
+    public function getPrimaryImageUrlAttribute(): ?string
+    {
+        return $this->primary_image?->url;
+    }
+
+    /**
+     * Get the cheapest price for the field.
+     *
+     * @return float|null
+     */
+    public function getCheapestPriceAttribute(): ?float
+    {
+        // Asumsi tabel field_pricings memiliki kolom 'price_per_slot'
+        return $this->pricing()->min('price_per_slot');
+    }
+
+    /**
+     * Generate schedules based on operating hours and pricing.
+     *
+     * @return array
+     */
+    public function getSchedulesAttribute(): array
+    {
+
+        $today = now();
+        $dayOfWeek = $today->dayOfWeek;
+
+        $operatingHour = $this->operatingHours()->where('day_of_week', $dayOfWeek)->first();
+
+        if (!$operatingHour || !$operatingHour->is_open) {
+            return [];
+        }
+
+        $dayType = $today->isWeekday() ? 'weekday' : 'weekend';
+        $pricing = $this->pricing()->where('day_type', $dayType)->first();
+
+        if (!$pricing) {
+            return [];
+        }
+
+        $schedules = [];
+        $startTime = Carbon::parse($operatingHour->open_time);
+        $closeTime = Carbon::parse($operatingHour->close_time);
+
+        while ($startTime < $closeTime) {
+            $schedules[] = [
+                'time' => $startTime->format('H:i'),
+                'price' => $pricing->price_per_slot,
+                'status' => 'available',
+            ];
+            $startTime->addHour();
+        }
+
+        return $schedules;
+    }
 }
