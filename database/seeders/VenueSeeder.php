@@ -20,12 +20,12 @@ class VenueSeeder extends Seeder
         $facilities = Facility::all();
         $sportsCategories = SportsCategory::all();
 
-        $venueImages = [
-            'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800',
-            'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800',
-            'https://images.unsplash.com/photo-1544698310-74ea9d1c8258?w=800',
-            'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800',
-            'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=800',
+        $venueLogos = [
+            'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=150&h=150&fit=crop',
+            'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=150&h=150&fit=crop',
+            'https://images.unsplash.com/photo-1527067829737-402993088e6b?w=150&h=150&fit=crop',
+            'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=150&h=150&fit=crop',
+            'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&h=150&fit=crop',
         ];
 
         $venuesData = [
@@ -71,7 +71,7 @@ class VenueSeeder extends Seeder
                 'address' => $data['address'],
                 'city' => $data['city'],
                 'province' => $data['province'],
-                'image_path' => $venueImages[$index] ?? $venueImages[0],
+                'logo' => $venueLogos[$index] ?? $venueLogos[0],
                 'is_active' => true,
             ]);
 
