@@ -73,7 +73,7 @@ class VenueController extends Controller
             ->whereHas('sportsCategories', function ($q) use ($categoryIds) {
                 $q->whereIn('id', $categoryIds);
             })
-            ->with(['sportsCategories'])
+            ->with(['sportsCategories', 'fields.pricing'])
             ->orderByDesc('rating_avg')
             ->limit(6)
             ->get();
