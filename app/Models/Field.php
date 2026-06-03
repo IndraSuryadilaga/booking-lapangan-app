@@ -59,7 +59,7 @@ class Field extends Model
     /**
      * relation to table field_pricing 1 to many
      */
-    public function pricing(): HasMany
+    public function pricings(): HasMany
     {
         return $this->hasMany(FieldPricing::class);
     }
@@ -134,5 +134,10 @@ class Field extends Model
         }
 
         return $schedules;
+     * relation to table booking_slots 1 to many
+     */
+    public function bookingSlots(): HasMany
+    {
+        return $this->hasMany(BookingSlot::class);
     }
 }
