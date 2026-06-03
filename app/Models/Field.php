@@ -93,7 +93,7 @@ class Field extends Model
     public function getCheapestPriceAttribute(): ?float
     {
         // Asumsi tabel field_pricings memiliki kolom 'price_per_slot'
-        return $this->pricing()->min('price_per_slot');
+        return $this->pricings()->min('price_per_slot');
     }
 
     /**
@@ -114,7 +114,7 @@ class Field extends Model
         }
 
         $dayType = $today->isWeekday() ? 'weekday' : 'weekend';
-        $pricing = $this->pricing()->where('day_type', $dayType)->first();
+        $pricing = $this->pricings()->where('day_type', $dayType)->first();
 
         if (!$pricing) {
             return [];
@@ -134,7 +134,10 @@ class Field extends Model
         }
 
         return $schedules;
-     * relation to table booking_slots 1 to many
+    }
+
+    /**
+     * Relation to table booking_slots 1 to many
      */
     public function bookingSlots(): HasMany
     {

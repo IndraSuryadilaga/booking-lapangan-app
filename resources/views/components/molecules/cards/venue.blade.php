@@ -10,8 +10,8 @@
     'url' => '#',
 ])
 
-@php
-    if ($venue) {
+@if($venue)
+    @php
         $logo = $venue->logo;
         $name = $venue->name;
         $rating = $venue->rating_avg;
@@ -20,9 +20,7 @@
         $sports = $venue->sportsCategories;
 
         $lowestPrice = $venue->fields
-            ->flatMap(function ($field) {
-                return $field->pricings;
-            })
+            ->flatMap(fn ($field) => $field->pricings)
             ->min('price_per_slot');
     @endphp
 @else
