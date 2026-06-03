@@ -1,15 +1,30 @@
 @props([
-    'court'
+    'court' => null,
+    'image' => null,
+    'name' => null,
+    'description' => null,
+    'sport' => null,
+    'type' => null,
+    'material' => null,
+    'schedules' => null,
 ])
 
 @php
-    $image = $court->primary_image_url ?? 'https://via.placeholder.com/800x600';
-    $name = $court->name;
-    $description = $court->description;
-    $sport = $court->sportsCategory->name ?? 'N/A';
-    $type = $court->type ?? 'N/A';
-    $material = $court->surface_material ?? 'N/A';
-    $schedules = $court->schedules ?? [];
+    if ($court) {
+        $image = $court->primary_image_url ?? 'https://via.placeholder.com/800x600';
+        $name = $court->name;
+        $description = $court->description;
+        $sport = $court->sportsCategory->name ?? 'N/A';
+        $type = $court->type ?? 'N/A';
+        $material = $court->surface_material ?? 'N/A';
+        $schedules = $court->schedules ?? [];
+    } else {
+        $image = $image ?? 'https://via.placeholder.com/800x600';
+        $schedules = $schedules ?? [];
+        $sport = $sport ?? 'N/A';
+        $type = $type ?? 'N/A';
+        $material = $material ?? 'N/A';
+    }
 @endphp
 
 <div {{ $attributes->merge(['class' => 'bg-white dark:bg-neutral-800 rounded-xl border border-slate-200 dark:border-neutral-700 shadow-sm overflow-hidden flex flex-col md:flex-row gap-6 p-4 sm:p-6']) }}>

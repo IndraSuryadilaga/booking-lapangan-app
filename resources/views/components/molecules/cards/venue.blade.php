@@ -1,20 +1,41 @@
 @props([
-    'venue'
+    'venue' => null,
+    'image' => null,
+    'name' => null,
+    'rating' => null,
+    'sport' => null,
+    'location' => null,
+    'price' => null,
+    'url' => null,
 ])
 
 @php
-    $logo = $venue->logo;
-    $name = $venue->name;
-    $rating = $venue->rating_avg;
-    $location = $venue->city;
-    $url = route('venues.show', $venue->slug);
-    $sports = $venue->sportsCategories;
+    if ($venue) {
+        $logo = $venue->logo;
+        $name = $venue->name;
+        $rating = $venue->rating_avg;
+        $location = $venue->city;
+        $url = route('venues.show', $venue->slug);
+        $sports = $venue->sportsCategories;
 
-    $lowestPrice = $venue->fields
-        ->flatMap(function ($field) {
-            return $field->pricing;
-        })
-        ->min('price_per_slot');
+        $lowestPrice = $venue->fields
+            ->flatMap(function ($field) {
+                return $field->pricing;
+            })
+            ->min('price_per_slot');
+    } else {
+        $logo = $image;
+        $sports = [];
+        if ($sport) {
+            $sports = [
+                (object) [
+                    'name' => $sport,
+                    'icon' => null
+                ]
+            ];
+        }
+        $lowestPrice = $price;
+    }
 @endphp
 
 <a href="{{ $url }}" class="block group text-current decoration-transparent">
