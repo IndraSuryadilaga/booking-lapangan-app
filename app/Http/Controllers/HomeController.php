@@ -20,7 +20,7 @@ class HomeController extends Controller
     {
         // Popular venues: top 6 by rating, only active venues
         $popularVenues = Venue::query()
-            ->with(['sportsCategories', 'fields', 'facilities'])
+            ->with(['sportsCategories', 'fields.pricing', 'facilities'])
             ->orderByDesc('rating_avg')
             ->limit(6)
             ->get();

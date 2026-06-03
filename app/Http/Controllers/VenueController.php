@@ -13,15 +13,14 @@ class VenueController extends Controller
         $query = Venue::query()
             ->with([
                 'sportsCategories',
-                'facilities'
+                'facilities',
+                'fields.pricing'
             ]);
 
-        // City filter (exact match)
         if ($request->filled('city')) {
             $query->where('city', $request->input('city'));
         }
 
-        // Category filter via fields -> sports_category_id (ensure venue has at least one field of selected categories)
         $categories = $request->input('category', []);
         if (!empty($categories)) {
             $query->whereHas('fields', function ($q) use ($categories) {
@@ -31,7 +30,6 @@ class VenueController extends Controller
 
         $venues = $query->paginate(12)->withQueryString();
 
-        // Data for filter UI
         $allCategories = SportsCategory::where('is_active', true)->orderBy('name')->get();
         $cities = Venue::distinct()->pluck('city')->filter()->values();
 
@@ -40,9 +38,6 @@ class VenueController extends Controller
 
     public function show(Venue $venue)
     {
-        // Note: `is_active` column not present in venues table in current schema — skip active check
-
-        // Eager-load nested relations to avoid N+1 queries
         $venue->load([
             'fields.sportsCategory',
             'fields.images',
@@ -52,18 +47,14 @@ class VenueController extends Controller
             'reviews.user',
         ]);
 
-        // Compute per-field primary image URL and weekday price, and build schedules for the court card
         $venue->fields->each(function ($field) {
-            // Primary image (use accessor added on FieldImage) - guard null
             $primary = $field->images->first();
             $field->primary_image_url = $primary ? ($primary->url ?? null) : null;
 
-            // Weekday price
             $weekdayPricing = $field->pricing->firstWhere('day_type', 'weekday');
             $weekdayPrice = $weekdayPricing ? (float) $weekdayPricing->price_per_slot : null;
             $field->weekday_price = $weekdayPrice;
 
-            // Build a minimal schedules array consumed by the court card component
             if ($weekdayPrice) {
                 $field->schedules = [
                     [
@@ -77,7 +68,6 @@ class VenueController extends Controller
             }
         });
 
-        // Recommendations: other active venues sharing at least one sports category
         $categoryIds = $venue->sportsCategories->pluck('id')->toArray();
         $recommendations = Venue::where('id', '!=', $venue->id)
             ->whereHas('sportsCategories', function ($q) use ($categoryIds) {
