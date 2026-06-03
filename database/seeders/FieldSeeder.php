@@ -22,15 +22,18 @@ class FieldSeeder extends Seeder
             return;
         }
 
-        $unsplashIds = [
-            'tennis' => ['sbjPmjwCtQo', 'dFJFwlGtFl0', 'G9Gw1_vFHbo', 'yoIt3Wxe0sI'],
-            'basketball' => ['hAr9Nlo2Fz4', 'HZzNCojYV0k', 'XcBPc0Q_2h8', 'XmYSlYrupL8', 'UQpTP-KqYRk', 'J_tbkGWxCH0', 'KDxFq4_SWSg', 'ece3HWGHdl0'],
-            'soccer' => ['K5ChxJaheKI', 'tGr0i7ooQeA']
+        $unsplashUrls = [
+            'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1544698310-74ea9d1c8258?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1519861531473-9200262188bf?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=800&h=600&fit=crop',
         ];
 
-        $allImages = array_merge($unsplashIds['tennis'], $unsplashIds['basketball'], $unsplashIds['soccer']);
-
-        $venues->each(function ($venue, $venueIndex) use ($categories, $allImages) {
+        $venues->each(function ($venue, $venueIndex) use ($categories, $unsplashUrls) {
 
             $numberOfFields = rand(3, 4);
 
@@ -50,11 +53,10 @@ class FieldSeeder extends Seeder
                     'is_active' => true,
                 ]);
 
-                $randomImageId = $allImages[array_rand($allImages)];
-                $unsplashUrl = "https://source.unsplash.com/{$randomImageId}/800x600";
+                $randomUrl = $unsplashUrls[array_rand($unsplashUrls)];
 
                 $field->images()->create([
-                    'image_path' => $unsplashUrl,
+                    'image_path' => $randomUrl,
                     'is_primary' => true,
                     'sort_order' => 1,
                 ]);
@@ -77,7 +79,7 @@ class FieldSeeder extends Seeder
                 foreach ($pricing as $dayType => $price) {
                     $field->pricing()->create([
                         'day_type' => $dayType,
-                        'price_per_slot' => $price, // Set harga per slot[cite: 3]
+                        'price_per_slot' => $price,
                     ]);
                 }
             }

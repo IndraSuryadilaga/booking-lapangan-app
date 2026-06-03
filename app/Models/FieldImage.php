@@ -24,22 +24,26 @@ class FieldImage extends Model
     }
 
     /**
-     * Return full URL for the image (Storage::url)
+     * Return full URL for the image (external URL or public storage).
      */
-    public function getUrlAttribute()
+    public function getUrlAttribute(): ?string
     {
         if (! $this->image_path) {
             return null;
         }
 
-        return Storage::url($this->image_path);
+        if (filter_var($this->image_path, FILTER_VALIDATE_URL)) {
+            return $this->image_path;
+        }
+
+        return Storage::disk('public')->url($this->image_path);
     }
 
     /**
      * Provide `path` attribute expected in some views as a URL.
      */
-    public function getPathAttribute()
+    public function getPathAttribute(): ?string
     {
-        return $this->getUrlAttribute();
+        return $this->url;
     }
 }
