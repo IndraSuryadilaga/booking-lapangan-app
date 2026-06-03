@@ -68,11 +68,7 @@ class VenueController extends Controller
             }
         });
 
-        $categoryIds = $venue->sportsCategories->pluck('id')->toArray();
-        $recommendations = Venue::where('id', '!=', $venue->id)
-            ->whereHas('sportsCategories', function ($q) use ($categoryIds) {
-                $q->whereIn('id', $categoryIds);
-            })
+        $venues = Venue::where('id', '!=', $venue->id)
             ->with(['sportsCategories', 'fields.pricing'])
             ->orderByDesc('rating_avg')
             ->limit(6)
@@ -80,7 +76,7 @@ class VenueController extends Controller
 
         return view(
             'venues.show',
-            compact('venue', 'recommendations')
+            compact('venue', 'venues')
         );
     }
 }
