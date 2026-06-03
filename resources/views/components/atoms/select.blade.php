@@ -62,7 +62,7 @@
         :class="{'opacity-75 cursor-not-allowed bg-neutral-100 dark:bg-neutral-800': {{ $disabled ? 'true' : 'false' }}}"
     >
         <span class="block truncate"
-              :class="value === '' ? 'text-neutral-400 dark:text-neutral-500' : 'text-neutral-900 dark:text-white'"
+              :class="value === '' ? 'text-neutral-400 dark:text-neutral-500 font-bold' : 'text-neutral-900 dark:text-white'"
               x-text="selectedLabel">
         </span>
 

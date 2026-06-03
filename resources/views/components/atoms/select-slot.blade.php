@@ -1,14 +1,13 @@
 @props([
     'name' => 'slots',
-    'options' => [],     // Format array: [['value' => '19:00', 'label' => '19:00', 'disabled' => false, 'price' => null]]
-    'selected' => null,  // Nilai terpilih (string untuk single, array untuk multiple)
-    'multiple' => false, // Set true jika boleh memilih lebih dari 1 slot
+    'options' => [],
+    'selected' => null,
+    'multiple' => false,
     'error' => false,
     'errorMessage' => '',
 ])
 
 @php
-    // Memastikan format default untuk Alpine
     $defaultSelected = $multiple
         ? json_encode(is_array($selected) ? $selected : [])
         : "'" . ($selected ?? '') . "'";
@@ -21,7 +20,6 @@
         name: '{{ $name }}',
         toggle(value, isDisabled) {
             if (isDisabled) return;
-
             if (this.multiple) {
                 let index = this.selected.indexOf(value);
                 if (index > -1) {
@@ -30,7 +28,6 @@
                     this.selected.push(value); // Tambah jika belum ada
                 }
             } else {
-                // Toggle off jika diklik lagi, atau pilih baru
                 this.selected = this.selected === value ? '' : value;
             }
         },
@@ -54,9 +51,7 @@
         @foreach($options as $slot)
             @php
                 $val = $slot['value'];
-                $label = $slot['label'];
                 $isDisabled = $slot['disabled'] ?? false;
-                $price = $slot['price'] ?? null;
             @endphp
 
             <button
@@ -74,13 +69,18 @@
                     'bg-neutral-100 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 text-neutral-400 dark:text-neutral-600 cursor-not-allowed opacity-75': {{ $isDisabled ? 'true' : 'false' }}
                 }"
             >
-                <span class="font-bold text-sm sm:text-base">{{ $label }}</span>
-
-                @if($isDisabled)
-                    <span class="text-[10px] sm:text-xs font-semibold mt-0.5" :class="isSelected('{{ $val }}') ? 'text-primary-100' : 'text-neutral-400 dark:text-neutral-600'">Booked</span>
-                @elseif($price)
-                    <span class="text-[10px] sm:text-xs font-medium mt-0.5" :class="isSelected('{{ $val }}') ? 'text-primary-100' : 'text-emerald-600 dark:text-emerald-400'">{{ $price }}</span>
-                @endif
+                {{-- PERUBAHAN: Membungkus setiap bagian dalam span dengan kelasnya sendiri --}}
+                <span class="text-[10px] font-medium -mb-0.5"
+                      :class="isSelected('{{ $val }}') ? 'text-white/75' : 'text-neutral-400 dark:text-neutral-500'">
+                      {{ $slot['top_label'] ?? '' }}
+                </span>
+                <span class="font-bold text-sm sm:text-base">
+                    {{ $slot['label'] }}
+                </span>
+                <span class="text-[10px] sm:text-xs font-medium mt-0.5"
+                      :class="isSelected('{{ $val }}') ? 'text-primary-100' : 'text-emerald-600 dark:text-emerald-400'">
+                      {{ $slot['bottom_label'] ?? '' }}
+                </span>
             </button>
         @endforeach
     </div>
@@ -88,4 +88,4 @@
     @if($error && $errorMessage)
         <p class="mt-2 text-14 text-danger-500 font-medium">{{ $errorMessage }}</p>
     @endif
-</div>4
+</div>
