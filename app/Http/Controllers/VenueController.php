@@ -14,7 +14,7 @@ class VenueController extends Controller
             ->with([
                 'sportsCategories',
                 'facilities',
-                'fields.pricing'
+                'fields.pricings'
             ]);
 
         if ($request->filled('city')) {
@@ -41,7 +41,7 @@ class VenueController extends Controller
         $venue->load([
             'fields.sportsCategory',
             'fields.images',
-            'fields.pricing',
+            'fields.pricings',
             'fields.operatingHours',
             'sportsCategories',
             'facilities',
@@ -56,7 +56,7 @@ class VenueController extends Controller
         $venue->price_start = $priceStart;
 
         $venues = Venue::where('id', '!=', $venue->id)
-            ->with(['sportsCategories', 'fields.pricing'])
+            ->with(['sportsCategories', 'fields.pricings'])
             ->orderByDesc('rating_avg')
             ->limit(6)
             ->get();
