@@ -10,8 +10,12 @@ use Illuminate\Support\Facades\Cache;
 
 class SlotAvailabilityController extends Controller
 {
-    public function index(Field $field, Request $request)
+    // Menggunakan $fieldId mentah untuk menghindari masalah Policy/Model Binding
+    public function index($fieldId, Request $request)
     {
+        // Mencari field secara manual
+        $field = Field::findOrFail($fieldId);
+
         $validated = $request->validate([
             'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
         ]);
@@ -25,7 +29,7 @@ class SlotAvailabilityController extends Controller
             $isHoliday = PublicHoliday::where('holiday_date', $date->format('Y-m-d'))->exists();
             $isWeekend = $date->isSaturday() || $date->isSunday();
 
-            $dayType = 'regular';
+            $dayType = 'weekday';
             if ($isHoliday) {
                 $dayType = 'holiday';
             } elseif ($isWeekend) {
@@ -43,8 +47,9 @@ class SlotAvailabilityController extends Controller
                 ];
             }
 
-            $pricing = $field->pricings()->where('tier', $dayType)->first();
-            $price = $pricing ? $pricing->price : $field->pricings()->where('tier', 'regular')->first()->price;
+            // Menggunakan pricings() (plural) dan nama kolom yang benar
+            $pricing = $field->pricings()->where('day_type', $dayType)->first();
+            $price = $pricing ? $pricing->price_per_slot : $field->pricings()->where('day_type', 'weekday')->first()->price_per_slot;
 
             $startTime = Carbon::parse($operatingHour->open_time);
             $endTime = Carbon::parse($operatingHour->close_time);
