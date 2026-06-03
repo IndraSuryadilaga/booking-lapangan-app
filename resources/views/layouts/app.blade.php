@@ -31,6 +31,8 @@
             <main>
                 {{ $slot }}
             </main>
+
+            <x-organisms.footer />
         </div>
     </body>
 </html>
