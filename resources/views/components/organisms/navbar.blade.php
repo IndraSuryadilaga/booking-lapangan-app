@@ -1,5 +1,5 @@
-<div class="fixed top-4 inset-x-0 z-50 px-4 h-16 sm:px-6 lg:px-8 flex justify-center">
-    <nav x-data="{ open: false }" class="w-full max-w-7xl bg-primary-600 backdrop-blur-md text-white rounded-full px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-2xl relative transition-all duration-300">
+<div class="relative mt-4 inset-x-0 z-50 px-4 h-16 sm:px-6 lg:px-8 flex justify-center">
+    <nav x-data="{ open: false }" class="w-full max-w-7xl bg-primary-600 text-white rounded-full px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-2xl relative transition-all duration-300">
 
         <div class="flex h-8 items-center shrink-0">
             <a href="/" class="h-full">
@@ -10,7 +10,7 @@
         <div class="hidden md:flex items-center justify-center space-x-8 flex-1 px-4">
             {{-- Menu tampil untuk Guest ATAU User biasa (Bukan Admin) --}}
             @if (Auth::guest() || (Auth::check() && Auth::user()->role !== 'admin'))
-                <a href="/venues" class="text-sm font-medium transition-colors {{ request()->routeIs('catalog') || request()->routeIs('home') ? 'text-white font-semibold' : 'text-primary-100 hover:text-white' }}">
+                <a href="/catalog" class="text-sm font-medium transition-colors {{ request()->routeIs('catalog') || request()->routeIs('home') ? 'text-white font-semibold' : 'text-primary-100 hover:text-white' }}">
                     Sewa Lapangan
                 </a>
                 <a href="/mabar" class="text-sm font-medium transition-colors {{ request()->routeIs('mabar') ? 'text-white font-semibold' : 'text-primary-100 hover:text-white' }}">
