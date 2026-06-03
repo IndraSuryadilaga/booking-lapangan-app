@@ -135,7 +135,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($recommendations as $rec)
-                    <x-venue-card :venue="$rec" />
+                    <x-molecules.cards.venue :venue="$rec" />
                 @endforeach
             </div>
         </section>
