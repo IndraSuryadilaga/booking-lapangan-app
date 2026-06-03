@@ -13,7 +13,6 @@ class AccountSeeder extends Seeder
      */
     public function run(): void
     {
-        // Super Admin
         User::firstOrCreate(
             ['email' => 'superadmin@booking.com'],
             [
@@ -23,8 +22,7 @@ class AccountSeeder extends Seeder
             ]
         );
 
-        // Admin Users for 2 venues
-        for ($i = 1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 5; $i++) {
             User::firstOrCreate(
                 ['email' => "admin{$i}@example.com"],
                 [
@@ -35,8 +33,7 @@ class AccountSeeder extends Seeder
             );
         }
 
-        // Regular Users for demo booking
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             User::firstOrCreate(
                 ['email' => "user{$i}@example.com"],
                 [

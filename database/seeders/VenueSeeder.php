@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use App\Models\Facility;
@@ -15,17 +16,18 @@ class VenueSeeder extends Seeder
      */
     public function run(): void
     {
-        // Pastikan ada admin[cite: 4]
         $admins = User::where('role', 'admin')->get();
-        if ($admins->count() < 1) {
-            $this->command->error('Please seed at least one admin user before running VenueSeeder.');
-            $admins = User::factory()->count(2)->create(['role' => 'admin']);
-        }
-
         $facilities = Facility::all();
         $sportsCategories = SportsCategory::all();
 
-        // Data Venues tambahan
+        $venueImages = [
+            'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800',
+            'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800',
+            'https://images.unsplash.com/photo-1544698310-74ea9d1c8258?w=800',
+            'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800',
+            'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=800',
+        ];
+
         $venuesData = [
             [
                 'name' => 'Arena Sport Center',
@@ -59,19 +61,24 @@ class VenueSeeder extends Seeder
             ],
         ];
 
-        foreach ($venuesData as $data) {
+        foreach ($venuesData as $index => $data) {
+            $currentAdmin = $admins->get($index);
+
             $venue = Venue::create([
-                'admin_id' => $admins->random()->id, // Assign ke admin secara acak
+                'admin_id' => $currentAdmin ? $currentAdmin->id : null,
                 'name' => $data['name'],
                 'slug' => Str::slug($data['name']),
                 'address' => $data['address'],
                 'city' => $data['city'],
                 'province' => $data['province'],
+                'image_path' => $venueImages[$index] ?? $venueImages[0],
+                'is_active' => true,
             ]);
 
             if ($facilities->count() > 0) {
                 $venue->facilities()->attach($facilities->random(rand(2, 4))->pluck('id'));
             }
+
             if ($sportsCategories->count() > 0) {
                 $venue->sportsCategories()->attach($sportsCategories->random(rand(1, 2))->pluck('id'));
             }
