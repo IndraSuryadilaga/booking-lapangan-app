@@ -150,7 +150,7 @@
             </div>
 
             {{-- DAFTAR LAPANGAN --}}
-{{--            <x-organisms.court-catalog :venue="$venue" />--}}
+            <x-organisms.court-catalog :venue="$venue" />
 
             <div class="mt-16 bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-2xl p-6 sm:p-8 shadow-sm">
 
