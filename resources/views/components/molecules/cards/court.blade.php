@@ -1,5 +1,12 @@
 @props([
-    'court'
+    'court' => null,
+    'image' => null,
+    'name' => null,
+    'description' => null,
+    'sport' => null,
+    'type' => null,
+    'material' => null,
+    'schedules' => null,
 ])
 
 @php

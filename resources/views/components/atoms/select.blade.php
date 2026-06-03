@@ -13,53 +13,34 @@
 @php
     $id = $id ?? $name ?? uniqid('select-');
 
-    $laravelErrors = $name && $errors->has($name) ? $errors->get($name) : [];
+    // Deteksi apakah slot iconLeft diisi
+    $hasIconLeft = isset($iconLeft) && !$iconLeft->isEmpty();
 
-    $allErrors = [];
-    if ($errorMessage) {
-        $allErrors[] = $errorMessage;
-    }
-    if (!empty($messages)) {
-        $allErrors = array_merge($allErrors, (array) $messages);
-    }
-    if (!empty($laravelErrors)) {
-        $allErrors = array_merge($allErrors, $laravelErrors);
-    }
+    // Padding kiri otomatis menyesuaikan ada/tidaknya icon
+    $paddingLeft = $hasIconLeft ? 'pl-10 sm:pl-11' : 'pl-4 sm:pl-6';
 
-    $hasError = $error || count($allErrors) > 0;
-
-    $borderClass = $hasError
-        ? 'border-danger-500 border focus:border-danger-500 focus:ring-1 focus:ring-danger-500 dark:border-danger-500'
-        : 'border-neutral-300 border focus:border-primary-500 focus:ring-1 focus:ring-primary-500 dark:border-neutral-700 dark:focus:border-primary-400';
+    $borderClass = $error
+        ? 'border-danger-500 focus:border-danger-500 focus:ring-danger-500 dark:border-danger-500'
+        : 'border-neutral-300 focus:border-primary-500 focus:ring-primary-500 dark:border-neutral-700 dark:focus:border-primary-400';
 @endphp
 
-<div class="w-full relative"
-     x-data="{
-        open: false,
-        value: '{{ $value }}',
-        options: {{ json_encode($options) }},
+<div class="w-full relative">
 
-        // Mengambil teks label berdasarkan value yang terpilih
-        get selectedLabel() {
-            let selectedOption = this.options.find(opt => opt.value == this.value);
-            return selectedOption ? selectedOption.label : '{{ $placeholder }}';
-        },
+    {{-- Icon kiri (opsional via slot) --}}
+    @if($hasIconLeft)
+        <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none text-neutral-400 z-10">
+            {{ $iconLeft }}
+        </div>
+    @endif
 
-        // Aksi saat item dipilih
-        selectOption(val) {
-            this.value = val;
-            this.open = false;
-        }
-     }"
-     @click.outside="open = false"
->
-    <input type="hidden" name="{{ $name }}" :value="value" id="{{ $id }}">
-
-    <button
-        type="button"
-        @click="if(!{{ $disabled ? 'true' : 'false' }}) open = !open"
-        class="relative w-full text-left rounded-full shadow-sm bg-white dark:bg-neutral-900 transition-colors duration-200 sm:text-sm py-2 sm:py-[10px] pl-4 sm:pl-6 pr-10 {{ $borderClass }} cursor-pointer focus:outline-none"
-        :class="{'opacity-75 cursor-not-allowed bg-neutral-100 dark:bg-neutral-800': {{ $disabled ? 'true' : 'false' }}}"
+    <select
+        name="{{ $name }}"
+        id="{{ $id }}"
+        {{ $disabled ? 'disabled' : '' }}
+        {{ $attributes->merge([
+            // Tambahkan class 'bg-none' di sini untuk mematikan panah bawaan tailwind forms
+            'class' => "w-full rounded-full shadow-sm bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white transition-colors duration-200 sm:text-sm disabled:bg-neutral-100 disabled:text-neutral-500 dark:disabled:bg-neutral-800 py-2 sm:py-[10px] $paddingLeft pr-10 $borderClass appearance-none bg-none cursor-pointer focus:outline-none"
+        ]) }}
     >
         <span class="block truncate"
               :class="value === '' ? 'text-neutral-400 dark:text-neutral-500 font-bold' : 'text-neutral-900 dark:text-white'"
