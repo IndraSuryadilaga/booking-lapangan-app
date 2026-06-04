@@ -25,16 +25,14 @@
     $fieldsToDisplay = $showAll ? $filteredFields : $filteredFields->take(2);
 @endphp
 
-<div id="fields-list" class="pt-12">
+<div id="fields-list">
     <div class="mb-6">
         <h2 class="text-2xl font-bold text-neutral-900 dark:text-white">Pilih Lapangan</h2>
         <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">Pilih lapangan dan lihat jadwal yang tersedia.</p>
     </div>
 
     <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-8">
-
         <div class="flex items-center bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-xl p-1.5 shadow-sm overflow-hidden w-full xl:w-auto">
-
             <div class="flex items-center gap-1 overflow-x-auto scrollbar-none snap-x">
                 @foreach($dateRange as $day)
                     @php
@@ -65,7 +63,6 @@
             <div class="w-px h-8 bg-slate-200 dark:bg-neutral-700 mx-2 flex-shrink-0"></div>
 
             <div class="relative flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-lg hover:bg-primary-50 dark:hover:bg-neutral-700 text-neutral-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors group">
-
                 <input
                     id="native-date-picker"
                     type="date"
@@ -73,7 +70,6 @@
                     value="{{ $selectedDate }}"
                     onchange="window.location.href = '?date=' + this.value + '&category={{ $selectedCategory }}#fields-list'"
                 >
-
                 <button
                     type="button"
                     onclick="document.getElementById('native-date-picker').showPicker()"
@@ -85,7 +81,6 @@
                     </svg>
                 </button>
             </div>
-
         </div>
 
         <div class="w-full xl:w-auto shrink-0">
@@ -103,19 +98,48 @@
         </div>
     </div>
 
-    <div>
-        <div class="space-y-6">
-            @forelse($fieldsToDisplay as $index => $field)
-                <div>
-                    <x-molecules.cards.court-card :court="$field" />
+    <div x-data="bookingCart()">
+        <form action="{{ route('bookings.init') }}" method="POST">
+            @csrf
+            <input type="hidden" name="booking_date" value="{{ $selectedDate }}">
+
+            <div class="space-y-6">
+                @forelse($fieldsToDisplay as $index => $field)
+                    <div>
+                        <x-molecules.cards.court-card :court="$field" />
+                    </div>
+                @empty
+                    <div class="bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-xl p-8 text-center shadow-sm">
+                        <h3 class="text-xl font-semibold text-neutral-700 dark:text-neutral-200">Belum ada lapangan</h3>
+                        <p class="text-sm text-neutral-500 mt-2">Venue ini belum menambahkan lapangan yang bisa dipesan atau sesuai kategori.</p>
+                    </div>
+                @endforelse
+            </div>
+
+            <div x-cloak x-show="selectedCount > 0"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-full"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 translate-y-full"
+                 class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-10px_20px_-5px_rgba(0,0,0,0.1)] z-50 p-4 md:p-6">
+
+                <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div>
+                        <p class="text-sm text-neutral-500 font-medium">Total Pembayaran</p>
+                        <p class="text-xl sm:text-2xl font-extrabold text-primary-700">
+                            Rp <span x-text="new Intl.NumberFormat('id-ID').format(totalPrice)"></span>
+                        </p>
+                    </div>
+
+                    <button type="submit" class="w-full sm:w-auto bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-8 rounded-xl shadow-md transition-colors flex items-center justify-center gap-2">
+                        <span>Lanjut Pembayaran</span>
+                        <span class="bg-white/20 px-2 py-0.5 rounded-md text-sm" x-text="selectedCount + ' Sesi'"></span>
+                    </button>
                 </div>
-            @empty
-                <div class="bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-xl p-8 text-center shadow-sm">
-                    <h3 class="text-xl font-semibold text-neutral-700 dark:text-neutral-200">Belum ada lapangan</h3>
-                    <p class="text-sm text-neutral-500 mt-2">Venue ini belum menambahkan lapangan yang bisa dipesan atau sesuai kategori.</p>
-                </div>
-            @endforelse
-        </div>
+            </div>
+        </form>
 
         @if(!$showAll && $totalFields > 2)
             <div class="flex justify-center mt-8">
@@ -130,3 +154,44 @@
         @endif
     </div>
 </div>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('bookingCart', () => ({
+            selectedCount: 0,
+            totalPrice: 0,
+            currentCourtId: null, // Mengingat ID lapangan yang sedang dipilih
+
+            calculate(event) {
+                const clickedCheckbox = event.target;
+                const courtId = clickedCheckbox.dataset.courtId;
+
+                if (clickedCheckbox.checked) {
+                    // Jika user klik jadwal di lapangan yang BEDA dari sebelumnya
+                    if (this.currentCourtId !== null && this.currentCourtId !== courtId) {
+
+                        // Hapus/uncheck semua centang di lapangan sebelumnya otomatis
+                        document.querySelectorAll('.slot-checkbox:checked').forEach(el => {
+                            if (el.dataset.courtId !== courtId) {
+                                el.checked = false;
+                            }
+                        });
+
+                        // (Opsional) Kamu bisa memunculkan alert jika mau:
+                        // alert('Anda hanya bisa memesan satu lapangan dalam 1 transaksi. Pilihan sebelumnya telah dibatalkan.');
+                    }
+                    // Update lapangan aktif saat ini
+                    this.currentCourtId = courtId;
+                }
+
+                const checkedSlots = Array.from(document.querySelectorAll('.slot-checkbox:checked'));
+                this.selectedCount = checkedSlots.length;
+                this.totalPrice = checkedSlots.reduce((sum, el) => sum + parseInt(el.dataset.price || 0), 0);
+
+                if (this.selectedCount === 0) {
+                    this.currentCourtId = null;
+                }
+            }
+        }))
+    })
+</script>

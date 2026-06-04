@@ -27,6 +27,7 @@ class StoreBookingRequest extends FormRequest
             'booking_date' => 'required|date|after_or_equal:today',
             'slots' => 'required|array|min:1',
             'slots.*.start_time' => 'required|date_format:H:i:s',
+            'slots.*.price' => 'required|numeric',
             'total_price' => 'required|numeric|min:0',
         ];
     }

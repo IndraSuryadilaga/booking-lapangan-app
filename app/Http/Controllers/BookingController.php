@@ -25,8 +25,12 @@ class BookingController extends Controller
             return redirect()->route('dashboard')->with('error', 'Tidak ada booking yang sedang diproses.');
         }
 
-        // You would typically pass this data to a confirmation view
-        return view('bookings.confirm', ['bookingData' => $pendingBooking]);
+        $field = \App\Models\Field::with('venue')->findOrFail($pendingBooking['field_id']);
+
+        return view('bookings.confirm', [
+            'bookingData' => $pendingBooking,
+            'field' => $field
+        ]);
     }
 
     public function store(StoreBookingRequest $request)
@@ -35,9 +39,13 @@ class BookingController extends Controller
 
         try {
             $booking = $this->bookingService->createBooking($data);
-            // Clear the pending booking from the session
+
+            // Hapus keranjang
             session()->forget('pending_booking');
-            return redirect()->route('bookings.show', $booking)->with('success', 'Booking berhasil dibuat.');
+
+            // UBAH BARIS INI: Arahkan ke halaman Pembayaran, bukan langsung ke tiket
+            return redirect()->route('payments.show', $booking)->with('success', 'Pesanan dibuat. Silakan selesaikan pembayaran.');
+
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage())->withInput();
         }
@@ -92,5 +100,35 @@ class BookingController extends Controller
         });
 
         return redirect()->route('bookings.index')->with('success', 'Booking berhasil dibatalkan.');
+    }
+
+    public function init(Request $request)
+    {
+        $request->validate([
+            'booking_date' => 'required|date',
+            'slots' => 'required|array|min:1',
+        ]);
+
+        $slotsData = $request->slots;
+        $fieldId = array_key_first($slotsData);
+        $rawSlots = $slotsData[$fieldId];
+
+        // Pecah gabungan "Jam|Harga" menjadi array terpisah
+        $selectedSlots = [];
+        foreach ($rawSlots as $item) {
+            $parts = explode('|', $item);
+            $selectedSlots[] = [
+                'time' => $parts[0],                 // Jam (misal: 19:00)
+                'price' => isset($parts[1]) ? (int)$parts[1] : 0 // Harga (misal: 130000)
+            ];
+        }
+
+        session(['pending_booking' => [
+            'field_id' => $fieldId,
+            'booking_date' => $request->booking_date,
+            'slots' => $selectedSlots, // Sekarang formatnya sudah rapi
+        ]]);
+
+        return redirect()->route('bookings.confirm');
     }
 }

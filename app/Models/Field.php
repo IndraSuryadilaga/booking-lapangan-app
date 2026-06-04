@@ -96,40 +96,65 @@ class Field extends Model
         return $this->pricings()->min('price_per_slot');
     }
 
-    /**
-     * Generate schedules based on operating hours and pricing.
-     *
-     * @return array
-     */
+
     public function getSchedulesAttribute(): array
     {
+        // 1. Ambil tanggal dinamis dari URL (jika tidak ada, gunakan hari ini)
+        $dateString = request('date', now()->format('Y-m-d'));
+        $selectedDate = Carbon::parse($dateString);
+        $dayOfWeek = $selectedDate->dayOfWeek;
 
-        $today = now();
-        $dayOfWeek = $today->dayOfWeek;
-
+        // 2. Cek jam operasional
         $operatingHour = $this->operatingHours()->where('day_of_week', $dayOfWeek)->first();
 
         if (!$operatingHour || !$operatingHour->is_open) {
             return [];
         }
 
-        $dayType = $today->isWeekday() ? 'weekday' : 'weekend';
+        // 3. Tentukan harga (weekday/weekend)
+        $dayType = $selectedDate->isWeekday() ? 'weekday' : 'weekend';
         $pricing = $this->pricings()->where('day_type', $dayType)->first();
 
         if (!$pricing) {
             return [];
         }
 
+        // 4. AMBIL SEMUA SLOT YANG SUDAH DIPESAN
+        $bookedSlots = $this->bookingSlots()
+            ->whereDate('booking_date', $selectedDate->format('Y-m-d'))
+            ->whereHas('booking', function ($query) {
+                $query->whereIn('status', ['pending', 'paid', 'confirmed']);
+            })
+            ->pluck('start_time')
+            ->map(function ($time) {
+                return Carbon::parse($time)->format('H:i');
+            })
+            ->toArray();
+
         $schedules = [];
         $startTime = Carbon::parse($operatingHour->open_time);
         $closeTime = Carbon::parse($operatingHour->close_time);
 
         while ($startTime < $closeTime) {
+            $timeString = $startTime->format('H:i');
+
+            // 5. PENENTUAN STATUS (Super Aman)
+            // Gabungkan tanggal yang dipilih dengan jam slot untuk divalidasi
+            $slotDateTime = $selectedDate->copy()->setTime($startTime->hour, $startTime->minute);
+
+            // Cek 2 kondisi: Apakah sudah dipesan orang? ATAU Apakah waktunya sudah lewat (hari ini/kemarin)?
+            if (in_array($timeString, $bookedSlots) || $slotDateTime->isPast()) {
+                $status = 'booked';
+            } else {
+                $status = 'available';
+            }
+
             $schedules[] = [
-                'time' => $startTime->format('H:i'),
+                'time' => $timeString,
                 'price' => $pricing->price_per_slot,
-                'status' => 'available',
+                'status' => $status,
             ];
+
             $startTime->addHour();
         }
 
