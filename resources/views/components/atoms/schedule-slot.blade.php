@@ -1,5 +1,5 @@
 @props([
-    'courtId', // Tambahkan properti ini untuk menerima ID unik lapangan
+    'courtId',
     'time',
     'price',
     'status',

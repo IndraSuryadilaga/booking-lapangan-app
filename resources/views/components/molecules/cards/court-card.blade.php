@@ -14,7 +14,6 @@
     $name = $court->name;
     $description = $court->description;
 
-    // Mengambil data kategori dan icon dari database
     $sportCategory = $court->sportsCategory;
     $sportName = $sportCategory->name ?? 'N/A';
     $sportIcon = $sportCategory->icon ?? null;
