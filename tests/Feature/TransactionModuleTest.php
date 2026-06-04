@@ -20,7 +20,7 @@ class TransactionModuleTest extends TestCase
 
         $this->assertTrue(
             \Schema::hasColumns('public_holidays', [
-                'id', 'name', 'date', 'created_at', 'updated_at'
+                'id', 'name', 'holiday_date', 'created_at', 'updated_at'
             ])
         );
     }

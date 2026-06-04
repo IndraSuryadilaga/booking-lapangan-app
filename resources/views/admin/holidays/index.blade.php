@@ -10,12 +10,12 @@
             <main class="flex-1 space-y-6">
                 <div class="flex justify-between items-center border-b border-neutral-200 pb-5">
                     <div>
-                        <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Kategori Olahraga</h1>
-                        <p class="mt-2 text-sm text-neutral-500">Kelola kategori cabang olahraga yang tersedia untuk venue dan lapangan.</p>
+                        <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Hari Libur Nasional</h1>
+                        <p class="mt-2 text-sm text-neutral-500">Kelola daftar hari libur nasional. Hari libur ini akan memicu penerapan tarif khusus libur (holiday tier) pada saat pemesanan lapangan.</p>
                     </div>
-                    <a href="{{ route('sports-categories.create') }}">
+                    <a href="{{ route('holidays.create') }}">
                         <x-atoms.button type="primary" class="px-5 py-2.5 text-sm">
-                            + Tambah Kategori
+                            + Tambah Hari Libur
                         </x-atoms.button>
                     </a>
                 </div>
@@ -37,37 +37,33 @@
                         <thead>
                             <tr class="border-b border-slate-100 bg-slate-50/50">
                                 <th class="p-4 text-xs font-semibold text-neutral-500 uppercase">ID</th>
-                                <th class="p-4 text-xs font-semibold text-neutral-500 uppercase">Nama Kategori</th>
-                                <th class="p-4 text-xs font-semibold text-neutral-500 uppercase">Status</th>
+                                <th class="p-4 text-xs font-semibold text-neutral-500 uppercase">Nama Hari Libur</th>
+                                <th class="p-4 text-xs font-semibold text-neutral-500 uppercase">Tanggal</th>
                                 <th class="p-4 text-xs font-semibold text-neutral-500 uppercase text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($categories as $category)
+                            @forelse ($holidays as $holiday)
                                 <tr class="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50 transition-colors">
                                     <td class="p-4 text-sm text-neutral-600">
-                                        #{{ $category->id }}
+                                        #{{ $holiday->id }}
                                     </td>
                                     
                                     <td class="p-4 font-semibold text-neutral-900 text-sm">
-                                        {{ $category->name }}
+                                        {{ $holiday->name }}
                                     </td>
-                                    
-                                    <td class="p-4">
-                                        @if($category->is_active)
-                                            <x-atoms.badge variant="success">Aktif</x-atoms.badge>
-                                        @else
-                                            <x-atoms.badge variant="danger">Nonaktif</x-atoms.badge>
-                                        @endif
+
+                                    <td class="p-4 text-neutral-600 text-sm">
+                                        {{ \Carbon\Carbon::parse($holiday->holiday_date)->translatedFormat('d F Y') }}
                                     </td>
                                     
                                     <td class="p-4 text-center">
                                         <div class="flex justify-center items-center gap-2">
-                                            <a href="{{ route('sports-categories.edit', $category->id) }}" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-xs font-semibold">
+                                            <a href="{{ route('holidays.edit', $holiday->id) }}" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-xs font-semibold">
                                                 Edit
                                             </a>
 
-                                            <form action="{{ route('sports-categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori olahraga ini secara permanen?')">
+                                            <form action="{{ route('holidays.destroy', $holiday->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus hari libur ini secara permanen?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold">
@@ -80,7 +76,7 @@
                             @empty
                                 <tr>
                                     <td colspan="4" class="p-8 text-center text-neutral-500 text-sm italic">
-                                        Belum ada kategori olahraga yang terdaftar.
+                                        Belum ada hari libur nasional yang terdaftar.
                                     </td>
                                 </tr>
                             @endforelse

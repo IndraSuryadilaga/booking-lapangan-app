@@ -16,6 +16,10 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
+        if ($user && in_array($user->role, ['admin', 'super-admin'])) {
+            return redirect()->route('admin.dashboard');
+        }
+
         // User: total bookings grouped by status
         $bookingsByStatus = Booking::where('user_id', $user->id)
             ->select('status', DB::raw('count(*) as total'))

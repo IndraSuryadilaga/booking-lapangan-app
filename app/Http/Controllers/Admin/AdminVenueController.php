@@ -95,21 +95,34 @@ class AdminVenueController extends Controller
 
     public function show(Venue $venue)
     {
-        abort_if(
-            !$venue->is_active,
-            404
-        );
+        $this->authorize('view', $venue);
 
         $venue->load([
-            'fields',
+            'fields.sportsCategory',
+            'fields.images',
+            'fields.pricings',
+            'fields.operatingHours',
             'sportsCategories',
             'facilities',
-            'reviews.user'
+            'reviews.user',
         ]);
+
+        $priceStart = $venue->fields
+            ->map(fn ($field) => $field->cheapest_price)
+            ->filter()
+            ->min();
+
+        $venue->price_start = $priceStart;
+
+        $venues = Venue::where('id', '!=', $venue->id)
+            ->with(['sportsCategories', 'fields.pricings'])
+            ->orderByDesc('rating_avg')
+            ->limit(6)
+            ->get();
 
         return view(
             'venues.show',
-            compact('venue')
+            compact('venue', 'venues')
         );
     }
 
@@ -258,7 +271,7 @@ class AdminVenueController extends Controller
     ]);
 
     return redirect()
-        ->back()
+        ->route('admin.venues.index')
         ->with(
             'success',
             'Admin berhasil di-assign.'
@@ -275,8 +288,52 @@ class AdminVenueController extends Controller
     }
 
     return view(
-        'admin.venues.my-venue',
+        'admin.my-venue.edit',
         compact('venue')
     );
+}
+
+    public function updateMyVenue(StoreVenueRequest $request)
+{
+    $user = auth()->user();
+    $venue = $user ? $user->venue : null;
+
+    if (!$venue) {
+        abort(404);
+    }
+
+    DB::transaction(function () use ($request, $venue) {
+        $data = [
+            'name' => $request->name,
+            'address' => $request->address,
+            'city' => $request->city,
+            'province' => $request->province,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
+            'refund_policy' => $request->refund_policy,
+            'reschedule_policy' => $request->reschedule_policy,
+        ];
+
+        if ($request->hasFile('logo')) {
+            if ($venue->logo) {
+                \Illuminate\Support\Facades\Storage::disk('public')
+                    ->delete($venue->logo);
+            }
+            $data['logo'] = $request->file('logo')
+                ->store('venues', 'public');
+        }
+
+        $venue->update($data);
+
+        $venue->facilities()->sync(
+            $request->facility_ids ?? []
+        );
+
+        $venue->sportsCategories()->sync(
+            $request->sports_category_ids ?? []
+        );
+    });
+
+    return back()->with('success', 'Profile venue berhasil diperbarui.');
 }
 }

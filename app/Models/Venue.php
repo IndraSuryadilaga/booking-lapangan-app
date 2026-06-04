@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 class Venue extends Model
 {
     protected $fillable = [
+        'admin_id',
         'name',
         'slug',
         'address',

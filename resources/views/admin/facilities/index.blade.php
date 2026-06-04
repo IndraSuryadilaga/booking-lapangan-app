@@ -10,12 +10,12 @@
             <main class="flex-1 space-y-6">
                 <div class="flex justify-between items-center border-b border-neutral-200 pb-5">
                     <div>
-                        <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Kategori Olahraga</h1>
-                        <p class="mt-2 text-sm text-neutral-500">Kelola kategori cabang olahraga yang tersedia untuk venue dan lapangan.</p>
+                        <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Fasilitas Venue</h1>
+                        <p class="mt-2 text-sm text-neutral-500">Kelola daftar fasilitas umum (seperti Wi-Fi, Parkir, Shower) yang dapat dikaitkan dengan venue.</p>
                     </div>
-                    <a href="{{ route('sports-categories.create') }}">
+                    <a href="{{ route('facilities.create') }}">
                         <x-atoms.button type="primary" class="px-5 py-2.5 text-sm">
-                            + Tambah Kategori
+                            + Tambah Fasilitas
                         </x-atoms.button>
                     </a>
                 </div>
@@ -37,37 +37,28 @@
                         <thead>
                             <tr class="border-b border-slate-100 bg-slate-50/50">
                                 <th class="p-4 text-xs font-semibold text-neutral-500 uppercase">ID</th>
-                                <th class="p-4 text-xs font-semibold text-neutral-500 uppercase">Nama Kategori</th>
-                                <th class="p-4 text-xs font-semibold text-neutral-500 uppercase">Status</th>
+                                <th class="p-4 text-xs font-semibold text-neutral-500 uppercase">Nama Fasilitas</th>
                                 <th class="p-4 text-xs font-semibold text-neutral-500 uppercase text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($categories as $category)
+                            @forelse ($facilities as $facility)
                                 <tr class="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50 transition-colors">
                                     <td class="p-4 text-sm text-neutral-600">
-                                        #{{ $category->id }}
+                                        #{{ $facility->id }}
                                     </td>
                                     
                                     <td class="p-4 font-semibold text-neutral-900 text-sm">
-                                        {{ $category->name }}
-                                    </td>
-                                    
-                                    <td class="p-4">
-                                        @if($category->is_active)
-                                            <x-atoms.badge variant="success">Aktif</x-atoms.badge>
-                                        @else
-                                            <x-atoms.badge variant="danger">Nonaktif</x-atoms.badge>
-                                        @endif
+                                        {{ $facility->name }}
                                     </td>
                                     
                                     <td class="p-4 text-center">
                                         <div class="flex justify-center items-center gap-2">
-                                            <a href="{{ route('sports-categories.edit', $category->id) }}" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-xs font-semibold">
+                                            <a href="{{ route('facilities.edit', $facility->id) }}" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-xs font-semibold">
                                                 Edit
                                             </a>
 
-                                            <form action="{{ route('sports-categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kategori olahraga ini secara permanen?')">
+                                            <form action="{{ route('facilities.destroy', $facility->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus fasilitas ini secara permanen?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold">
@@ -79,8 +70,8 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="p-8 text-center text-neutral-500 text-sm italic">
-                                        Belum ada kategori olahraga yang terdaftar.
+                                    <td colspan="3" class="p-8 text-center text-neutral-500 text-sm italic">
+                                        Belum ada fasilitas yang terdaftar.
                                     </td>
                                 </tr>
                             @endforelse

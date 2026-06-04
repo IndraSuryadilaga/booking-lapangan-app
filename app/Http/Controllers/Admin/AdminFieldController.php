@@ -16,18 +16,28 @@ class AdminFieldController extends Controller
 {
     public function index()
     {
-        $fields = Field::whereHas('venue', fn ($q) => $q->where('admin_id', auth()->id()))
-            ->with(['venue', 'sportsCategory', 'images'])
-            ->latest()
-            ->paginate(10);
+        $user = auth()->user();
+        $query = Field::with(['venue', 'sportsCategory', 'images']);
+
+        if ($user->isAdmin()) {
+            $query->whereHas('venue', fn ($q) => $q->where('admin_id', $user->id));
+        }
+
+        $fields = $query->latest()->paginate(10);
 
         return view('admin.fields.index', compact('fields'));
     }
 
     public function create()
     {
+        $user = auth()->user();
         $categories = SportsCategory::where('is_active', true)->get();
-        $venues = Venue::where('admin_id', auth()->id())->get();
+
+        if ($user->isSuperAdmin()) {
+            $venues = Venue::all();
+        } else {
+            $venues = Venue::where('admin_id', $user->id)->get();
+        }
 
         return view('admin.fields.create', compact('categories', 'venues'));
     }
@@ -72,8 +82,15 @@ class AdminFieldController extends Controller
     public function edit(Field $field)
     {
         $this->authorize('update', $field);
+        $user = auth()->user();
         $categories = SportsCategory::where('is_active', true)->get();
-        $venues = Venue::where('admin_id', auth()->id())->get();
+
+        if ($user->isSuperAdmin()) {
+            $venues = Venue::all();
+        } else {
+            $venues = Venue::where('admin_id', $user->id)->get();
+        }
+
         $field->load('operatingHours', 'images', 'pricings');
         return view('admin.fields.edit', compact('field', 'categories', 'venues'));
     }
@@ -110,5 +127,13 @@ class AdminFieldController extends Controller
         $field->delete();
 
         return redirect()->route('admin.fields.index')->with('success', 'Lapangan berhasil dihapus!');
+    }
+
+    public function toggleStatus(Field $field)
+    {
+        $this->authorize('update', $field);
+        $field->update(['is_active' => !$field->is_active]);
+
+        return back()->with('success', 'Status operasional lapangan berhasil diperbarui.');
     }
 }

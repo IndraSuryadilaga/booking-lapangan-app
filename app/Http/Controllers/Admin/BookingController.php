@@ -32,8 +32,16 @@ class BookingController extends Controller
             abort(403, 'Anda tidak memiliki izin untuk mengakses halaman ini.');
         }
 
+        if ($request->filled('date')) {
+            $query->whereDate('booking_date', $request->date);
+        }
+
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        }
+
+        if ($request->filled('field_id')) {
+            $query->where('field_id', $request->field_id);
         }
 
         if ($request->filled('search')) {
@@ -48,7 +56,12 @@ class BookingController extends Controller
 
         $bookings = $query->latest()->paginate(15);
 
-        return view('admin.bookings.index', compact('bookings'));
+        // Fetch fields list for the dropdown filter
+        $fields = \App\Models\Field::when($user->isAdmin(), function ($q) use ($user) {
+            $q->whereHas('venue', fn ($qv) => $qv->where('admin_id', $user->id));
+        })->get();
+
+        return view('admin.bookings.index', compact('bookings', 'fields'));
     }
 
     /**

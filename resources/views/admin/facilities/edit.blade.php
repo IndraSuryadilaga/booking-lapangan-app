@@ -9,42 +9,32 @@
             <!-- Main Content -->
             <main class="flex-1 space-y-6">
                 <div class="border-b border-neutral-200 pb-5">
-                    <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Edit Kategori Olahraga</h1>
-                    <p class="mt-2 text-sm text-neutral-500">Ubah detail kategori olahraga yang sudah terdaftar.</p>
+                    <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Edit Fasilitas</h1>
+                    <p class="mt-2 text-sm text-neutral-500">Ubah nama fasilitas venue.</p>
                 </div>
 
                 <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 max-w-xl">
-                    <form action="{{ route('sports-categories.update', $category->id) }}" method="POST" class="space-y-6">
+                    <form action="{{ route('facilities.update', $facility->id) }}" method="POST" class="space-y-6">
                         @csrf
                         @method('PUT')
 
                         <div>
-                            <label for="name" class="block text-sm font-medium text-neutral-700 mb-2">Nama Kategori</label>
+                            <label for="name" class="block text-sm font-medium text-neutral-700 mb-2">Nama Fasilitas</label>
                             <x-atoms.input
                                 type="text"
                                 name="name"
                                 id="name"
-                                value="{{ old('name', $category->name) }}"
-                                placeholder="Masukkan nama kategori"
+                                value="{{ old('name', $facility->name) }}"
+                                placeholder="Masukkan nama fasilitas"
                                 required
-                            />
-                        </div>
-
-                        <div>
-                            <span class="block text-sm font-medium text-neutral-700 mb-2">Status Kategori</span>
-                            <x-atoms.select-toggle
-                                name="is_active"
-                                id="is_active"
-                                :checked="$category->is_active"
-                                label="Kategori Aktif (Dapat digunakan oleh lapangan/venue)"
                             />
                         </div>
 
                         <div class="flex items-center gap-3 pt-4 border-t border-slate-100">
                             <x-atoms.button type="primary" class="px-5 py-2.5 text-sm">
-                                Perbarui Kategori
+                                Perbarui Fasilitas
                             </x-atoms.button>
-                            <a href="{{ route('sports-categories.index') }}">
+                            <a href="{{ route('facilities.index') }}">
                                 <x-atoms.button type="secondary" class="px-5 py-2.5 text-sm" type-button="button">
                                     Batal
                                 </x-atoms.button>
