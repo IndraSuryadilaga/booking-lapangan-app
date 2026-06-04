@@ -10,18 +10,17 @@
     'url' => '#',
 ])
 
-@php
-    $logo = $venue->logo;
-    $name = $venue->name;
-    $rating = $venue->rating_avg;
-    $location = $venue->city;
-    $url = route('venues.show', $venue->slug);
-    $sports = $venue->sportsCategories;
+@if($venue)
+    @php
+        $logo = $venue->logo;
+        $name = $venue->name;
+        $rating = $venue->rating_avg;
+        $location = $venue->city;
+        $url = route('venues.show', $venue->slug);
+        $sports = $venue->sportsCategories;
 
         $lowestPrice = $venue->fields
-            ->flatMap(function ($field) {
-                return $field->pricings;
-            })
+            ->flatMap(fn ($field) => $field->pricings)
             ->min('price_per_slot');
     @endphp
 @else
