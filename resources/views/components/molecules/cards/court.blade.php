@@ -99,7 +99,7 @@
 
                 @forelse($schedules as $schedule)
                     <x-atoms.schedule-slot
-                        :time="$schedule['time']"
+                        :court-id="$court->id" :time="$schedule['time']"
                         :price="$schedule['price']"
                         :status="$schedule['status']"
                     />
