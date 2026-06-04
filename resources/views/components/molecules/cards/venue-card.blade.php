@@ -68,18 +68,19 @@
                 @endphp
 
                 @if($sport)
-                    <x-atoms.badge-sport :name="$sport" />
+                    <x-atoms.badge type="sport" :name="$sport" />
                 @endif
 
                 @foreach($sportsCollection->take(3) as $sportItem)
-                    <x-atoms.badge-sport
+                    <x-atoms.badge
+                        type="sport"
                         :name="$sportItem->name"
                         :icon="$sportItem->icon"
                     />
                 @endforeach
 
                 @if($sportsCollection->count() > 3)
-                    <x-atoms.badge-sport :name="'+' . ($sportsCollection->count() - 3)" />
+                    <x-atoms.badge type="sport" :name="'+' . ($sportsCollection->count() - 3)" />
                 @endif
             </div>
 

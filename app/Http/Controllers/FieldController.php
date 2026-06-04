@@ -18,6 +18,6 @@ class FieldController extends Controller
             'pricings'
         ]);
 
-        return view('field-detail', compact('field'));
+        return view('venues.field-detail', compact('field'));
     }
 }

@@ -14,7 +14,7 @@ class HomeController extends Controller
 {
     /**
      * Show the public homepage.
-     * View `home` is not created by this change.
+     * View `pages.home`.
      */
     public function index()
     {
@@ -45,7 +45,7 @@ class HomeController extends Controller
                 return ['name' => $c->name, 'count' => $c->fields_count];
             });
 
-        return view('home', compact(
+        return view('pages.home', compact(
             'popularVenues',
             'allCategories',
             'cities',
