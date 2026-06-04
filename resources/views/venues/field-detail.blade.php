@@ -1,6 +1,6 @@
 <x-app-layout>
     {{-- Kita bungkus semuanya dalam komponen Alpine.js di sini --}}
-    <div class="container mx-auto px-4 py-8" x-data="{ 
+    <div class="container mx-auto px-4 py-8" x-data="{
         ...slotCalendar({{ $field->id }}),
         mainImage: '{{ $field->images->isNotEmpty() ? asset('storage/' . ($field->images->firstWhere('is_primary', true)?->image_path ?? $field->images->first()->image_path)) : '' }}'
     }">
@@ -19,10 +19,10 @@
                 {{-- Thumbnails --}}
                 <div class="flex flex-wrap gap-2">
                     @foreach($field->images as $image)
-                        <img 
-                            src="{{ asset('storage/' . $image->image_path) }}" 
+                        <img
+                            src="{{ asset('storage/' . $image->image_path) }}"
                             @click="mainImage = '{{ asset('storage/' . $image->image_path) }}'"
-                            alt="Thumbnail" 
+                            alt="Thumbnail"
                             class="w-24 h-24 object-cover rounded-md cursor-pointer border-2 hover:border-primary-500 transition-colors"
                             :class="mainImage === '{{ asset('storage/' . $image->image_path) }}' ? 'border-primary-500' : 'border-transparent'"
                         >

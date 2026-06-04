@@ -81,7 +81,7 @@ Route::get('/admin/test', function () {
 })->middleware('isAdminOrSuperAdmin');
 
 Route::get('/styleguide', function () {
-    return view('styleguide');
+    return view('pages.styleguide');
 });
 
 require __DIR__ . '/auth.php';

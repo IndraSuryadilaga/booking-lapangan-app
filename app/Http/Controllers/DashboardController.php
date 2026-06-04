@@ -45,6 +45,6 @@ class DashboardController extends Controller
             }
         }
 
-        return view('dashboard.index', compact('bookingsByStatus', 'latestActiveBookings', 'adminBookingsToday'));
+        return view('pages.dashboard', compact('bookingsByStatus', 'latestActiveBookings', 'adminBookingsToday'));
     }
 }
