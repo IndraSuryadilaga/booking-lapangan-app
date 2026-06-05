@@ -89,7 +89,14 @@
                             @if($venue->logo)
                                 <div class="mb-3 flex items-center gap-4">
                                     <img src="{{ asset('storage/' . $venue->logo) }}" alt="Logo saat ini" class="w-16 h-16 object-cover rounded-xl border border-slate-200">
-                                    <span class="text-xs text-neutral-400">Biarkan kosong jika tidak ingin mengubah logo.</span>
+                                    <div class="flex flex-col gap-1.5">
+                                        <span class="text-xs text-neutral-400">Biarkan kosong jika tidak ingin mengubah logo.</span>
+                                        <button type="button" 
+                                                onclick="if(confirm('Apakah Anda yakin ingin menghapus logo ini?')) { document.getElementById('delete-logo-form').submit(); }" 
+                                                class="text-xs font-semibold text-red-600 hover:text-red-700 w-fit">
+                                            Hapus Logo
+                                        </button>
+                                    </div>
                                 </div>
                             @endif
                             <x-atoms.input-file name="logo" accept="image/*" />
@@ -140,6 +147,13 @@
                             </x-atoms.button>
                         </div>
                     </form>
+                    
+                    @if($venue->logo)
+                        <form id="delete-logo-form" action="{{ route('admin.venues.my-venue.delete-logo') }}" method="POST" class="hidden">
+                            @csrf
+                            @method('DELETE')
+                        </form>
+                    @endif
                 </div>
             </main>
         </div>

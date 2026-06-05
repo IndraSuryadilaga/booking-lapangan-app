@@ -69,6 +69,11 @@
                                         @if($venue->admin)
                                             <div class="font-medium text-neutral-900">{{ $venue->admin->name }}</div>
                                             <div class="text-xs text-neutral-400">{{ $venue->admin->email }}</div>
+                                            <div class="mt-1">
+                                                <a href="{{ route('admin.venues.assign-admin', $venue->id) }}" class="text-primary-600 hover:text-primary-700 text-xs font-semibold underline">
+                                                    Kelola Admin
+                                                </a>
+                                            </div>
                                         @else
                                             <a href="{{ route('admin.venues.assign-admin', $venue->id) }}" class="text-primary-600 hover:text-primary-700 text-xs font-semibold underline">
                                                 Tugaskan Admin
@@ -95,7 +100,7 @@
                                     </td>
                                     <td class="p-4 text-center">
                                         <div class="flex justify-center items-center gap-2">
-                                            <a href="{{ route('venues.show', $venue->slug) }}" target="_blank" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold">
+                                            <a href="{{ route('admin.venues.show', $venue->id) }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold">
                                                 Detail
                                             </a>
                                             <a href="{{ route('admin.venues.edit', $venue->id) }}" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-xs font-semibold">

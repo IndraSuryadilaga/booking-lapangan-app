@@ -43,7 +43,11 @@ class AdminPublicHolidayController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'holiday_date' => 'required|date|unique:public_holidays,holiday_date,' . $holiday->id,
+            'holiday_date' => [
+                'required',
+                'date',
+                \Illuminate\Validation\Rule::unique('public_holidays', 'holiday_date')->ignore($holiday->id),
+            ],
         ]);
 
         $holiday->update($validated);

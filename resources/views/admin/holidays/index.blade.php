@@ -63,13 +63,36 @@
                                                 Edit
                                             </a>
 
-                                            <form action="{{ route('holidays.destroy', $holiday->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus hari libur ini secara permanen?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold">
-                                                    Hapus
-                                                </button>
-                                            </form>
+                                            <button
+                                                type="button"
+                                                class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold"
+                                                x-data
+                                                @click="$dispatch('open-modal', 'confirm-delete-holiday-{{ $holiday->id }}')"
+                                            >
+                                                Hapus
+                                            </button>
+
+                                            <!-- Delete Confirmation Modal -->
+                                            <x-organisms.modal name="confirm-delete-holiday-{{ $holiday->id }}" maxWidth="sm">
+                                                <div class="p-6 space-y-4">
+                                                    <h3 class="text-base font-bold text-neutral-900">Hapus Hari Libur</h3>
+                                                    <p class="text-sm text-neutral-600">
+                                                        Apakah Anda yakin ingin menghapus hari libur <strong>{{ $holiday->name }}</strong> secara permanen? Tindakan ini tidak dapat dibatalkan.
+                                                    </p>
+                                                    <div class="flex justify-end gap-3 pt-2">
+                                                        <button type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-semibold" x-data @click="$dispatch('close-modal', 'confirm-delete-holiday-{{ $holiday->id }}')">
+                                                            Batal
+                                                        </button>
+                                                        <form action="{{ route('holidays.destroy', $holiday->id) }}" method="POST">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                                                                Ya, Hapus
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </x-organisms.modal>
                                         </div>
                                     </td>
                                 </tr>

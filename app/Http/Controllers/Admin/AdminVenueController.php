@@ -89,7 +89,7 @@ class AdminVenueController extends Controller
     });
 
     return redirect()
-        ->back()
+        ->route('admin.venues.index')
         ->with('success', 'Venue berhasil dibuat.');
 }
 
@@ -121,8 +121,8 @@ class AdminVenueController extends Controller
             ->get();
 
         return view(
-            'venues.show',
-            compact('venue', 'venues')
+            'admin.venues.show',
+            compact('venue')
         );
     }
 
@@ -192,10 +192,12 @@ class AdminVenueController extends Controller
         );
     });
 
-    return back()->with(
-        'success',
-        'Venue berhasil diupdate.'
-    );
+    return redirect()
+        ->route('admin.venues.index')
+        ->with(
+            'success',
+            'Venue berhasil diupdate.'
+        );
 }
 
     public function destroy(Venue $venue)
@@ -249,17 +251,30 @@ class AdminVenueController extends Controller
     $this->authorize('assignAdmin', $venue);
     $request->validate([
     'admin_id' => [
-        'required',
+        'nullable',
         Rule::exists('users', 'id')
             ->where('role', 'admin')
     ]
     ]);
 
+    if (empty($request->admin_id)) {
+        $venue->update([
+            'admin_id' => null
+        ]);
+
+        return redirect()
+            ->route('admin.venues.index')
+            ->with(
+                'success',
+                'Penugasan admin berhasil dilepas.'
+            );
+    }
+
     $admin = User::findOrFail(
     $request->admin_id
     );
 
-    if ($admin->venue) {
+    if ($admin->venue && $admin->venue->id !== $venue->id) {
         return back()->withErrors([
         'admin_id' =>
             'Admin sudah memiliki venue.'
@@ -336,4 +351,33 @@ class AdminVenueController extends Controller
 
     return back()->with('success', 'Profile venue berhasil diperbarui.');
 }
+
+    public function deleteLogo(Venue $venue)
+    {
+        $this->authorize('update', $venue);
+
+        if ($venue->logo) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($venue->logo);
+            $venue->update(['logo' => null]);
+        }
+
+        return back()->with('success', 'Logo venue berhasil dihapus.');
+    }
+
+    public function deleteMyVenueLogo()
+    {
+        $user = auth()->user();
+        $venue = $user ? $user->venue : null;
+
+        if (!$venue) {
+            abort(404);
+        }
+
+        if ($venue->logo) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($venue->logo);
+            $venue->update(['logo' => null]);
+        }
+
+        return back()->with('success', 'Logo venue berhasil dihapus.');
+    }
 }

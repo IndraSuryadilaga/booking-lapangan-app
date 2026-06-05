@@ -10,14 +10,11 @@ use App\Models\Venue;
 use App\Policies\VenuePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
-
 class AuthServiceProvider extends ServiceProvider
 {
     protected $policies = [
-    Field::class => FieldPolicy::class,
-    Venue::class => VenuePolicy::class,
-];
-        Field::class => FieldPolicy::class,
+        Field::class   => FieldPolicy::class,
+        Venue::class   => VenuePolicy::class,
         Booking::class => BookingPolicy::class,
     ];
 
@@ -29,3 +26,4 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
     }
 }
+

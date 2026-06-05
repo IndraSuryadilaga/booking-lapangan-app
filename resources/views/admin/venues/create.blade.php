@@ -115,7 +115,7 @@
                         <!-- Submit Button -->
                         <div class="flex justify-end gap-3 pt-6 border-t border-slate-100">
                             <a href="{{ route('admin.venues.index') }}">
-                                <x-atoms.button type="secondary">Batal</x-atoms.button>
+                                <x-atoms.button type="button" variant="secondary">Batal</x-atoms.button>
                             </a>
                             <x-atoms.button type="primary" class="px-6 py-2.5">
                                 Simpan Venue

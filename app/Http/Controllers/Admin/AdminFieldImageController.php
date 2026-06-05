@@ -5,13 +5,18 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Field;
 use App\Models\FieldImage;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class AdminFieldImageController extends Controller
 {
+    use AuthorizesRequests;
+
     public function store(Request $request, Field $field)
     {
+        $this->authorize('update', $field);
+
         $request->validate([
             'images'   => 'required|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:10000',
@@ -33,6 +38,8 @@ class AdminFieldImageController extends Controller
 
     public function setPrimary(Field $field, FieldImage $image)
     {
+        $this->authorize('update', $field);
+
         $field->images()->update(['is_primary' => false]);
         $image->update(['is_primary' => true]);
 
@@ -41,6 +48,9 @@ class AdminFieldImageController extends Controller
 
     public function destroy(FieldImage $image)
     {
+        $field = Field::findOrFail($image->field_id);
+        $this->authorize('update', $field);
+
         Storage::disk('public')->delete($image->image_path);
 
         $fieldId = $image->field_id;
@@ -58,3 +68,4 @@ class AdminFieldImageController extends Controller
         return back()->with('success', 'Gambar berhasil dihapus.');
     }
 }
+

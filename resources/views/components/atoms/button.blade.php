@@ -1,6 +1,20 @@
-@props(['type' => 'primary'])
+@props(['type' => 'primary', 'variant' => null])
 
 @php
+    // Determine style variant and HTML type
+    $styleVariant = $variant ?? $type;
+    $htmlType = 'submit';
+
+    // If type is a known native HTML button type, assign it to $htmlType
+    if (in_array($type, ['button', 'submit', 'reset'])) {
+        $htmlType = $type;
+        $styleVariant = $variant ?? 'primary';
+    }
+
+    if (in_array($styleVariant, ['button', 'submit', 'reset'])) {
+        $styleVariant = 'primary';
+    }
+
     $baseClasses = 'inline-flex items-center justify-center px-6 py-2.5 rounded-full font-semibold transition-all duration-200 focus:outline-none';
 
     $styles = [
@@ -44,12 +58,13 @@
                         dark:disabled:text-neutral-600',
     ];
 
-    $appliedClass = $styles[$type] ?? $styles['primary'];
+    $appliedClass = $styles[$styleVariant] ?? $styles['primary'];
     $isDisabled = $attributes->has('disabled') && $attributes->get('disabled') !== false;
 @endphp
 
 <button
-    {{ $attributes->merge(['class' => $baseClasses . ' ' . $appliedClass]) }}
+    type="{{ $htmlType }}"
+    {{ $attributes->except(['type', 'variant'])->merge(['class' => $baseClasses . ' ' . $appliedClass]) }}
     {{ $isDisabled ? 'disabled' : '' }}
 >
     {{ $slot }}

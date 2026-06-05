@@ -36,7 +36,11 @@
                         <!-- Select Admin -->
                         <div>
                             <label class="block text-sm font-medium text-neutral-700 mb-2">Pilih Akun Admin</label>
-                            <x-atoms.select name="admin_id" placeholder="Pilih akun admin..." :options="$admins->map(fn($admin) => ['value' => $admin->id, 'label' => $admin->name . ' (' . $admin->email . ')'])->toArray()" required />
+                            @php
+                                $options = $admins->map(fn($admin) => ['value' => $admin->id, 'label' => $admin->name . ' (' . $admin->email . ')'])->toArray();
+                                array_unshift($options, ['value' => '', 'label' => '-- Lepas Penugasan Admin (Kosongkan) --']);
+                            @endphp
+                            <x-atoms.select name="admin_id" placeholder="Pilih akun admin..." :options="$options" :value="$venue->admin_id" />
                             <p class="text-xs text-neutral-400 mt-2">Hanya menampilkan admin yang belum memegang venue lain.</p>
                         </div>
 

@@ -17,15 +17,52 @@ class BookingController extends Controller
         $this->bookingService = $bookingService;
     }
 
-    public function confirm()
+    public function confirm(Request $request)
     {
+        if ($request->has('field_id')) {
+            $request->validate([
+                'field_id' => 'required|exists:fields,id',
+                'date' => 'required|date|after_or_equal:today',
+                'slots' => 'required|array|min:1',
+            ]);
+
+            $field = \App\Models\Field::findOrFail($request->field_id);
+            if (!$field->is_active) {
+                return redirect()->route('dashboard')->with('error', 'Lapangan sedang ditutup sementara (Maintenance Mode).');
+            }
+
+            $slotsMapped = collect($request->slots)->map(function($slot) {
+                return [
+                    'start_time' => $slot['start'] . ':00',
+                    'end_time' => $slot['end'] . ':00',
+                    'price' => $slot['price'],
+                ];
+            })->toArray();
+
+            $totalPrice = collect($request->slots)->sum('price');
+
+            $pendingBooking = [
+                'field_id' => $request->field_id,
+                'booking_date' => $request->date,
+                'slots' => $slotsMapped,
+                'total_price' => $totalPrice,
+            ];
+
+            session(['pending_booking' => $pendingBooking]);
+        }
+
         $pendingBooking = session('pending_booking');
 
         if (!$pendingBooking) {
             return redirect()->route('dashboard')->with('error', 'Tidak ada booking yang sedang diproses.');
         }
 
-        // You would typically pass this data to a confirmation view
+        $field = \App\Models\Field::findOrFail($pendingBooking['field_id']);
+        if (!$field->is_active) {
+            session()->forget('pending_booking');
+            return redirect()->route('dashboard')->with('error', 'Lapangan sedang ditutup sementara (Maintenance Mode).');
+        }
+
         return view('bookings.confirm', ['bookingData' => $pendingBooking]);
     }
 

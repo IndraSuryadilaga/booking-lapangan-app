@@ -20,7 +20,7 @@ class StoreFieldRequest extends FormRequest
             $venueRule->where('admin_id', $user->id);
         }
 
-        return [
+        $rules = [
             'venue_id' => ['required', $venueRule],
             'sports_category_id' => ['required', 'exists:sports_categories,id'],
             'name' => ['required', 'string', 'max:255'],
@@ -28,13 +28,35 @@ class StoreFieldRequest extends FormRequest
             'images' => ['required', 'array'],
             'images.*' => ['image', 'mimes:jpeg,png,jpg,webp', 'max:10000'],
             'operating_hours' => ['required', 'array', 'size:7'],
-            'operating_hours.*.day_of_week' => ['required', 'integer', 'between:0,6'],
-            'operating_hours.*.open_time' => ['required_if:operating_hours.*.is_open,1', 'nullable', 'date_format:H:i'],
-            'operating_hours.*.close_time' => ['required_if:operating_hours.*.is_open,1', 'nullable', 'date_format:H:i', 'after:operating_hours.*.open_time'],
-            'operating_hours.*.is_open' => ['required', 'boolean'],
             'pricings' => ['required', 'array', 'size:3'],
             'pricings.*.tier' => ['required', 'string', Rule::in(['regular', 'weekend', 'holiday'])],
             'pricings.*.price' => ['required', 'numeric', 'min:0'],
+        ];
+
+        $operatingHours = $this->input('operating_hours', []);
+        if (is_array($operatingHours)) {
+            foreach ($operatingHours as $index => $hour) {
+                $rules["operating_hours.{$index}.day_of_week"] = ['required', 'integer', 'between:0,6'];
+                $rules["operating_hours.{$index}.is_open"] = ['required', 'boolean'];
+
+                $isOpen = isset($hour['is_open']) && filter_var($hour['is_open'], FILTER_VALIDATE_BOOLEAN);
+                if ($isOpen) {
+                    $rules["operating_hours.{$index}.open_time"] = ['required', 'date_format:H:i'];
+                    $rules["operating_hours.{$index}.close_time"] = ['required', 'date_format:H:i', "after:operating_hours.{$index}.open_time"];
+                } else {
+                    $rules["operating_hours.{$index}.open_time"] = ['nullable', 'date_format:H:i'];
+                    $rules["operating_hours.{$index}.close_time"] = ['nullable', 'date_format:H:i'];
+                }
+            }
+        }
+
+        return $rules;
+    }
+
+    public function messages(): array
+    {
+        return [
+            'operating_hours.*.close_time.after' => 'Jam tutup harus lebih besar dari jam buka.',
         ];
     }
 }

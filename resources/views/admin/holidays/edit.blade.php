@@ -35,7 +35,7 @@
                             <x-atoms.input-date
                                 name="holiday_date"
                                 id="holiday_date"
-                                value="{{ old('holiday_date', $holiday->holiday_date) }}"
+                                value="{{ old('holiday_date', $holiday->holiday_date ? \Carbon\Carbon::parse($holiday->holiday_date)->format('Y-m-d') : '') }}"
                                 :error="$errors->has('holiday_date')"
                                 :errorMessage="$errors->first('holiday_date')"
                                 required

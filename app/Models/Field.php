@@ -24,6 +24,10 @@ class Field extends Model
         'is_active',
     ];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
     /**
      * Relation to table vaenues 1 to 1
      */
@@ -97,43 +101,77 @@ class Field extends Model
     }
 
     /**
-     * Generate schedules based on operating hours and pricing.
+     * Generate schedules for a given date, respecting operating hours,
+     * pricing tiers, and existing paid bookings.
      *
+     * @param  string|null  $date  Y-m-d format; defaults to today
      * @return array
      */
-    public function getSchedulesAttribute(): array
+    public function getSchedulesForDate(?string $date = null): array
     {
+        $carbon = $date ? Carbon::parse($date) : now();
+        $dayOfWeek = $carbon->dayOfWeek;
 
-        $today = now();
-        $dayOfWeek = $today->dayOfWeek;
-
-        $operatingHour = $this->operatingHours()->where('day_of_week', $dayOfWeek)->first();
+        $operatingHour = $this->operatingHours
+            ->firstWhere('day_of_week', $dayOfWeek)
+            ?? $this->operatingHours()->where('day_of_week', $dayOfWeek)->first();
 
         if (!$operatingHour || !$operatingHour->is_open) {
             return [];
         }
 
-        $dayType = $today->isWeekday() ? 'weekday' : 'weekend';
-        $pricing = $this->pricings()->where('day_type', $dayType)->first();
+        // Determine day type: holiday takes precedence over weekend/weekday.
+        $isHoliday = \App\Models\PublicHoliday::where('holiday_date', $carbon->toDateString())->exists();
+        if ($isHoliday) {
+            $dayType = 'holiday';
+        } elseif ($carbon->isWeekend()) {
+            $dayType = 'weekend';
+        } else {
+            $dayType = 'weekday';
+        }
+
+        $pricing = $this->pricings
+            ->firstWhere('day_type', $dayType)
+            ?? $this->pricings()->where('day_type', $dayType)->first();
 
         if (!$pricing) {
             return [];
         }
 
-        $schedules = [];
-        $startTime = Carbon::parse($operatingHour->open_time);
-        $closeTime = Carbon::parse($operatingHour->close_time);
+        // Fetch already-booked slots for this field on this date (paid bookings).
+        $bookedSlots = \App\Models\BookingSlot::where('field_id', $this->id)
+            ->where('booking_date', $carbon->toDateString())
+            ->whereHas('booking', fn ($q) => $q->where('status', 'paid'))
+            ->pluck('start_time')
+            ->map(fn ($t) => substr($t, 0, 5)) // normalize to H:i
+            ->all();
+
+        $schedules  = [];
+        $startTime  = Carbon::parse($operatingHour->open_time);
+        $closeTime  = Carbon::parse($operatingHour->close_time);
 
         while ($startTime < $closeTime) {
+            $slotKey = $startTime->format('H:i');
             $schedules[] = [
-                'time' => $startTime->format('H:i'),
-                'price' => $pricing->price_per_slot,
-                'status' => 'available',
+                'time'   => $slotKey,
+                'price'  => $pricing->price_per_slot,
+                'status' => in_array($slotKey, $bookedSlots) ? 'booked' : 'available',
             ];
             $startTime->addHour();
         }
 
         return $schedules;
+    }
+
+    /**
+     * Accessor — returns schedules for the date currently in the request
+     * (query param 'date'), falling back to today.
+     *
+     * @return array
+     */
+    public function getSchedulesAttribute(): array
+    {
+        return $this->getSchedulesForDate(request('date'));
     }
 
     /**

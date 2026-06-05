@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\BookingSlot;
-use App\Models\Field;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
 {
@@ -42,6 +42,7 @@ class AdminDashboardController extends Controller
             ->count();
 
         // 3. Lapangan Sedang Dipakai (Live Occupancy)
+        // Use DB::raw COUNT(DISTINCT) for reliable distinct field counting on MySQL.
         $liveOccupancy = BookingSlot::where('booking_date', $todayStr)
             ->where('start_time', '<=', $nowTime)
             ->where('end_time', '>', $nowTime)
@@ -53,12 +54,11 @@ class AdminDashboardController extends Controller
                     });
                 }
             })
-            ->distinct('field_id')
-            ->count('field_id');
+            ->count(DB::raw('DISTINCT field_id'));
 
         // 4. Pendapatan Bulan Ini (status = paid, booking_date in current month)
         $startOfMonth = now()->startOfMonth()->toDateString();
-        $endOfMonth = now()->endOfMonth()->toDateString();
+        $endOfMonth   = now()->endOfMonth()->toDateString();
         $monthlyRevenue = Booking::where('status', 'paid')
             ->whereBetween('booking_date', [$startOfMonth, $endOfMonth])
             ->when($user->isAdmin(), function ($q) use ($user) {
@@ -68,7 +68,7 @@ class AdminDashboardController extends Controller
             })
             ->sum('total_price');
 
-        // 5. Today's Schedule Table (status = paid, booking_date = today)
+        // 5. Today's Schedule Table — sorted at DB level by earliest slot start_time.
         $todayBookings = Booking::with(['user', 'field.venue', 'slots'])
             ->where('status', 'paid')
             ->whereDate('booking_date', $todayStr)
@@ -77,31 +77,42 @@ class AdminDashboardController extends Controller
                     $qv->where('admin_id', $user->id);
                 });
             })
-            ->get()
-            ->sortBy(function ($booking) {
-                $firstSlot = $booking->slots->sortBy('start_time')->first();
-                return $firstSlot ? $firstSlot->start_time : '23:59';
-            });
+            ->join(
+                DB::raw('(SELECT booking_id, MIN(start_time) as first_slot_time FROM booking_slots GROUP BY booking_id) as bslots'),
+                'bookings.id',
+                '=',
+                'bslots.booking_id'
+            )
+            ->orderBy('bslots.first_slot_time')
+            ->select('bookings.*')
+            ->get();
 
-        // 6. Trend Chart (7-day trend of paid bookings count & revenue)
-        $chartLabels = [];
-        $chartBookings = [];
-        $chartRevenue = [];
-        for ($i = 6; $i >= 0; $i--) {
-            $date = now()->subDays($i);
-            $dateStr = $date->toDateString();
-            $chartLabels[] = $date->translatedFormat('D, d M');
+        // 6. Trend Chart — single aggregation query replacing 14 individual queries.
+        $sevenDaysAgo = now()->subDays(6)->toDateString();
 
-            $dayBookingsQuery = Booking::where('status', 'paid')
-                ->whereDate('booking_date', $dateStr)
-                ->when($user->isAdmin(), function ($q) use ($user) {
-                    $q->whereHas('field.venue', function ($qv) use ($user) {
-                        $qv->where('admin_id', $user->id);
-                    });
+        $trendRows = Booking::where('status', 'paid')
+            ->whereBetween('booking_date', [$sevenDaysAgo, $todayStr])
+            ->when($user->isAdmin(), function ($q) use ($user) {
+                $q->whereHas('field.venue', function ($qv) use ($user) {
+                    $qv->where('admin_id', $user->id);
                 });
+            })
+            ->selectRaw('DATE(booking_date) as day, COUNT(*) as total_bookings, SUM(total_price) as total_revenue')
+            ->groupBy('day')
+            ->get()
+            ->keyBy('day');
 
-            $chartBookings[] = $dayBookingsQuery->count();
-            $chartRevenue[] = (float) $dayBookingsQuery->sum('total_price');
+        $chartLabels   = [];
+        $chartBookings = [];
+        $chartRevenue  = [];
+
+        for ($i = 6; $i >= 0; $i--) {
+            $date    = now()->subDays($i);
+            $dateStr = $date->toDateString();
+            $chartLabels[]   = $date->translatedFormat('D, d M');
+            $row = $trendRows->get($dateStr);
+            $chartBookings[] = $row ? (int) $row->total_bookings : 0;
+            $chartRevenue[]  = $row ? (float) $row->total_revenue : 0.0;
         }
 
         return view('admin.dashboard', compact(

@@ -19,7 +19,7 @@ class BookingFactory extends Factory
             'booking_date' => fake()->dateTimeBetween('now', '+1 month')->format('Y-m-d'),
             'total_slots' => fake()->numberBetween(1, 3),
             'total_price' => fake()->numberBetween(50000, 500000),
-            'status' => fake()->randomElement(['pending', 'confirmed', 'cancelled', 'completed']),
+            'status' => fake()->randomElement(['pending', 'paid', 'cancelled', 'completed']),
             'notes' => fake()->optional()->sentence(),
             'expires_at' => now()->addHours(2),
         ];

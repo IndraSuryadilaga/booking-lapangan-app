@@ -26,9 +26,9 @@ class DashboardController extends Controller
             ->groupBy('status')
             ->pluck('total', 'status');
 
-        // User: latest 3 active bookings (pending or confirmed)
+        // User: latest 3 active bookings (pending or paid)
         $latestActiveBookings = Booking::where('user_id', $user->id)
-            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereIn('status', ['pending', 'paid'])
             ->orderBy('booking_date', 'desc')
             ->take(3)
             ->get();
