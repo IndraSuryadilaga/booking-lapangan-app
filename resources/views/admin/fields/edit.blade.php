@@ -1,11 +1,6 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row gap-8">
-            <!-- Sidebar -->
-            <aside class="w-full lg:w-64 shrink-0">
-                <x-organisms.sidebar />
-            </aside>
-
             <!-- Main Content -->
             <main class="flex-1 space-y-6">
                 <div class="border-b border-neutral-200 pb-5">
@@ -33,7 +28,7 @@
                 <!-- Gallery Management Section -->
                 <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-6">
                     <h2 class="text-lg font-bold text-neutral-800">Galeri Foto Lapangan</h2>
-                    
+
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                         @foreach($field->images as $image)
                             <div class="border border-slate-200 rounded-2xl p-3 flex flex-col items-center justify-between gap-3 bg-slate-50/50">
@@ -88,7 +83,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-medium text-neutral-700 mb-2">Venue</label>
-                                <x-atoms.select name="venue_id" placeholder="-- Pilih Venue --" 
+                                <x-atoms.select name="venue_id" placeholder="-- Pilih Venue --"
                                     :options="$venues->map(fn($v) => ['value' => $v->id, 'label' => $v->name])->toArray()" :value="$field->venue_id" required />
                             </div>
 
@@ -114,7 +109,7 @@
                         <!-- Tarif / Pricing Tiers -->
                         <div class="border-t border-slate-100 pt-6">
                             <h2 class="text-lg font-bold text-neutral-800 mb-4">Pengaturan Harga per Slot</h2>
-                            
+
                             @php
                                 $currentPricings = $field->pricings->keyBy(function($p) {
                                     return $p->day_type === 'weekday' ? 'regular' : $p->day_type;
@@ -151,7 +146,7 @@
                         <!-- Jam Operasional -->
                         <div class="border-t border-slate-100 pt-6">
                             <h2 class="text-lg font-bold text-neutral-800 mb-4">Pengaturan Jam Operasional Mingguan</h2>
-                            
+
                             @php
                                 $days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
                                 $currentHours = $field->operatingHours->keyBy('day_of_week');
@@ -176,13 +171,13 @@
                                         <div class="flex items-center gap-4">
                                             <div class="flex items-center gap-2">
                                                 <span class="text-xs text-neutral-500 font-medium">Buka</span>
-                                                <input type="time" name="operating_hours[{{ $index }}][open_time]" 
+                                                <input type="time" name="operating_hours[{{ $index }}][open_time]"
                                                        value="{{ $data ? \Carbon\Carbon::parse($data->open_time)->format('H:i') : '08:00' }}" :disabled="!isOpen" class="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-slate-100 disabled:text-neutral-400">
                                             </div>
-                                            
+
                                             <div class="flex items-center gap-2">
                                                 <span class="text-xs text-neutral-500 font-medium">Tutup</span>
-                                                <input type="time" name="operating_hours[{{ $index }}][close_time]" 
+                                                <input type="time" name="operating_hours[{{ $index }}][close_time]"
                                                        value="{{ $data ? \Carbon\Carbon::parse($data->close_time)->format('H:i') : '22:00' }}" :disabled="!isOpen" class="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-slate-100 disabled:text-neutral-400">
                                             </div>
                                         </div>

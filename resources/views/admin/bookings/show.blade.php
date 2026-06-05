@@ -1,11 +1,6 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row gap-8">
-            <!-- Sidebar -->
-            <aside class="w-full lg:w-64 shrink-0">
-                <x-organisms.sidebar />
-            </aside>
-
             <!-- Main Content -->
             <main class="flex-1 space-y-6">
                 <!-- Header -->
@@ -33,7 +28,7 @@
                         <!-- Main Info Card -->
                         <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-6">
                             <h2 class="text-lg font-bold text-neutral-800 border-b border-slate-100 pb-2">Informasi Pemesanan</h2>
-                            
+
                             <table class="w-full text-left">
                                 <tr class="border-b border-slate-100">
                                     <th class="py-3 text-sm font-semibold text-neutral-500 w-1/3">Pelanggan</th>
@@ -142,7 +137,7 @@
                             <form action="{{ route('admin.bookings.updateStatus', $booking->id) }}" method="POST" class="space-y-4 pt-4 border-t border-slate-100">
                                 @csrf
                                 @method('PATCH')
-                                
+
                                 <div>
                                     <label class="block text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2">Ubah Status</label>
                                     <x-atoms.select name="status" :value="$booking->status" :options="[

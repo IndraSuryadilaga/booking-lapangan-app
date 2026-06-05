@@ -1,11 +1,6 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row gap-8">
-            <!-- Sidebar -->
-            <aside class="w-full lg:w-64 shrink-0">
-                <x-organisms.sidebar />
-            </aside>
-
             <!-- Main Content -->
             <main class="flex-1 space-y-6">
                 <div class="border-b border-neutral-200 pb-5">

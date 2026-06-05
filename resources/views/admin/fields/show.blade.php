@@ -1,11 +1,6 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row gap-8">
-            <!-- Sidebar -->
-            <aside class="w-full lg:w-64 shrink-0">
-                <x-organisms.sidebar />
-            </aside>
-
             <!-- Main Content -->
             <main class="flex-1 space-y-6">
                 <div class="flex justify-between items-center border-b border-neutral-200 pb-5">
@@ -116,7 +111,7 @@
                         <!-- Operating Hours card -->
                         <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-4">
                             <h3 class="text-lg font-bold text-neutral-800 border-b border-slate-100 pb-2">Jam Operasional</h3>
-                            
+
                             <ul class="space-y-3">
                                 @php
                                     $hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -125,7 +120,7 @@
                                 @forelse($field->operatingHours->sortBy('day_of_week') as $hour)
                                     <li class="flex justify-between items-center p-2.5 rounded-xl border border-slate-100 {{ $hour->is_open ? 'bg-slate-50/50' : 'bg-red-50/30' }}">
                                         <span class="text-sm font-semibold text-neutral-700">{{ $hari[$hour->day_of_week] }}</span>
-                                        
+
                                         @if($hour->is_open)
                                             <span class="text-xs font-semibold bg-white border border-slate-200 px-2.5 py-1 rounded-lg text-neutral-600">
                                                 {{ \Carbon\Carbon::parse($hour->open_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($hour->close_time)->format('H:i') }}

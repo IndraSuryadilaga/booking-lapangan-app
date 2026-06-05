@@ -1,11 +1,6 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row gap-8">
-            <!-- Sidebar -->
-            <aside class="w-full lg:w-64 shrink-0">
-                <x-organisms.sidebar />
-            </aside>
-
             <!-- Main Content -->
             <main class="flex-1 space-y-6">
                 <div class="flex justify-between items-center border-b border-neutral-200 pb-5">
@@ -55,11 +50,11 @@
                                             </div>
                                         @endif
                                     </td>
-                                    
+
                                     <td class="p-4 font-semibold text-neutral-900 text-sm">
                                         {{ $field->name }}
                                     </td>
-                                    
+
                                     <td class="p-4 text-sm text-neutral-600">
                                         <div class="font-medium">{{ $field->sportsCategory->name ?? 'Kategori Dihapus' }}</div>
                                         <div class="text-xs text-neutral-400 mt-0.5">{{ $field->venue->name ?? 'Venue Dihapus' }}</div>
@@ -72,7 +67,7 @@
                                             @else
                                                 <x-atoms.badge variant="danger">Tutup Sementara</x-atoms.badge>
                                             @endif
-                                            
+
                                             <!-- Toggle Status (Quick Action) -->
                                             <form action="{{ route('admin.fields.toggle-status', $field->id) }}" method="POST">
                                                 @csrf
@@ -83,7 +78,7 @@
                                             </form>
                                         </div>
                                     </td>
-                                    
+
                                     <td class="p-4 text-center">
                                         <div class="flex justify-center items-center gap-2">
                                             <a href="{{ route('admin.fields.show', $field->id) }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold">

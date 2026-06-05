@@ -1,11 +1,6 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row gap-8">
-            <!-- Sidebar -->
-            <aside class="w-full lg:w-64 shrink-0">
-                <x-organisms.sidebar />
-            </aside>
-
             <!-- Main Content -->
             <main class="flex-1 space-y-6">
                 <div class="border-b border-neutral-200 pb-5">
@@ -91,8 +86,8 @@
                                     <img src="{{ asset('storage/' . $venue->logo) }}" alt="Logo saat ini" class="w-16 h-16 object-cover rounded-xl border border-slate-200">
                                     <div class="flex flex-col gap-1.5">
                                         <span class="text-xs text-neutral-400">Biarkan kosong jika tidak ingin mengubah logo.</span>
-                                        <button type="button" 
-                                                onclick="if(confirm('Apakah Anda yakin ingin menghapus logo ini?')) { document.getElementById('delete-logo-form').submit(); }" 
+                                        <button type="button"
+                                                onclick="if(confirm('Apakah Anda yakin ingin menghapus logo ini?')) { document.getElementById('delete-logo-form').submit(); }"
                                                 class="text-xs font-semibold text-red-600 hover:text-red-700 w-fit">
                                             Hapus Logo
                                         </button>
@@ -111,7 +106,7 @@
                                 @endphp
                                 @foreach($sportsCategories as $cat)
                                     <label class="inline-flex items-center gap-2 text-sm text-neutral-600 cursor-pointer">
-                                        <input type="checkbox" name="sports_category_ids[]" value="{{ $cat->id }}" 
+                                        <input type="checkbox" name="sports_category_ids[]" value="{{ $cat->id }}"
                                                {{ in_array($cat->id, old('sports_category_ids', $currentCats)) ? 'checked' : '' }}
                                                class="rounded border-slate-300 text-primary-600 focus:ring-primary-500">
                                         <span>{{ $cat->name }}</span>
@@ -148,7 +143,7 @@
                             </x-atoms.button>
                         </div>
                     </form>
-                    
+
                     @if($venue->logo)
                         <form id="delete-logo-form" action="{{ route('admin.venues.delete-logo', $venue->id) }}" method="POST" class="hidden">
                             @csrf

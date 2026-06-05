@@ -1,11 +1,6 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row gap-8">
-            <!-- Sidebar -->
-            <aside class="w-full lg:w-64 shrink-0">
-                <x-organisms.sidebar />
-            </aside>
-
             <!-- Main Content -->
             <main class="flex-1 space-y-6">
                 <div class="border-b border-neutral-200 pb-5">
@@ -88,7 +83,7 @@
                             <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                                 @foreach($sportsCategories as $cat)
                                     <label class="inline-flex items-center gap-2 text-sm text-neutral-600 cursor-pointer">
-                                        <input type="checkbox" name="sports_category_ids[]" value="{{ $cat->id }}" 
+                                        <input type="checkbox" name="sports_category_ids[]" value="{{ $cat->id }}"
                                                {{ is_array(old('sports_category_ids')) && in_array($cat->id, old('sports_category_ids')) ? 'checked' : '' }}
                                                class="rounded border-slate-300 text-primary-600 focus:ring-primary-500">
                                         <span>{{ $cat->name }}</span>

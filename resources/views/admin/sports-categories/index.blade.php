@@ -1,11 +1,6 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row gap-8">
-            <!-- Sidebar -->
-            <aside class="w-full lg:w-64 shrink-0">
-                <x-organisms.sidebar />
-            </aside>
-
             <!-- Main Content -->
             <main class="flex-1 space-y-6">
                 <div class="flex justify-between items-center border-b border-neutral-200 pb-5">
@@ -48,11 +43,11 @@
                                     <td class="p-4 text-sm text-neutral-600">
                                         #{{ $category->id }}
                                     </td>
-                                    
+
                                     <td class="p-4 font-semibold text-neutral-900 text-sm">
                                         {{ $category->name }}
                                     </td>
-                                    
+
                                     <td class="p-4">
                                         @if($category->is_active)
                                             <x-atoms.badge variant="success">Aktif</x-atoms.badge>
@@ -60,7 +55,7 @@
                                             <x-atoms.badge variant="danger">Nonaktif</x-atoms.badge>
                                         @endif
                                     </td>
-                                    
+
                                     <td class="p-4 text-center">
                                         <div class="flex justify-center items-center gap-2">
                                             <a href="{{ route('sports-categories.edit', $category->id) }}" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-xs font-semibold">
