@@ -7,6 +7,7 @@ use App\Models\Field;
 use App\Models\FieldImage;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class AdminFieldImageController extends Controller
@@ -22,16 +23,20 @@ class AdminFieldImageController extends Controller
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:10000',
         ]);
 
-        foreach ($request->file('images') as $index => $image) {
-            $imagePath = $image->store('fields', 'public');
+        DB::transaction(function () use ($request, $field) {
+            $currentImageCount = $field->images()->count();
 
-            FieldImage::create([
-                'field_id'   => $field->id,
-                'image_path' => $imagePath,
-                'is_primary' => $field->images()->count() === 0 && $index === 0,
-                'sort_order' => $field->images()->count() + $index,
-            ]);
-        }
+            foreach ($request->file('images') as $index => $image) {
+                $imagePath = $image->store('fields', 'public');
+
+                FieldImage::create([
+                    'field_id'   => $field->id,
+                    'image_path' => $imagePath,
+                    'is_primary' => $currentImageCount === 0 && $index === 0,
+                    'sort_order' => $currentImageCount + $index,
+                ]);
+            }
+        });
 
         return back()->with('success', 'Gambar berhasil diunggah.');
     }
@@ -40,8 +45,10 @@ class AdminFieldImageController extends Controller
     {
         $this->authorize('update', $field);
 
-        $field->images()->update(['is_primary' => false]);
-        $image->update(['is_primary' => true]);
+        DB::transaction(function () use ($field, $image) {
+            $field->images()->update(['is_primary' => false]);
+            $image->update(['is_primary' => true]);
+        });
 
         return back()->with('success', 'Gambar utama berhasil diubah.');
     }
@@ -51,21 +58,23 @@ class AdminFieldImageController extends Controller
         $field = Field::findOrFail($image->field_id);
         $this->authorize('update', $field);
 
-        Storage::disk('public')->delete($image->image_path);
+        DB::transaction(function () use ($image, $field) {
+            $wasPrimary = $image->is_primary;
 
-        $fieldId = $image->field_id;
-        $wasPrimary = $image->is_primary;
-
-        $image->delete();
-
-        if ($wasPrimary) {
-            $newPrimary = FieldImage::where('field_id', $fieldId)->first();
-            if ($newPrimary) {
-                $newPrimary->update(['is_primary' => true]);
+            if (!str_starts_with($image->image_path, 'http')) {
+                Storage::disk('public')->delete($image->image_path);
             }
-        }
+
+            $image->delete();
+
+            if ($wasPrimary) {
+                $newPrimary = $field->images()->first();
+                if ($newPrimary) {
+                    $newPrimary->update(['is_primary' => true]);
+                }
+            }
+        });
 
         return back()->with('success', 'Gambar berhasil dihapus.');
     }
 }
-

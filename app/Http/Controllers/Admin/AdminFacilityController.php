@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Facility;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 class AdminFacilityController extends Controller
 {
     public function index()
     {
-        $facilities = Facility::latest()->get();
+        $facilities = Facility::latest()->paginate(10);
 
         return view('admin.facilities.index', compact('facilities'));
     }
@@ -24,16 +25,17 @@ class AdminFacilityController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:facilities,name',
+            'icon' => 'nullable|string|max:255',
         ]);
 
         Facility::create([
             'name' => $validated['name'],
-            'icon' => null,
+            'icon' => $validated['icon'] ?? null,
         ]);
 
         return redirect()
             ->route('facilities.index')
-            ->with('success', 'Facility created successfully');
+            ->with('success', 'Fasilitas berhasil ditambahkan.');
     }
 
     public function edit(Facility $facility)
@@ -45,23 +47,32 @@ class AdminFacilityController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:facilities,name,' . $facility->id,
+            'icon' => 'nullable|string|max:255',
         ]);
 
         $facility->update([
             'name' => $validated['name'],
+            'icon' => $validated['icon'] ?? $facility->icon,
         ]);
 
         return redirect()
             ->route('facilities.index')
-            ->with('success', 'Facility updated successfully');
+            ->with('success', 'Data fasilitas berhasil diperbarui.');
     }
 
     public function destroy(Facility $facility)
     {
-        $facility->delete();
+        try {
+            $facility->delete();
 
-        return redirect()
-            ->route('facilities.index')
-            ->with('success', 'Facility deleted successfully');
+            return redirect()
+                ->route('facilities.index')
+                ->with('success', 'Fasilitas berhasil dihapus.');
+
+        } catch (QueryException $e) {
+            return redirect()
+                ->route('facilities.index')
+                ->with('error', 'Gagal menghapus! Fasilitas ini mungkin sedang digunakan oleh suatu Venue.');
+        }
     }
 }
