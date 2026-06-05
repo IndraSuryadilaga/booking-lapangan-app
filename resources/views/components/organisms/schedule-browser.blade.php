@@ -46,8 +46,8 @@
     </div>
 
     <div class="p-4 border-t border-slate-100 dark:border-neutral-700 space-y-4">
-        <x-molecules.cards.court />
-        <x-molecules.cards.court />
+        <x-molecules.cards.court-card />
+        <x-molecules.cards.court-card />
     </div>
 
     <div class="p-4 border-t border-slate-200 dark:border-neutral-700 flex justify-center">

@@ -304,7 +304,7 @@
                 <div class="border border-slate-200 rounded-2xl p-6 bg-white shadow-sm flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-300">
                     <div class="space-y-4">
                         <div class="flex items-center">
-                            <x-star-rating :value="5" size="sm" />
+                            <x-molecules.star-rating :value="5" size="sm" />
                         </div>
                         <p class="text-sm text-neutral-600 italic leading-relaxed">
                             "Sangat praktis! Dulu harus telepon satu-satu untuk tanya jadwal kosong, sekarang tinggal buka web, pilih jam, langsung bayar. Konfirmasi instan tanpa nunggu lama."
@@ -323,7 +323,7 @@
                 <div class="border border-slate-200 rounded-2xl p-6 bg-white shadow-sm flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-300">
                     <div class="space-y-4">
                         <div class="flex items-center">
-                            <x-star-rating :value="5" size="sm" />
+                            <x-molecules.star-rating :value="5" size="sm" />
                         </div>
                         <p class="text-sm text-neutral-600 italic leading-relaxed">
                             "Informasi lapangan terverifikasi dengan sangat baik. Foto-foto fasilitasnya sesuai asli, harganya transparan, dan CS di lapangan ramah saat klaim tiket booking."
@@ -342,7 +342,7 @@
                 <div class="border border-slate-200 rounded-2xl p-6 bg-white shadow-sm flex flex-col justify-between h-full hover:shadow-md transition-shadow duration-300">
                     <div class="space-y-4">
                         <div class="flex items-center">
-                            <x-star-rating :value="5" size="sm" />
+                            <x-molecules.star-rating :value="5" size="sm" />
                         </div>
                         <p class="text-sm text-neutral-600 italic leading-relaxed">
                             "Sistem reschedule-nya luar biasa membantu saat tim tiba-tiba berhalangan hadir. Pembayarannya aman dan proses verifikasinya instan."

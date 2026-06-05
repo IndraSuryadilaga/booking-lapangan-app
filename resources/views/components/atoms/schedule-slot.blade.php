@@ -1,4 +1,5 @@
 @props([
+    'courtId',
     'time',
     'price',
     'status',
@@ -12,7 +13,7 @@
 
     $isBooked = $status === 'booked';
 
-    $inputId = 'schedule-' . \Illuminate\Support\Str::slug($time);
+    $inputId = 'schedule-' . $courtId . '-' . \Illuminate\Support\Str::slug($time);
 @endphp
 
 <div class="relative w-full">

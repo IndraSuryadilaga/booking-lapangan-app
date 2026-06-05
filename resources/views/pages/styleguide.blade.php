@@ -416,14 +416,5 @@
                 </div>
             </div>
         </section>
-
-        {{-- Menghapus pemanggilan lama dan menambahkannya di sini --}}
-        <section>
-            <h2 class="text-xl font-bold text-neutral-800 dark:text-neutral-100 mb-4 border-l-4 border-primary-500 pl-3">Schedule Browser</h2>
-            <div class="bg-neutral-50 border border-slate-200 rounded-xl p-6">
-                <x-organisms.schedule-browser />
-            </div>
-        </section>
-
     </div>
 </x-app-layout>

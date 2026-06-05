@@ -107,7 +107,7 @@
         <div class="space-y-6">
             @forelse($fieldsToDisplay as $index => $field)
                 <div>
-                    <x-molecules.cards.court :court="$field" />
+                    <x-molecules.cards.court-card :court="$field" />
                 </div>
             @empty
                 <div class="bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-xl p-8 text-center shadow-sm">

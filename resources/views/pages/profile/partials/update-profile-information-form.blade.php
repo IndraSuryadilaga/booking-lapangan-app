@@ -19,14 +19,33 @@
 
         <div>
             <x-atoms.input-label for="name" :value="__('Name')" />
-            <x-atoms.text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-atoms.input-error class="mt-2" :messages="$errors->get('name')" />
+            <x-atoms.input
+                id="name"
+                name="name"
+                type="text"
+                class="mt-1 block w-full"
+                :value="old('name', $user->name)"
+                :error="$errors->has('name')"
+                :messages="$errors->get('name')"
+                required
+                autofocus
+                autocomplete="name"
+            />
         </div>
 
         <div>
             <x-atoms.input-label for="email" :value="__('Email')" />
-            <x-atoms.text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
-            <x-atoms.input-error class="mt-2" :messages="$errors->get('email')" />
+            <x-atoms.input
+                id="email"
+                name="email"
+                type="email"
+                class="mt-1 block w-full"
+                :value="old('email', $user->email)"
+                :error="$errors->has('email')"
+                :messages="$errors->get('email')"
+                required
+                autocomplete="username"
+            />
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>
@@ -48,7 +67,7 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <x-atoms.primary-button>{{ __('Save') }}</x-atoms.primary-button>
+            <x-atoms.button type="primary">{{ __('Save') }}</x-atoms.button>
 
             @if (session('status') === 'profile-updated')
                 <p

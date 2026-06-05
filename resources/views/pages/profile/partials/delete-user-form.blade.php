@@ -9,10 +9,11 @@
         </p>
     </header>
 
-    <x-atoms.danger-button
+    <x-atoms.button
+        type="danger"
         x-data=""
         x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-    >{{ __('Delete Account') }}</x-atoms.danger-button>
+    >{{ __('Delete Account') }}</x-atoms.button>
 
     <x-organisms.modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
         <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
@@ -30,25 +31,25 @@
             <div class="mt-6">
                 <x-atoms.input-label for="password" value="{{ __('Password') }}" class="sr-only" />
 
-                <x-atoms.text-input
+                <x-atoms.input
                     id="password"
                     name="password"
                     type="password"
                     class="mt-1 block w-3/4"
                     placeholder="{{ __('Password') }}"
+                    :error="$errors->userDeletion->has('password')"
+                    :messages="$errors->userDeletion->get('password')"
                 />
-
-                <x-atoms.input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
             </div>
 
             <div class="mt-6 flex justify-end">
-                <x-atoms.secondary-button x-on:click="$dispatch('close')">
+                <x-atoms.button type="secondary" x-on:click="$dispatch('close')">
                     {{ __('Cancel') }}
-                </x-atoms.secondary-button>
+                </x-atoms.button>
 
-                <x-atoms.danger-button class="ms-3">
+                <x-atoms.button type="danger" class="ms-3">
                     {{ __('Delete Account') }}
-                </x-atoms.danger-button>
+                </x-atoms.button>
             </div>
         </form>
     </x-organisms.modal>

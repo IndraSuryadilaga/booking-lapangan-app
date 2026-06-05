@@ -14,7 +14,6 @@
     $name = $court->name;
     $description = $court->description;
 
-    // Mengambil data kategori dan icon dari database
     $sportCategory = $court->sportsCategory;
     $sportName = $sportCategory->name ?? 'N/A';
     $sportIcon = $sportCategory->icon ?? null;
@@ -99,7 +98,7 @@
 
                 @forelse($schedules as $schedule)
                     <x-atoms.schedule-slot
-                        :time="$schedule['time']"
+                        :court-id="$court->id" :time="$schedule['time']"
                         :price="$schedule['price']"
                         :status="$schedule['status']"
                     />
@@ -110,7 +109,6 @@
                 @endforelse
 
             </div>
-        </div>
         </div>
 
     </div>
