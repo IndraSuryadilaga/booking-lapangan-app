@@ -34,6 +34,5 @@
 
             <x-organisms.footer />
         </div>
-        <x-organisms.quick-access-sidebar />
     </body>
 </html>

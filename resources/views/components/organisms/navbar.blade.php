@@ -40,18 +40,17 @@
                         <a href="/admin" class="text-sm font-semibold text-primary-400 hover:text-primary-300 transition-colors">Panel Admin</a>
                     @endif
 
-                    <button type="button" @click="$dispatch('open-sidebar')" class="relative p-1 text-primary-100 hover:text-white transition-colors focus:outline-none">
-                        <span class="sr-only">Buka Aktivitas</span>
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        <a href="/dashboard" class="relative p-1 text-primary-100 hover:text-white transition-colors focus:outline-none">
+                            <span class="sr-only">Buka Aktivitas</span>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
 
-                        @if(auth()->check() && (\App\Models\Booking::where('user_id', auth()->id())->whereIn('status', ['pending', 'paid', 'confirmed'])->exists()))
-                            <span class="absolute top-0 right-0 flex h-2.5 w-2.5">
+                            @if(auth()->check() && (\App\Models\Booking::where('user_id', auth()->id())->whereIn('status', ['pending', 'paid', 'confirmed'])->exists()))
+                                <span class="absolute top-0 right-0 flex h-2.5 w-2.5">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
                             </span>
-                        @endif
-                    </button>
-
+                            @endif
+                        </a>
                     <x-molecules.dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <x-atoms.button type="secondary" class="flex items-center gap-2 !px-1.5 !py-1.5 rounded-full focus:outline-none">
