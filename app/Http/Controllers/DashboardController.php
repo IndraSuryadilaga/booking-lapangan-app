@@ -16,15 +16,19 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
+        if ($user && in_array($user->role, ['admin', 'super-admin'])) {
+            return redirect()->route('admin.dashboard');
+        }
+
         // User: total bookings grouped by status
         $bookingsByStatus = Booking::where('user_id', $user->id)
             ->select('status', DB::raw('count(*) as total'))
             ->groupBy('status')
             ->pluck('total', 'status');
 
-        // User: latest 3 active bookings (pending or confirmed)
+        // User: latest 3 active bookings (pending or paid)
         $latestActiveBookings = Booking::where('user_id', $user->id)
-            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereIn('status', ['pending', 'paid'])
             ->orderBy('booking_date', 'desc')
             ->take(3)
             ->get();

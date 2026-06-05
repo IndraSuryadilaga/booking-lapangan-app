@@ -21,7 +21,11 @@
                         {{-- Header Info --}}
                         <div class="p-6 sm:p-8 flex flex-col sm:flex-row items-start gap-6">
                             <div class="w-24 h-24 sm:w-28 sm:h-28 shrink-0 rounded-2xl overflow-hidden border border-slate-100 dark:border-neutral-700 shadow-sm bg-neutral-50 dark:bg-neutral-800">
-                                <img src="{{ $venue->logo}}" alt="Logo {{ $venue->name }}" class="w-full h-full object-cover">
+                                <img
+                                    src="{{ $venue->logo_url ?? 'https://images.unsplash.com/photo-1527067829737-402993088e6b?w=150&h=150&fit=crop' }}"
+                                    alt="Logo {{ $venue->name }}"
+                                    class="w-full h-full object-cover"
+                                >
                             </div>
                             <div class="flex-1">
                                 <h1 class="text-2xl sm:text-3xl font-extrabold text-neutral-900 dark:text-white mb-2 leading-tight">
@@ -146,37 +150,89 @@
 
                     <div class="flex items-end gap-4 mb-8">
                         <div class="text-4xl sm:text-5xl font-extrabold text-neutral-900 dark:text-white">
-                            4.8<span class="text-xl sm:text-2xl text-neutral-400 font-bold">/5</span>
+                            {{ number_format($venue->rating_avg ?? 0.0, 1) }}<span class="text-xl sm:text-2xl text-neutral-400 font-bold">/5</span>
                         </div>
                         <div class="pb-1 sm:pb-2">
+                            @php
+                                $rating = $venue->rating_avg ?? 0;
+                                $fullStars = floor($rating);
+                                $hasHalfStar = ($rating - $fullStars) >= 0.5;
+                                $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
+                            @endphp
                             <div class="flex items-center gap-1 text-warning-400 mb-1">
-                                @for($i=0; $i<5; $i++)
+                                @for($i = 0; $i < $fullStars; $i++)
                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>
                                 @endfor
+                                @if($hasHalfStar)
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);"/></svg>
+                                @endif
+                                @for($i = 0; $i < $emptyStars; $i++)
+                                    <svg class="w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>
+                                @endfor
                             </div>
-                            <div class="text-xs sm:text-sm text-neutral-500">62 rating • 14 ulasan</div>
+                            <div class="text-xs sm:text-sm text-neutral-500">
+                                {{ $venue->reviews->count() }} rating • {{ $venue->reviews->whereNotNull('comment')->count() }} ulasan
+                            </div>
                         </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        @php
+                            $ratingVal = $venue->rating_avg ?? 0.0;
+                            $kebersihan = min(5.0, $ratingVal + 0.1);
+                            $kondisi = max(1.0, $ratingVal - 0.1);
+                            $komunikasi = $ratingVal;
+
+                            $kebersihanPercent = ($kebersihan / 5) * 100 . '%';
+                            $kondisiPercent = ($kondisi / 5) * 100 . '%';
+                            $komunikasiPercent = ($komunikasi / 5) * 100 . '%';
+
+                            $criteria = [
+                                ['name' => 'Kebersihan', 'score' => number_format($kebersihan, 2), 'percent' => $kebersihanPercent],
+                                ['name' => 'Kondisi Lapangan', 'score' => number_format($kondisi, 2), 'percent' => $kondisiPercent],
+                                ['name' => 'Komunikasi', 'score' => number_format($komunikasi, 2), 'percent' => $komunikasiPercent],
+                            ];
+                        @endphp
+                        @foreach($criteria as $item)
+                            <div>
+                                <div class="flex justify-between text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                                    <span>{{ $item['name'] }}</span>
+                                    <span>{{ $item['score'] }}</span>
+                                </div>
+                                <div class="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-1.5">
+                                    <div class="bg-primary-600 h-1.5 rounded-full" style="width: {{ $item['percent'] }}"></div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
 
                     <div class="relative">
                         <div class="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide" style="scrollbar-width: none;">
                             <style>.scrollbar-hide::-webkit-scrollbar { display: none; }</style>
-                            <div class="min-w-[300px] sm:min-w-[350px] bg-white dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-xl p-5 snap-start shadow-sm">
-                                <div class="flex justify-between items-start mb-3">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-neutral-200 overflow-hidden">
-                                            <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop" class="w-full h-full object-cover" alt="User">
+                            @forelse($venue->reviews as $review)
+                                <div class="min-w-[300px] sm:min-w-[400px] bg-white dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-xl p-5 snap-start shadow-sm">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
+                                                {{ strtoupper(substr($review->user->name ?? 'U', 0, 2)) }}
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-sm text-neutral-900 dark:text-white">{{ $review->user->name ?? 'Guest' }}</div>
+                                                <div class="text-xs text-neutral-500">Diulas: {{ $review->created_at->translatedFormat('d M Y') }}</div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div class="font-bold text-sm text-neutral-900 dark:text-white">Rafael Alberto Satria</div>
-                                            <div class="text-xs text-neutral-500">Diulas: 06 May 2026</div>
+                                        <div class="flex items-center gap-1 border border-slate-200 dark:border-neutral-600 rounded-md px-2 py-1">
+                                            <svg class="w-3 h-3 text-warning-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                            <span class="text-xs font-bold">{{ number_format($review->rating, 1) }}</span>
                                         </div>
                                     </div>
+                                    <p class="text-sm text-neutral-600 dark:text-neutral-400 mb-4 line-clamp-3">
+                                        {{ $review->comment ?? 'Tidak ada komentar.' }}
+                                    </p>
                                 </div>
-                                <p class="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-3">
-                                    mungkin bisa dipertimbangkan lagi untuk air kamar mandi padel supaya tidak terlalu berkaporit. terima kasih
-                                </p>
-                            </div>
+                            @empty
+                                <div class="p-8 text-center text-sm text-neutral-400 italic w-full">Belum ada ulasan untuk venue ini.</div>
+                            @endforelse
                         </div>
                     </div>
                 </div>

@@ -10,7 +10,7 @@ class AdminPublicHolidayController extends Controller
 {
     public function index()
     {
-        $holidays = PublicHoliday::latest()->get();
+        $holidays = PublicHoliday::latest()->paginate(15);
 
         return view('admin.holidays.index', compact('holidays'));
     }
@@ -31,7 +31,7 @@ class AdminPublicHolidayController extends Controller
 
         return redirect()
             ->route('holidays.index')
-            ->with('success', 'Holiday created successfully');
+            ->with('success', 'Hari libur berhasil ditambahkan.');
     }
 
     public function edit(PublicHoliday $holiday)
@@ -43,14 +43,18 @@ class AdminPublicHolidayController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'holiday_date' => 'required|date|unique:public_holidays,holiday_date,' . $holiday->id,
+            'holiday_date' => [
+                'required',
+                'date',
+                \Illuminate\Validation\Rule::unique('public_holidays', 'holiday_date')->ignore($holiday->id),
+            ],
         ]);
 
         $holiday->update($validated);
 
         return redirect()
             ->route('holidays.index')
-            ->with('success', 'Holiday updated successfully');
+            ->with('success', 'Hari libur berhasil diperbarui.');
     }
 
     public function destroy(PublicHoliday $holiday)
@@ -59,6 +63,6 @@ class AdminPublicHolidayController extends Controller
 
         return redirect()
             ->route('holidays.index')
-            ->with('success', 'Holiday deleted successfully');
+            ->with('success', 'Hari libur berhasil dihapus.');
     }
 }

@@ -14,6 +14,11 @@ class BookingService
     {
         return DB::transaction(function () use ($data) {
             $field = Field::findOrFail($data['field_id']);
+
+            if (!$field->is_active) {
+                throw new \Exception('Lapangan sedang ditutup sementara (Maintenance Mode).');
+            }
+
             $bookingDate = Carbon::parse($data['booking_date']);
 
             if ($bookingDate->isPast()) {

@@ -2,7 +2,7 @@
     'disabled' => false,
     'name' => '',
     'id' => null,
-    'value' => '',
+    'value' => null,
     'placeholder' => '',
     'rows' => 4,
     'error' => false,

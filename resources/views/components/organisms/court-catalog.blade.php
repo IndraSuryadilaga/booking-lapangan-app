@@ -17,7 +17,7 @@
     $categories = \App\Models\SportsCategory::all();
 
     $filteredFields = $venue->fields->filter(function($field) use ($selectedCategory) {
-        return $selectedCategory === 'all' || $field->sports_category_id == $selectedCategory;
+        return ($selectedCategory === 'all' || $field->sports_category_id == $selectedCategory) && $field->is_active;
     })->values();
 
     $totalFields = $filteredFields->count();

@@ -1,111 +1,137 @@
 <x-app-layout>
-    <div class="p-6">
-        <h1 class="text-2xl font-bold mb-6">Tambah Lapangan Baru</h1>
-
-        <div class="bg-white rounded-lg shadow p-6 max-w-4xl">
-            {{-- Atribut enctype sangat penting agar foto bisa terkirim ke Controller --}}
-            <form action="{{ route('fields.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Main Content -->
+            <main class="flex-1 space-y-6">
+                <div class="border-b border-neutral-200 pb-5">
+                    <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Tambah Lapangan Baru</h1>
+                    <p class="mt-2 text-sm text-neutral-500">Buat data lapangan baru, unggah foto, dan atur jam operasional serta tarif per slot.</p>
+                </div>
 
                 @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                <strong>Oops! Gagal menyimpan data:</strong>
-                <ul class="list-disc pl-5 mt-2">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium">Venue</label>
-                    <select
-                        name="venue_id"
-                        class="w-full border rounded px-3 py-2"
-                        required>
-                        <option value="">-- Pilih Venue --</option>
-                        @foreach($venues as $venue)
-                            <option value="{{ $venue->id }}">
-                                {{ $venue->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium">Kategori Olahraga</label>
-                    <select name="sports_category_id" class="w-full border rounded px-3 py-2" required>
-                        <option value="">-- Pilih Kategori --</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}">{{ $category->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block mb-2 font-medium">Nama Lapangan</label>
-                        <input type="text" name="name" class="w-full border rounded px-3 py-2" placeholder="Contoh: Lapangan Futsal Utama" required>
+                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
+                        <strong class="text-sm">Oops! Gagal menyimpan data:</strong>
+                        <ul class="list-disc pl-5 mt-2 text-sm">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                </div>
+                @endif
 
-                <div class="mb-4">
-                        <label class="block mb-2 font-medium">
-                            Galeri Foto Lapangan (Bisa Banyak)
-                        </label>
-                        <input
-                            type="file"
-                            name="images[]"
-                            multiple
-                            accept="image/png, image/jpeg, image/jpg"
-                            class="w-full border rounded px-3 py-2">
-                        <p class="text-sm text-gray-500 mt-1">
-                            Foto pertama otomatis menjadi foto utama.
-                        </p>
-                    </div>
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+                    <form action="{{ route('admin.fields.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                        @csrf
 
-                <div class="mb-6">
-                    <label class="block mb-2 font-medium">Deskripsi Singkat</label>
-                    <textarea name="description" class="w-full border rounded px-3 py-2" rows="3"></textarea>
-                </div>
-
-                <hr class="mb-6">
-
-                <h2 class="text-lg font-bold mb-4">Pengaturan Jam Operasional</h2>
-                
-                @php
-                    // Array nama hari (0 = Minggu, 1 = Senin, dst menyesuaikan standar date PHP)
-                    $days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-                @endphp
-
-                <div class="space-y-4 mb-6">
-                    @foreach($days as $index => $day)
-                        <div class="flex items-center gap-4 p-3 border rounded bg-gray-50">
-                            <div class="w-32">
-                                <label class="inline-flex items-center">
-                                    <input type="checkbox" name="operating_hours[{{ $index }}][is_open]" value="1" class="rounded border-gray-300 text-blue-600 shadow-sm" checked>
-                                    <span class="ml-2 font-medium">{{ $day }}</span>
-                                </label>
+                        <!-- Venue & Kategori Olahraga -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-2">Venue</label>
+                                <x-atoms.select name="venue_id" placeholder="-- Pilih Venue --"
+                                    :options="$venues->map(fn($v) => ['value' => $v->id, 'label' => $v->name])->toArray()" required />
                             </div>
 
-                            <div class="flex items-center gap-2">
-                                <span>Buka:</span>
-                                <input type="time" name="operating_hours[{{ $index }}][open_time]" value="08:00" class="border rounded px-2 py-1">
-                                
-                                <span class="ml-4">Tutup:</span>
-                                <input type="time" name="operating_hours[{{ $index }}][close_time]" value="22:00" class="border rounded px-2 py-1">
+                            <div>
+                                <label class="block text-sm font-medium text-neutral-700 mb-2">Kategori Olahraga</label>
+                                <x-atoms.select name="sports_category_id" placeholder="-- Pilih Kategori --"
+                                    :options="$categories->map(fn($c) => ['value' => $c->id, 'label' => $c->name])->toArray()" required />
                             </div>
                         </div>
-                    @endforeach
-                </div>
 
-                <div class="flex justify-end">
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">
-                        Simpan Lapangan
-                    </button>
+                        <!-- Nama Lapangan -->
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-700 mb-2">Nama Lapangan</label>
+                            <x-atoms.input type="text" name="name" placeholder="Contoh: Lapangan Futsal A" value="{{ old('name') }}" required />
+                        </div>
+
+                        <!-- Galeri Foto -->
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-700 mb-2">Galeri Foto Lapangan (Bisa Unggah Banyak)</label>
+                            <x-atoms.input-file name="images" accept="image/*" :multiple="true" />
+                            <p class="text-xs text-neutral-400 mt-2">Foto pertama otomatis menjadi foto utama (primary).</p>
+                        </div>
+
+                        <!-- Deskripsi Singkat -->
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-700 mb-2">Deskripsi Singkat</label>
+                            <x-atoms.input-textarea name="description" placeholder="Info fasilitas lapangan, ukuran, tipe rumput..." rows="3">{{ old('description') }}</x-atoms.input-textarea>
+                        </div>
+
+                        <!-- Tarif / Pricing Tiers -->
+                        <div class="border-t border-slate-100 pt-6">
+                            <h2 class="text-lg font-bold text-neutral-800 mb-4">Pengaturan Harga per Slot</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <!-- Regular Weekday -->
+                                <div class="p-4 border border-slate-200 rounded-2xl bg-slate-50/50 space-y-3">
+                                    <input type="hidden" name="pricings[0][tier]" value="regular">
+                                    <span class="block text-sm font-bold text-neutral-700 uppercase tracking-wider text-xs">Regular (Weekday)</span>
+                                    <x-atoms.input-number name="pricings[0][price]" value="100000" min="0" prefix="Rp" :isCurrency="true" required />
+                                </div>
+
+                                <!-- Weekend -->
+                                <div class="p-4 border border-slate-200 rounded-2xl bg-slate-50/50 space-y-3">
+                                    <input type="hidden" name="pricings[1][tier]" value="weekend">
+                                    <span class="block text-sm font-bold text-neutral-700 uppercase tracking-wider text-xs">Weekend (Sabtu-Minggu)</span>
+                                    <x-atoms.input-number name="pricings[1][price]" value="150000" min="0" prefix="Rp" :isCurrency="true" required />
+                                </div>
+
+                                <!-- Holiday -->
+                                <div class="p-4 border border-slate-200 rounded-2xl bg-slate-50/50 space-y-3">
+                                    <input type="hidden" name="pricings[2][tier]" value="holiday">
+                                    <span class="block text-sm font-bold text-neutral-700 uppercase tracking-wider text-xs">Hari Libur Nasional</span>
+                                    <x-atoms.input-number name="pricings[2][price]" value="175000" min="0" prefix="Rp" :isCurrency="true" required />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Jam Operasional -->
+                        <div class="border-t border-slate-100 pt-6">
+                            <h2 class="text-lg font-bold text-neutral-800 mb-4">Pengaturan Jam Operasional Mingguan</h2>
+
+                            @php
+                                $days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                            @endphp
+
+                            <div class="space-y-4">
+                                @foreach($days as $index => $day)
+                                    <div x-data="{ isOpen: true }" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border border-slate-200 rounded-2xl bg-slate-50/50">
+                                        <div class="w-32 shrink-0">
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="hidden" name="operating_hours[{{ $index }}][is_open]" value="0">
+                                                <input type="checkbox" name="operating_hours[{{ $index }}][is_open]" value="1" x-model="isOpen" class="rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                                                <input type="hidden" name="operating_hours[{{ $index }}][day_of_week]" value="{{ $index }}">
+                                                <span class="ml-2 font-semibold text-neutral-700 text-sm">{{ $day }}</span>
+                                            </label>
+                                        </div>
+
+                                        <div class="flex items-center gap-4">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-neutral-500 font-medium">Buka</span>
+                                                <input type="time" name="operating_hours[{{ $index }}][open_time]" value="08:00" :disabled="!isOpen" class="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-slate-100 disabled:text-neutral-400">
+                                            </div>
+
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-xs text-neutral-500 font-medium">Tutup</span>
+                                                <input type="time" name="operating_hours[{{ $index }}][close_time]" value="22:00" :disabled="!isOpen" class="border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:bg-slate-100 disabled:text-neutral-400">
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex justify-end gap-3 pt-6 border-t border-slate-100">
+                            <a href="{{ route('admin.fields.index') }}">
+                                <x-atoms.button type="button" variant="secondary">Batal</x-atoms.button>
+                            </a>
+                            <x-atoms.button type="primary" class="px-6 py-2.5">
+                                Simpan Lapangan
+                            </x-atoms.button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </main>
         </div>
     </div>
 </x-app-layout>

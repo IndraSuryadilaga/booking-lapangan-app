@@ -24,9 +24,15 @@ class StoreVenueRequest extends FormRequest
     public function rules(): array
     {
         $venue = $this->route('venue');
+        $venueId = null;
 
         if ($venue) {
             $venueId = is_object($venue) ? $venue->id : $venue;
+        } elseif (auth()->check() && auth()->user()->isAdmin()) {
+            $venueId = auth()->user()->venue?->id;
+        }
+
+        if ($venueId) {
             $nameRule = ['required', 'string', 'max:255', Rule::unique('venues', 'name')->ignore($venueId)];
         } else {
             $nameRule = ['required', 'string', 'max:255', Rule::unique('venues', 'name')];
