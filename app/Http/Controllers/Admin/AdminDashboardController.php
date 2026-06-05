@@ -6,99 +6,79 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\BookingSlot;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $user = Auth::user();
+        $user = auth()->user();
+
         $todayStr = now()->toDateString();
         $nowTime = now()->format('H:i:s');
 
-        // Verify that only admin or super-admin can access
-        if (!$user || !in_array($user->role, ['admin', 'super-admin'])) {
-            abort(403);
+        $adminFieldIds = [];
+        if ($user->role === 'admin') {
+            $adminFieldIds = DB::table('fields')
+                ->join('venues', 'fields.venue_id', '=', 'venues.id')
+                ->where('venues.admin_id', $user->id)
+                ->pluck('fields.id')
+                ->toArray();
+
+            if (empty($adminFieldIds)) {
+                return $this->emptyDashboardResponse();
+            }
         }
 
-        // 1. Total Booking Hari Ini (status = paid, booking_date = today)
+        $applyAdminFilter = function ($query) use ($user, $adminFieldIds) {
+            $query->when($user->role === 'admin', fn($q) => $q->whereIn('field_id', $adminFieldIds));
+        };
+
         $totalBookingsToday = Booking::where('status', 'paid')
-            ->whereDate('booking_date', $todayStr)
-            ->when($user->isAdmin(), function ($q) use ($user) {
-                $q->whereHas('field.venue', function ($qv) use ($user) {
-                    $qv->where('admin_id', $user->id);
-                });
-            })
+            ->where('booking_date', $todayStr)
+            ->tap($applyAdminFilter)
             ->count();
 
-        // 2. Menunggu Pembayaran (status = pending)
         $pendingPayments = Booking::where('status', 'pending')
-            ->when($user->isAdmin(), function ($q) use ($user) {
-                $q->whereHas('field.venue', function ($qv) use ($user) {
-                    $qv->where('admin_id', $user->id);
-                });
-            })
+            ->tap($applyAdminFilter)
             ->count();
 
-        // 3. Lapangan Sedang Dipakai (Live Occupancy)
-        // Use DB::raw COUNT(DISTINCT) for reliable distinct field counting on MySQL.
         $liveOccupancy = BookingSlot::where('booking_date', $todayStr)
             ->where('start_time', '<=', $nowTime)
             ->where('end_time', '>', $nowTime)
-            ->whereHas('booking', function ($q) use ($user) {
-                $q->where('status', 'paid');
-                if ($user->isAdmin()) {
-                    $q->whereHas('field.venue', function ($qv) use ($user) {
-                        $qv->where('admin_id', $user->id);
-                    });
-                }
+            ->whereHas('booking', function ($q) use ($applyAdminFilter) {
+                $q->where('status', 'paid')->tap($applyAdminFilter);
             })
-            ->count(DB::raw('DISTINCT field_id'));
+            ->distinct('field_id')
+            ->count('field_id');
 
-        // 4. Pendapatan Bulan Ini (status = paid, booking_date in current month)
         $startOfMonth = now()->startOfMonth()->toDateString();
         $endOfMonth   = now()->endOfMonth()->toDateString();
+
         $monthlyRevenue = Booking::where('status', 'paid')
             ->whereBetween('booking_date', [$startOfMonth, $endOfMonth])
-            ->when($user->isAdmin(), function ($q) use ($user) {
-                $q->whereHas('field.venue', function ($qv) use ($user) {
-                    $qv->where('admin_id', $user->id);
-                });
-            })
+            ->tap($applyAdminFilter)
             ->sum('total_price');
 
-        // 5. Today's Schedule Table — sorted at DB level by earliest slot start_time.
         $todayBookings = Booking::with(['user', 'field.venue', 'slots'])
             ->where('status', 'paid')
-            ->whereDate('booking_date', $todayStr)
-            ->when($user->isAdmin(), function ($q) use ($user) {
-                $q->whereHas('field.venue', function ($qv) use ($user) {
-                    $qv->where('admin_id', $user->id);
-                });
-            })
-            ->join(
-                DB::raw('(SELECT booking_id, MIN(start_time) as first_slot_time FROM booking_slots GROUP BY booking_id) as bslots'),
-                'bookings.id',
-                '=',
-                'bslots.booking_id'
-            )
-            ->orderBy('bslots.first_slot_time')
-            ->select('bookings.*')
+            ->where('booking_date', $todayStr)
+            ->tap($applyAdminFilter)
+            ->addSelect(['first_slot_time' => BookingSlot::select('start_time')
+                ->whereColumn('booking_id', 'bookings.id')
+                ->orderBy('start_time', 'asc')
+                ->limit(1)
+            ])
+            ->orderBy('first_slot_time')
             ->get();
 
-        // 6. Trend Chart — single aggregation query replacing 14 individual queries.
         $sevenDaysAgo = now()->subDays(6)->toDateString();
 
         $trendRows = Booking::where('status', 'paid')
             ->whereBetween('booking_date', [$sevenDaysAgo, $todayStr])
-            ->when($user->isAdmin(), function ($q) use ($user) {
-                $q->whereHas('field.venue', function ($qv) use ($user) {
-                    $qv->where('admin_id', $user->id);
-                });
-            })
-            ->selectRaw('DATE(booking_date) as day, COUNT(*) as total_bookings, SUM(total_price) as total_revenue')
-            ->groupBy('day')
+            ->tap($applyAdminFilter)
+            ->selectRaw('booking_date as day, COUNT(*) as total_bookings, SUM(total_price) as total_revenue')
+            ->groupBy('booking_date')
             ->get()
             ->keyBy('day');
 
@@ -110,6 +90,7 @@ class AdminDashboardController extends Controller
             $date    = now()->subDays($i);
             $dateStr = $date->toDateString();
             $chartLabels[]   = $date->translatedFormat('D, d M');
+
             $row = $trendRows->get($dateStr);
             $chartBookings[] = $row ? (int) $row->total_bookings : 0;
             $chartRevenue[]  = $row ? (float) $row->total_revenue : 0.0;
@@ -125,5 +106,22 @@ class AdminDashboardController extends Controller
             'chartBookings',
             'chartRevenue'
         ));
+    }
+
+    /**
+     * Helper response ketika Admin belum punya lapangan
+     */
+    private function emptyDashboardResponse()
+    {
+        return view('admin.dashboard', [
+            'totalBookingsToday' => 0,
+            'pendingPayments' => 0,
+            'liveOccupancy' => 0,
+            'monthlyRevenue' => 0,
+            'todayBookings' => collect(),
+            'chartLabels' => array_fill(0, 7, ''),
+            'chartBookings' => array_fill(0, 7, 0),
+            'chartRevenue' => array_fill(0, 7, 0.0)
+        ]);
     }
 }
