@@ -38,9 +38,19 @@
                 <div class="flex items-center space-x-5">
                     @if (Auth::user()->role === 'admin')
                         <a href="/admin" class="text-sm font-semibold text-primary-400 hover:text-primary-300 transition-colors">Panel Admin</a>
-                    @else
-                        <a href="/dashboard/bookings" class="text-sm font-semibold text-primary-100 hover:text-white transition-colors">Pembayaran</a>
                     @endif
+
+                    <button type="button" @click="$dispatch('open-sidebar')" class="relative p-1 text-primary-100 hover:text-white transition-colors focus:outline-none">
+                        <span class="sr-only">Buka Aktivitas</span>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+
+                        @if(auth()->check() && (\App\Models\Booking::where('user_id', auth()->id())->whereIn('status', ['pending', 'paid', 'confirmed'])->exists()))
+                            <span class="absolute top-0 right-0 flex h-2.5 w-2.5">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
+                            </span>
+                        @endif
+                    </button>
 
                     <x-molecules.dropdown align="right" width="48">
                         <x-slot name="trigger">
@@ -75,7 +85,22 @@
             @endguest
         </div>
 
-        <div class="-mr-1 flex items-center md:hidden">
+        <div class="-mr-1 flex items-center md:hidden gap-2">
+
+            @auth
+                <button type="button" @click="$dispatch('open-sidebar')" class="relative inline-flex items-center justify-center p-2 rounded-full text-primary-100 hover:text-white hover:bg-primary-700 focus:outline-none transition-colors">
+                    <span class="sr-only">Buka Aktivitas</span>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+
+                    @if(\App\Models\Booking::where('user_id', auth()->id())->whereIn('status', ['pending', 'paid', 'confirmed'])->exists())
+                        <span class="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
+                    </span>
+                    @endif
+                </button>
+            @endauth
+
             <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-full text-primary-100 hover:text-white hover:bg-primary-700 focus:outline-none transition-colors">
                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                     <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />

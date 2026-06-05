@@ -1,109 +1,85 @@
 <x-app-layout>
     <div class="max-w-3xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
 
-            <div class="bg-emerald-50 border-b border-emerald-100 p-6 md:p-8 text-center">
-                <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                </div>
-                <h1 class="text-2xl font-extrabold text-slate-900 mb-2">Pembayaran Berhasil!</h1>
-                <p class="text-slate-500 text-sm">Pesanan Anda telah dikonfirmasi dan jadwal telah dikunci.</p>
-            </div>
-
-            <div class="p-6 md:p-8">
-                <h3 class="font-bold text-lg text-slate-800 mb-4 border-b pb-2">Detail Pesanan</h3>
-
-                <div class="space-y-3 mb-6">
-                    <div class="flex justify-between">
-                        <span class="text-slate-500">Status</span>
-                        <span class="font-bold text-emerald-600 uppercase">{{ $booking->status }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-slate-500">Tempat</span>
-                        <span class="font-bold text-slate-800">{{ $booking->field->name }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-slate-500">Tanggal Main</span>
-                        <span class="font-bold text-slate-800">{{ \Carbon\Carbon::parse($booking->booking_date)->translatedFormat('d F Y') }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-slate-500">Total Harga</span>
-                        <span class="font-bold text-slate-800">Rp {{ number_format($booking->total_price, 0, ',', '.') }}</span>
-                    </div>
-                </div>
-
-                <div class="mt-8 flex justify-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-atoms.button type="primary">Kembali ke Beranda</x-atoms.button>
-                    </a>
-                </div>
-            </div>
-
+        <div class="flex justify-between items-center mb-6">
+            <a href="{{ route('bookings.history') }}" class="text-sm font-bold text-slate-500 hover:text-slate-700 flex items-center gap-2 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Kembali ke Riwayat
+            </a>
         </div>
-    </div>
-</x-app-layout><x-app-layout>
-    <div class="max-w-3xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
 
-        @if(session('success'))
-            <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-600 p-4 rounded-xl flex items-center gap-3 shadow-sm">
-                <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <p class="font-bold">{{ session('success') }}</p>
-            </div>
-        @endif
+        <div class="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
 
-        <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-
-            <div class="bg-emerald-50 border-b border-emerald-100 p-6 md:p-8 text-center">
-                <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+            <div class="bg-primary-600 p-8 text-white flex justify-between items-start">
+                <div>
+                    <h1 class="text-2xl font-black text-primary-100 uppercase">E-Tiket Masuk</h1>
+                    <p class="text-primary-100 mt-1">Tunjukkan tiket ini kepada petugas lapangan</p>
                 </div>
-                <h1 class="text-2xl font-extrabold text-slate-900 mb-2">Pembayaran Berhasil!</h1>
-                <p class="text-slate-500 text-sm">Pesanan Anda telah dikonfirmasi dan jadwal telah dikunci.</p>
+                <div class="text-right">
+                    <p class="text-xs text-primary-200 font-medium uppercase tracking-widest">Kode Booking</p>
+                    <p class="text-xl font-bold font-mono mt-1">{{ $booking->payment->reference_code ?? 'TBA-'.strtoupper(Str::random(6)) }}</p>
+                </div>
             </div>
 
-            <div class="p-6 md:p-8">
-                <h3 class="font-bold text-lg text-slate-800 mb-4 border-b border-slate-200 pb-2">Detail Pesanan</h3>
-
-                <div class="space-y-4 mb-8">
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-500 font-medium">Status</span>
-                        <span class="font-bold text-emerald-600 bg-emerald-100 px-3 py-1 rounded-full text-xs uppercase tracking-wider">
-                            {{ $booking->status }}
-                        </span>
+            <div class="p-8">
+                <div class="flex flex-col sm:flex-row justify-between gap-6 border-b border-slate-200 pb-8">
+                    <div class="w-full sm:w-1/2">
+                        <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-2">Lokasi Bermain</p>
+                        <h2 class="text-xl font-bold text-slate-900">{{ $booking->field->venue->name ?? 'Venue Sport' }}</h2>
+                        <p class="text-primary-600 font-semibold mt-1">{{ $booking->field->name }}</p>
                     </div>
 
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-500 font-medium">Tempat</span>
-                        <div class="text-right">
-                            <span class="font-bold text-slate-800 block">{{ $booking->field->name }}</span>
-                            <span class="text-xs text-slate-500">{{ $booking->field->venue->name ?? '' }}</span>
+                    <div class="w-full sm:w-1/2 sm:text-right">
+                        <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-2">Jadwal</p>
+                        <p class="text-lg font-bold text-slate-900">{{ \Carbon\Carbon::parse($booking->booking_date)->translatedFormat('l, d F Y') }}</p>
+                        <div class="mt-2 inline-flex flex-wrap gap-2 justify-start sm:justify-end">
+                            @foreach($booking->slots as $slot)
+                                <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded-md text-xs font-bold border border-slate-200">
+                                    {{ \Carbon\Carbon::parse($slot->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($slot->end_time)->format('H:i') }}
+                                </span>
+                            @endforeach
                         </div>
                     </div>
+                </div>
 
-                    <div class="flex justify-between items-center">
-                        <span class="text-slate-500 font-medium">Tanggal Main</span>
-                        <span class="font-bold text-slate-800">
-                            {{ \Carbon\Carbon::parse($booking->booking_date)->translatedFormat('d F Y') }}
-                        </span>
-                    </div>
-
-                    <div class="flex justify-between items-center border-t border-slate-100 pt-4 mt-2">
-                        <span class="text-slate-500 font-medium">Total Pembayaran</span>
-                        <span class="font-black text-2xl text-primary-700">
-                            Rp {{ number_format($booking->total_price, 0, ',', '.') }}
-                        </span>
+                <div class="mt-8">
+                    <h3 class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-4">Rincian Transaksi</h3>
+                    <div class="bg-slate-50 rounded-xl p-5 border border-slate-100">
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-slate-600">Total Sesi</span>
+                                <span class="font-bold text-slate-900">{{ $booking->total_slots }} Sesi (Jam)</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-600">Metode Pembayaran</span>
+                                <span class="font-bold text-slate-900 capitalize">{{ str_replace('_', ' ', $booking->payment->method ?? 'Sistem') }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-600">Waktu Pembayaran</span>
+                                <span class="font-bold text-slate-900">{{ $booking->payment ? \Carbon\Carbon::parse($booking->payment->paid_at)->translatedFormat('d M Y H:i') : '-' }}</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-3 border-t border-slate-200 border-dashed mt-3">
+                                <span class="font-bold text-slate-900">Total Dibayar</span>
+                                <span class="text-xl font-black text-emerald-600">Rp {{ number_format($booking->total_price, 0, ',', '.') }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mt-8 flex justify-center pt-6 border-t border-slate-200 border-dashed">
-                    <a href="{{ route('dashboard') }}" class="w-full sm:w-auto block">
-                        <x-atoms.button type="primary" class="w-full justify-center">
-                            Kembali ke Beranda
-                        </x-atoms.button>
-                    </a>
+                <div class="mt-8 text-center">
+                    @if($booking->status === 'paid' || $booking->status === 'confirmed' || $booking->status === 'completed')
+                        <div class="inline-block border-2 border-emerald-500 text-emerald-500 px-6 py-2 rounded-lg font-black text-lg tracking-widest uppercase transform -rotate-2 opacity-80">
+                            LUNAS / VALID
+                        </div>
+                    @else
+                        <div class="inline-block border-2 border-rose-500 text-rose-500 px-6 py-2 rounded-lg font-black text-lg tracking-widest uppercase transform -rotate-2 opacity-80">
+                            {{ strtoupper($booking->status) }}
+                        </div>
+                    @endif
                 </div>
+
             </div>
-
         </div>
+
     </div>
 </x-app-layout>

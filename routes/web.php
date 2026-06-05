@@ -54,6 +54,8 @@ Route::middleware('auth')->group(function () {
     // Review Routes (authenticated, booking model-bound)
     Route::get('/bookings/{booking}/review/create', [ReviewController::class, 'create'])->name('reviews.create');
     Route::post('/bookings/{booking}/review', [ReviewController::class, 'store'])->name('reviews.store');
+
+    Route::get('/dashboard/riwayat', [\App\Http\Controllers\BookingController::class, 'history'])->name('bookings.history');
 });
 Route::get(
     '/venues',

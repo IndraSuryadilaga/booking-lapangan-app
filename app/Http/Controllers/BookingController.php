@@ -64,25 +64,38 @@ class BookingController extends Controller
         return view('bookings.index', ['bookings' => $bookings]);
     }
 
+    /**
+     * Display a listing of the user's booking history.
+     */
+    /**
+     * Display a listing of the user's booking history.
+     */
     public function history()
     {
-        $bookings = Booking::where('user_id', auth()->id())
-            ->whereIn('status', ['completed', 'cancelled'])
-            ->with('field.venue')
+        $bookings = Booking::with(['field.venue', 'payment'])
+            ->where('user_id', auth()->id())
+            // PERUBAHAN: Memasukkan paid dan confirmed agar tiket aktif juga muncul
+            ->whereIn('status', ['paid', 'confirmed', 'completed', 'cancelled', 'expired'])
             ->latest()
             ->paginate(10);
 
         return view('bookings.history', compact('bookings'));
     }
 
+    /**
+     * Display the specified booking (E-Ticket / Invoice).
+     */
     public function show(Booking $booking)
     {
-        // Authorize that the user can view this booking
-        $this->authorize('view', $booking);
+        // Pastikan hanya pemilik yang bisa melihat tiketnya
+        if ($booking->user_id !== auth()->id()) {
+            abort(403, 'Anda tidak memiliki akses ke tiket ini.');
+        }
 
-        $booking->load('field.venue', 'slots', 'payment');
+        // Load relasi lengkap untuk e-tiket
+        $booking->load(['field.venue', 'slots', 'payment']);
 
-        return view('bookings.show', ['booking' => $booking]);
+        return view('bookings.show', compact('booking'));
     }
 
     public function cancel(Booking $booking)
