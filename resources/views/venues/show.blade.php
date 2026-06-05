@@ -30,7 +30,7 @@
                                 <div class="flex flex-wrap items-center gap-3 text-sm text-neutral-600 dark:text-neutral-400 mb-4">
                                     <div class="flex items-center gap-1">
                                         <svg class="w-4 h-4 text-warning-400" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>
-                                        <span class="font-bold text-neutral-900 dark:text-white">{{ $venue->rating_avg ?? '4.5' }}</span>
+                                        <span class="font-bold text-neutral-900 dark:text-white">{{ number_format($venue->reviews?->avg('rating') ?? 0, 1) }}</span>
                                     </div>
                                     <span class="text-neutral-300 dark:text-neutral-600">•</span>
                                     <div class="flex items-center gap-1">
@@ -141,42 +141,60 @@
                             <svg class="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                             <h2 class="text-xl font-bold text-neutral-900 dark:text-white">Ulasan</h2>
                         </div>
-                        <a href="#" class="text-sm font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400">Lihat semua ulasan</a>
                     </div>
+
+                    <!-- Hitung rata-rata secara dinamis dengan Laravel Collection -->
+                    @php
+                        $reviewsCollection = $venue->reviews ?? collect();
+                        $avgRating = $reviewsCollection->avg('rating') ?? 0;
+                        $totalReviews = $reviewsCollection->count();
+                    @endphp
 
                     <div class="flex items-end gap-4 mb-8">
                         <div class="text-4xl sm:text-5xl font-extrabold text-neutral-900 dark:text-white">
-                            4.8<span class="text-xl sm:text-2xl text-neutral-400 font-bold">/5</span>
+                            {{ number_format($avgRating, 1) }}<span class="text-xl sm:text-2xl text-neutral-400 font-bold">/5</span>
                         </div>
                         <div class="pb-1 sm:pb-2">
-                            <div class="flex items-center gap-1 text-warning-400 mb-1">
-                                @for($i=0; $i<5; $i++)
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>
+                            <div class="flex items-center gap-1 mb-1">
+                                @php $roundedAvg = round($avgRating); @endphp
+                                @for($i=1; $i<=5; $i++)
+                                    <svg class="w-5 h-5 {{ $i <= $roundedAvg ? 'text-warning-400' : 'text-slate-200 dark:text-neutral-700' }}" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>
                                 @endfor
                             </div>
-                            <div class="text-xs sm:text-sm text-neutral-500">62 rating • 14 ulasan</div>
+                            <div class="text-xs sm:text-sm text-neutral-500">{{ $totalReviews }} ulasan</div>
                         </div>
                     </div>
 
                     <div class="relative">
                         <div class="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide" style="scrollbar-width: none;">
                             <style>.scrollbar-hide::-webkit-scrollbar { display: none; }</style>
-                            <div class="min-w-[300px] sm:min-w-[350px] bg-white dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-xl p-5 snap-start shadow-sm">
-                                <div class="flex justify-between items-start mb-3">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-neutral-200 overflow-hidden">
-                                            <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop" class="w-full h-full object-cover" alt="User">
+
+                            @forelse($venue->reviews ?? [] as $review)
+                                <div class="min-w-[300px] sm:min-w-[350px] bg-white dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-xl p-5 snap-start shadow-sm">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold">
+                                                {{ substr($review->user->name ?? 'U', 0, 1) }}
+                                            </div>
+                                            <div>
+                                                <div class="font-bold text-sm text-neutral-900 dark:text-white">{{ $review->user->name ?? 'Pengguna' }}</div>
+                                                <div class="text-xs text-neutral-500">Diulas: {{ \Carbon\Carbon::parse($review->created_at)->translatedFormat('d M Y') }}</div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div class="font-bold text-sm text-neutral-900 dark:text-white">Rafael Alberto Satria</div>
-                                            <div class="text-xs text-neutral-500">Diulas: 06 May 2026</div>
+                                        <div class="flex items-center gap-0.5 text-warning-400">
+                                            <span class="text-xs font-bold mr-1">{{ $review->rating }}</span>
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>
                                         </div>
                                     </div>
+                                    <p class="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-3">
+                                        {{ $review->comment ?? 'Penilaian tanpa ulasan tertulis.' }}
+                                    </p>
                                 </div>
-                                <p class="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-3">
-                                    mungkin bisa dipertimbangkan lagi untuk air kamar mandi padel supaya tidak terlalu berkaporit. terima kasih
-                                </p>
-                            </div>
+                            @empty
+                                <div class="w-full text-center py-8 text-sm text-neutral-500 border-2 border-dashed border-slate-200 rounded-xl">
+                                    Belum ada ulasan untuk venue ini. Jadilah yang pertama memberikan ulasan!
+                                </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>

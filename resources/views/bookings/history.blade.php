@@ -46,9 +46,16 @@
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700">Kedaluwarsa</span>
                                 @endif
                             </td>
-                            <td class="p-4 sm:px-6 text-right">
-                                <a href="{{ route('bookings.show', $booking->id) }}" class="text-sm font-bold text-primary-600 hover:text-primary-800 transition-colors">
-                                    Detail &rarr;
+                            <td class="p-4 sm:px-6 text-right space-x-3">
+                                <!-- Logika Tombol Beri Ulasan / Sewa Lagi -->
+                                @if($booking->status === 'completed' && !$booking->review)
+                                    <a href="{{ route('reviews.create', $booking->id) }}" class="text-sm font-bold text-amber-500 hover:text-amber-700 transition-colors">
+                                        Beri Ulasan
+                                    </a>
+                                @endif
+                                <!-- Tombol E-Tiket -->
+                                <a href="{{ route('bookings.show', $booking->id) }}" class="text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors">
+                                    Tiket
                                 </a>
                             </td>
                         </tr>

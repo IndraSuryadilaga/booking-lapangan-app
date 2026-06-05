@@ -11,8 +11,18 @@
     $endTime = (clone $startTime)->addHour();
     $timeRange = $startTime->format('H:i') . ' - ' . $endTime->format('H:i');
 
-    // Blokir jadwal yang diproses
-    $isBooked = in_array(strtolower($status), ['booked', 'pending', 'confirmed']);
+    // 1. Ambil tanggal dari parameter URL (misal: ?date=2026-06-05), jika kosong gunakan hari ini
+    $selectedDate = request('date', now()->format('Y-m-d'));
+
+    // 2. Gabungkan tanggal terpilih dengan waktu slot untuk mengecek apakah sudah lewat
+    $slotDateTime = \Carbon\Carbon::parse($selectedDate . ' ' . $time);
+    $isPast = $slotDateTime->isPast();
+
+    // 3. Status asli dari database
+    $isBookedFromDb = in_array(strtolower($status), ['booked', 'pending', 'confirmed']);
+
+    // 4. Blokir jadwal jika sudah dipesan ATAU waktunya sudah lewat
+    $isBooked = $isBookedFromDb || $isPast;
 
     $inputId = 'schedule-' . $courtId . '-' . \Illuminate\Support\Str::slug($time);
 @endphp
@@ -53,7 +63,12 @@
                 ? 'text-slate-400'
                 : 'text-emerald-600 dark:text-emerald-400'
             }}">
-            {{ $isBooked ? 'Tidak Tersedia' : 'Rp ' . number_format($price, 0, ',', '.') }}
+            {{-- Logika teks kecil di bawah jam --}}
+            @if($isBookedFromDb)
+                Sudah Lewat
+            @else
+                Rp {{ number_format($price, 0, ',', '.') }}
+            @endif
         </span>
     </label>
 </div>
