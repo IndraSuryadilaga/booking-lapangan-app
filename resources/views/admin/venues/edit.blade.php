@@ -91,7 +91,7 @@
                         <label class="block text-sm font-bold text-neutral-700 mb-2">Logo Venue (Max: 5MB)</label>
                         @if($venue->logo)
                             <div class="mb-4 flex items-center gap-4 p-3 bg-neutral-50 rounded-xl border border-neutral-100 w-fit">
-                                <img src="{{ asset('storage/' . $venue->logo) }}" alt="Logo saat ini" class="w-16 h-16 object-cover rounded-xl border border-neutral-200 shadow-sm">
+                                <img src="{{ $venue->logo_url }}" alt="Logo saat ini" class="w-16 h-16 object-cover rounded-xl border border-neutral-200 shadow-sm">
                                 <div class="flex flex-col gap-1.5">
                                     <span class="text-xs text-neutral-400 font-medium">Biarkan kosong jika tidak ingin mengubah logo.</span>
                                     <button type="button"

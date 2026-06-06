@@ -22,8 +22,8 @@
                     <div class="bg-white border border-neutral-200/60 rounded-2xl shadow-sm p-6 space-y-6">
                         <!-- Logo & Name -->
                         <div class="flex items-center gap-6 pb-6 border-b border-neutral-100">
-                            @if($venue->logo)
-                                <img src="{{ asset('storage/' . $venue->logo) }}" alt="Logo Venue" class="w-24 h-24 object-cover rounded-2xl border border-neutral-100 shadow-sm bg-neutral-50">
+                            @if($venue->logo_url)
+                                <img src="{{ $venue->logo_url }}" alt="Logo Venue" class="w-24 h-24 object-cover rounded-2xl border border-neutral-100 shadow-sm bg-neutral-50">
                             @else
                                 <div class="w-24 h-24 bg-neutral-100 rounded-2xl flex items-center justify-center text-neutral-400 font-bold uppercase text-[10px]">
                                     No Logo

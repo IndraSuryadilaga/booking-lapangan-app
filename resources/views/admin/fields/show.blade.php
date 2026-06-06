@@ -26,7 +26,7 @@
                                 $primaryImage = $field->images->where('is_primary', true)->first();
                             @endphp
                             @if($primaryImage)
-                                <img src="{{ asset('storage/' . $primaryImage->image_path) }}" alt="Foto Utama" class="w-full h-80 object-cover rounded-2xl border border-neutral-100 shadow-sm">
+                                <img src="{{ $primaryImage->url }}" alt="Foto Utama" class="w-full h-80 object-cover rounded-2xl border border-neutral-100 shadow-sm">
                             @else
                                 <div class="w-full h-80 bg-neutral-100 rounded-2xl flex items-center justify-center text-neutral-400 font-bold uppercase text-[10px]">
                                     Belum ada foto utama.
@@ -79,7 +79,7 @@
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                             @forelse($field->images as $image)
                                 <div class="border border-neutral-100 rounded-2xl p-2 bg-neutral-50/50 flex flex-col items-center">
-                                    <img src="{{ asset('storage/' . $image->image_path) }}" class="w-full h-20 object-cover rounded-xl border border-neutral-100 shadow-sm">
+                                    <img src="{{ $image->url }}" class="w-full h-20 object-cover rounded-xl border border-neutral-100 shadow-sm">
                                     @if($image->is_primary)
                                         <span class="mt-2 bg-success-50 border border-success-200 text-success-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
                                             Primary

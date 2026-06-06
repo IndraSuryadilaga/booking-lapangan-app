@@ -49,8 +49,8 @@
                             @forelse($venues as $venue)
                                 <tr class="hover:bg-slate-50/50 transition-colors">
                                     <td class="p-4">
-                                        @if($venue->logo)
-                                            <img src="{{ asset('storage/' . $venue->logo) }}" alt="Logo" class="w-12 h-12 object-cover rounded-xl border border-neutral-100 shadow-sm">
+                                        @if($venue->logo_url)
+                                            <img src="{{ $venue->logo_url }}" alt="Logo" class="w-12 h-12 object-cover rounded-xl border border-neutral-100 shadow-sm">
                                         @else
                                             <div class="w-12 h-12 bg-neutral-100 rounded-xl flex items-center justify-center text-neutral-400 text-[10px] font-bold uppercase">
                                                 No Logo

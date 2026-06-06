@@ -43,7 +43,7 @@
                                         @endphp
                                         @if($primaryImage)
                                             <img
-                                                src="{{ asset('storage/' . $primaryImage->image_path) }}"
+                                                src="{{ $primaryImage->url }}"
                                                 alt="Foto Lapangan"
                                                 class="w-16 h-16 object-cover rounded-xl border border-neutral-100 shadow-sm">
                                         @else

@@ -40,7 +40,7 @@
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     @foreach($field->images as $image)
                         <div class="border border-neutral-200/60 rounded-2xl p-3 flex flex-col items-center justify-between gap-3 bg-neutral-50/50 hover:bg-neutral-50 hover:shadow-sm transition-all duration-300">
-                            <img src="{{ asset('storage/' . $image->image_path) }}" alt="Foto" class="w-full h-24 object-cover rounded-xl border border-neutral-100 shadow-sm">
+                            <img src="{{ $image->url }}" alt="Foto" class="w-full h-24 object-cover rounded-xl border border-neutral-100 shadow-sm">
                             <div class="w-full flex flex-col gap-2">
                                 @if($image->is_primary)
                                     <span class="text-center bg-success-50 border border-success-200 text-success-700 text-xs font-bold py-1 rounded-lg">
