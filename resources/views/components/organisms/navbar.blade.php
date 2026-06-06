@@ -33,11 +33,19 @@
                         Panel Admin
                     </x-atoms.button>
                 @else
-                    <x-atoms.button href="{{ route('bookings.index') }}" variant="navbar" :active="request()->routeIs('bookings.*')" class="!px-4 !py-1.5 text-sm">
+                    <x-atoms.button href="{{ route('dashboard') }}" variant="navbar" :active="request()->routeIs('dashboard')" class="!px-4 !py-1.5 text-sm">
                         <x-slot name="icon">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                         </x-slot>
-                        Pembayaran
+                        <span class="relative pr-2">
+                            Pembayaran
+                            @if(auth()->check() && \App\Models\Booking::where('user_id', auth()->id())->whereIn('status', ['pending'])->exists())
+                                <span class="absolute top-0 right-0 -mt-0.5 -mr-1.5 flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                                </span>
+                            @endif
+                        </span>
                     </x-atoms.button>
                 @endif
             @endauth
@@ -57,19 +65,6 @@
                 </a>
             @else
                 <div class="flex items-center space-x-4">
-
-                    <a href="/dashboard" class="relative p-2 rounded-full text-primary-100 hover:text-white hover:bg-primary-700 transition-colors focus:outline-none">
-                        <span class="sr-only">Buka Aktivitas</span>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-
-                        @if(auth()->check() && (\App\Models\Booking::where('user_id', auth()->id())->whereIn('status', ['pending', 'paid', 'confirmed'])->exists()))
-                            <span class="absolute top-1 right-1 flex h-2.5 w-2.5">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
-                            </span>
-                        @endif
-                    </a>
-
                     <x-molecules.dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button type="button" class="flex items-center gap-2 p-1 pr-2 rounded-full bg-primary-700/50 hover:bg-primary-700 border border-primary-500/50 focus:outline-none transition-colors">
@@ -170,11 +165,19 @@
                             Panel Admin
                         </x-atoms.button>
                     @else
-                        <x-atoms.button href="{{ route('bookings.index') }}" variant="navbar" :active="request()->routeIs('bookings.*')" class="w-full justify-start !px-4 !py-3 text-sm">
+                        <x-atoms.button href="{{ route('dashboard') }}" variant="navbar" :active="request()->routeIs('dashboard') || request()->routeIs('bookings.*')" class="w-full justify-start !px-4 !py-3 text-sm">
                             <x-slot name="icon">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                             </x-slot>
-                            Pembayaran
+                            <span class="relative pr-2">
+                                Pembayaran
+                                @if(auth()->check() && \App\Models\Booking::where('user_id', auth()->id())->whereIn('status', ['pending'])->exists())
+                                    <span class="absolute top-0 right-0 -mt-0.5 -mr-1 flex h-2.5 w-2.5">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
+                                    </span>
+                                @endif
+                            </span>
                         </x-atoms.button>
                     @endif
                 @endauth

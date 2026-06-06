@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-2xl mx-auto py-10 px-4 sm:px-6 lg:px-8 pt-24">
 
         <div class="mb-8">
             <a href="{{ route('bookings.history') }}" class="text-sm font-bold text-slate-500 hover:text-slate-700 flex items-center gap-2 mb-4 transition-colors">

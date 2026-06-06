@@ -22,42 +22,46 @@ use Illuminate\Support\Facades\Route;
 Route::get('/fields/{field:slug}', [FieldController::class, 'show'])->name('fields.show');
 
 Route::middleware('auth')->group(function () {
-    // Dashboard (user/admin) - shows personalized aggregates
-    // Keep the route name `dashboard` but move path to `/dashboard`
+    // ==== 1. RUTE UMUM (Bisa diakses User & Admin) ====
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // User Booking Routes
-    Route::prefix('bookings')->name('bookings.')->controller(BookingController::class)->group(function () {
-        Route::get('/confirm', 'confirm')->name('confirm');
-        Route::post('/', 'store')->name('store');
-        Route::get('/', 'index')->name('index');
-        Route::get('/history', 'history')->name('history');
-        Route::get('/{booking}', 'show')->name('show');
-        Route::patch('/{booking}/cancel', 'cancel')->name('cancel');
+    // ==== 2. RUTE KHUSUS CUSTOMER (Dilarang untuk Admin/Super Admin) ====
+    Route::middleware(function ($request, $next) {
+        if (in_array(auth()->user()->role, ['admin', 'super-admin'])) {
+            abort(403, 'Akses Ditolak: Admin tidak diperbolehkan memesan lapangan atau mengakses halaman pembayaran.');
+        }
+        return $next($request);
+    })->group(function () {
+
+        // Alur Booking & Konfirmasi
+        Route::prefix('bookings')->name('bookings.')->controller(BookingController::class)->group(function () {
+            Route::post('/init', 'init')->name('init');
+            Route::get('/confirm', 'confirm')->name('confirm');
+            Route::post('/store', 'store')->name('store');
+            Route::get('/', 'index')->name('index');
+            Route::get('/history', 'history')->name('history');
+            Route::get('/{booking}', 'show')->name('show');
+            Route::patch('/{booking}/cancel', 'cancel')->name('cancel');
+        });
+
+        // Alur Pembayaran
+        Route::prefix('payments')->name('payments.')->controller(\App\Http\Controllers\PaymentController::class)->group(function () {
+            Route::get('/{booking}', 'show')->name('show');
+            Route::post('/{booking}/process', 'process')->name('process');
+        });
+
+        // Alur Ulasan (Review)
+        Route::prefix('bookings/{booking}/review')->name('reviews.')->controller(ReviewController::class)->group(function () {
+            Route::get('/create', 'create')->name('create');
+            Route::post('/', 'store')->name('store');
+        });
+
     });
-
-// 1. Alur Booking & Konfirmasi
-    Route::post('/booking/init', [\App\Http\Controllers\BookingController::class, 'init'])->name('bookings.init');
-    Route::get('/booking/confirm', [\App\Http\Controllers\BookingController::class, 'confirm'])->name('bookings.confirm');
-    Route::post('/booking/store', [\App\Http\Controllers\BookingController::class, 'store'])->name('bookings.store');
-
-// 2. Alur Pembayaran
-    Route::get('/payments/{booking}', [\App\Http\Controllers\PaymentController::class, 'show'])->name('payments.show');
-    Route::post('/payments/{booking}/process', [\App\Http\Controllers\PaymentController::class, 'process'])->name('payments.process');
-
-// 3. Alur Riwayat (Untuk dikerjakan nanti)
-    Route::get('/dashboard/riwayat', [\App\Http\Controllers\BookingController::class, 'history'])->name('bookings.history');
-    Route::get('/dashboard/tiket/{booking}', [\App\Http\Controllers\BookingController::class, 'show'])->name('bookings.show');
-
-    // Review Routes (authenticated, booking model-bound)
-    Route::get('/bookings/{booking}/review/create', [ReviewController::class, 'create'])->name('reviews.create');
-    Route::post('/bookings/{booking}/review', [ReviewController::class, 'store'])->name('reviews.store');
-
-    Route::get('/dashboard/riwayat', [\App\Http\Controllers\BookingController::class, 'history'])->name('bookings.history');
 });
+
 Route::get(
     '/venues',
     [VenueController::class, 'index']

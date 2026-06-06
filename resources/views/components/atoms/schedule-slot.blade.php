@@ -65,7 +65,7 @@
             }}">
             {{-- Logika teks kecil di bawah jam --}}
             @if($isBookedFromDb)
-                Sudah Lewat
+                Tidak Tersedia
             @else
                 Rp {{ number_format($price, 0, ',', '.') }}
             @endif
