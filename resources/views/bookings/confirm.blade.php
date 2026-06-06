@@ -30,13 +30,30 @@
             <div class="p-6 md:p-8 md:w-[55%] flex flex-col">
                 <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">Rincian Waktu Sesi</h3>
 
+                @if(session('error'))
+                    <div class="bg-rose-50 border border-rose-200 text-rose-600 px-4 py-3 rounded-xl mb-4 text-sm font-medium">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                @if($errors->any())
+                    <div class="bg-rose-50 border border-rose-200 text-rose-600 p-4 rounded-xl mb-4">
+                        <p class="font-bold mb-2 text-sm">Gagal memproses pesanan:</p>
+                        <ul class="list-disc pl-5 text-sm space-y-1">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div class="flex-grow overflow-y-auto max-h-60 pr-2 scrollbar-thin scrollbar-thumb-slate-200">
                     <ul class="space-y-3">
                         @php $totalSemua = 0; @endphp
 
                         @foreach($bookingData['slots'] as $index => $slot)
                             @php
-                                $time = $slot['time'];
+                                $time = $slot['time'] ?? substr($slot['start_time'], 0, 5); // Antisipasi format data dari Controller
                                 $hargaSesi = $slot['price'];
                                 $totalSemua += $hargaSesi;
                             @endphp
@@ -64,23 +81,6 @@
                         </span>
                     </div>
 
-                    @if($errors->any())
-                        <div class="bg-rose-50 border border-rose-200 text-rose-600 p-4 rounded-xl mb-6">
-                            <p class="font-bold mb-2">Gagal memproses pesanan:</p>
-                            <ul class="list-disc pl-5 text-sm space-y-1">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    @if(session('error'))
-                        <div class="bg-rose-50 border border-rose-200 text-rose-600 p-4 rounded-xl mb-6 text-sm font-medium">
-                            Terjadi Kesalahan Sistem: {{ session('error') }}
-                        </div>
-                    @endif
-                    <!-- Form HANYA membungkus tombol Buat Pesanan -->
                     <form action="{{ route('bookings.store') }}" method="POST" x-data="{ isSubmitting: false }" @submit="isSubmitting = true">
                         @csrf
                         <input type="hidden" name="field_id" value="{{ $field->id }}">
@@ -88,8 +88,9 @@
                         <input type="hidden" name="total_price" value="{{ $totalSemua }}">
 
                         @foreach($bookingData['slots'] as $index => $slot)
-                            <input type="hidden" name="slots[{{ $index }}][start_time]" value="{{ \Carbon\Carbon::parse($slot['time'])->format('H:i:s') }}">
-                            <input type="hidden" name="slots[{{ $index }}][end_time]" value="{{ \Carbon\Carbon::parse($slot['time'])->addHour()->format('H:i:s') }}">
+                            @php $time = $slot['time'] ?? substr($slot['start_time'], 0, 5); @endphp
+                            <input type="hidden" name="slots[{{ $index }}][start_time]" value="{{ \Carbon\Carbon::parse($time)->format('H:i:s') }}">
+                            <input type="hidden" name="slots[{{ $index }}][end_time]" value="{{ \Carbon\Carbon::parse($time)->addHour()->format('H:i:s') }}">
                             <input type="hidden" name="slots[{{ $index }}][price]" value="{{ $slot['price'] }}">
                         @endforeach
 
@@ -112,7 +113,6 @@
                         </div>
                     </form>
 
-                    <!-- Tombol Batal DI LUAR tag form agar terbebas dari aksi submit -->
                     <div class="mt-3 flex flex-col gap-3">
                         <a href="{{ route('venues.show', $field->venue->slug) }}" class="w-full block">
                             <x-atoms.button

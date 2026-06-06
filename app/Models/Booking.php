@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Booking extends Model
 {
     use HasFactory;
+    
+    protected static function booted()
+    {
+        static::creating(function ($booking) {
+            $field = \App\Models\Field::find($booking->field_id);
+            if ($field && !$field->is_active) {
+                throw new \Exception('Lapangan sedang ditutup sementara (Maintenance Mode).');
+            }
+        });
+    }
 
     protected $fillable = [
         'user_id',
@@ -32,7 +42,7 @@ class Booking extends Model
 
     public function scopeConfirmed($query)
     {
-        return $query->where('status', 'confirmed');
+        return $query->where('status', 'paid');
     }
 
     public function scopeCancelled($query)

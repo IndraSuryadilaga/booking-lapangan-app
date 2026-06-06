@@ -12,7 +12,7 @@
 
 @if($venue)
     @php
-        $logo = $venue->logo;
+        $logo = $venue->logo_url ?? 'https://images.unsplash.com/photo-1527067829737-402993088e6b?w=150&h=150&fit=crop';
         $name = $venue->name;
         $rating = $venue->rating_avg;
         $location = $venue->city;

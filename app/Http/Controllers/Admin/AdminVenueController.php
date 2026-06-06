@@ -16,267 +16,219 @@ use App\Http\Controllers\Controller;
 
 class AdminVenueController extends Controller
 {
-        public function index()
-{
-    if (auth()->user()->isAdmin()) {
-        return redirect()
-            ->route('admin.venues.my-venue');
-    }
-
-    $venues = Venue::with([
-        'admin',
-        'sportsCategories',
-        'facilities'
-    ])
-    ->latest()
-    ->paginate(10);
-
-    return view(
-        'admin.venues.index',
-        compact('venues')
-    );
-}
-
-    public function create()
-{
-    $facilities = Facility::all();
-    $sportsCategories = SportsCategory::all();
-
-    return view(
-        'admin.venues.create',
-        compact(
-            'facilities',
-            'sportsCategories'
-        )
-    );
-}
-
-    public function store(StoreVenueRequest $request)
-{
-    DB::transaction(function () use ($request) {
-
-        $logoPath = null;
-
-        if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')
-                ->store('venues', 'public');
+    public function index()
+    {
+        if (auth()->user()->isAdmin()) {
+            return redirect()->route('admin.venues.my-venue');
         }
 
-        $venue = Venue::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name) . '-' . uniqid(),
+        $venues = Venue::with(['admin', 'sportsCategories', 'facilities'])
+            ->latest()
+            ->paginate(10);
 
-            'address' => $request->address,
-            'city' => $request->city,
-            'province' => $request->province,
+        return view('admin.venues.index', compact('venues'));
+    }
 
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
+    public function create()
+    {
+        $facilities = Facility::all();
+        $sportsCategories = SportsCategory::all();
 
-            'refund_policy' => $request->refund_policy,
-            'reschedule_policy' => $request->reschedule_policy,
+        return view('admin.venues.create', compact('facilities', 'sportsCategories'));
+    }
 
-            'logo' => $logoPath,
-        ]);
+    public function store(StoreVenueRequest $request)
+    {
+        DB::transaction(function () use ($request) {
+            $logoPath = null;
 
-        $venue->facilities()->sync(
-            $request->facility_ids ?? []
-        );
+            if ($request->hasFile('logo')) {
+                $logoPath = $request->file('logo')->store('venues', 'public');
+            }
 
-        $venue->sportsCategories()->sync(
-            $request->sports_category_ids ?? []
-        );
-    });
+            $venue = Venue::create([
+                'name' => $request->name,
+                'slug' => Str::slug($request->name) . '-' . uniqid(),
+                'address' => $request->address,
+                'city' => $request->city,
+                'province' => $request->province,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'refund_policy' => $request->refund_policy,
+                'reschedule_policy' => $request->reschedule_policy,
+                'logo' => $logoPath,
+            ]);
 
-    return redirect()
-        ->back()
-        ->with('success', 'Venue berhasil dibuat.');
-}
+            $venue->facilities()->sync($request->facility_ids ?? []);
+            $venue->sportsCategories()->sync($request->sports_category_ids ?? []);
+        });
+
+        return redirect()->route('admin.venues.index')->with('success', 'Venue berhasil dibuat.');
+    }
 
     public function show(Venue $venue)
     {
-        abort_if(
-            !$venue->is_active,
-            404
-        );
+        $this->authorize('view', $venue);
 
         $venue->load([
-            'fields',
+            'fields.sportsCategory',
+            'fields.images',
+            'fields.pricings',
+            'fields.operatingHours',
             'sportsCategories',
             'facilities',
-            'reviews.user'
+            'reviews.user',
         ]);
 
-        return view(
-            'venues.show',
-            compact('venue')
-        );
+        $venue->price_start = $venue->fields->map(fn ($field) => $field->cheapest_price)->filter()->min();
+
+        $venues = Venue::where('id', '!=', $venue->id)
+            ->with(['sportsCategories', 'fields.pricings'])
+            ->orderByDesc('rating_avg')
+            ->limit(6)
+            ->get();
+
+        return view('admin.venues.show', compact('venue'));
     }
 
     public function edit(Venue $venue)
-{
-    $this->authorize('update', $venue);
+    {
+        $this->authorize('update', $venue);
 
-    $facilities = Facility::all();
-    $sportsCategories = SportsCategory::all();
+        $facilities = Facility::all();
+        $sportsCategories = SportsCategory::all();
 
-    return view(
-        'admin.venues.edit',
-        compact(
-            'venue',
-            'facilities',
-            'sportsCategories'
-        )
-    );
-}
+        return view('admin.venues.edit', compact('venue', 'facilities', 'sportsCategories'));
+    }
 
-    public function update(
-    StoreVenueRequest $request,
-    Venue $venue
-)
-{
-    $this->authorize('update', $venue);
+    public function update(StoreVenueRequest $request, Venue $venue)
+    {
+        $this->authorize('update', $venue);
 
-    DB::transaction(function () use (
-        $request,
-        $venue
-    ) {
+        DB::transaction(function () use ($request, $venue) {
+            $data = $request->only([
+                'name', 'address', 'city', 'province', 'latitude', 'longitude', 'refund_policy', 'reschedule_policy'
+            ]);
 
-        $data = [
-            'name' => $request->name,
-
-            'address' => $request->address,
-            'city' => $request->city,
-            'province' => $request->province,
-
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-
-            'refund_policy' => $request->refund_policy,
-            'reschedule_policy' => $request->reschedule_policy,
-        ];
-
-        if ($request->hasFile('logo')) {
-
-            if ($venue->logo) {
-                Storage::disk('public')
-                    ->delete($venue->logo);
+            if ($request->hasFile('logo')) {
+                if ($venue->logo && !str_starts_with($venue->logo, 'http')) {
+                    Storage::disk('public')->delete($venue->logo);
+                }
+                $data['logo'] = $request->file('logo')->store('venues', 'public');
             }
 
-            $data['logo'] = $request
-                ->file('logo')
-                ->store('venues', 'public');
-        }
+            $venue->update($data);
+            $venue->facilities()->sync($request->facility_ids ?? []);
+            $venue->sportsCategories()->sync($request->sports_category_ids ?? []);
+        });
 
-        $venue->update($data);
-
-        $venue->facilities()->sync(
-            $request->facility_ids ?? []
-        );
-
-        $venue->sportsCategories()->sync(
-            $request->sports_category_ids ?? []
-        );
-    });
-
-    return back()->with(
-        'success',
-        'Venue berhasil diupdate.'
-    );
-}
+        return redirect()->route('admin.venues.index')->with('success', 'Venue berhasil diupdate.');
+    }
 
     public function destroy(Venue $venue)
-{
-    $this->authorize('delete', $venue);
+    {
+        $this->authorize('delete', $venue);
 
-    // Prevent deleting a venue that still has bookings for its fields.
-    $fieldIds = $venue->fields()->pluck('id');
-    $hasBookings = \App\Models\Booking::whereIn('field_id', $fieldIds)->exists();
-    if ($hasBookings) {
-        return back()->withErrors([
-            'venue' => 'Venue cannot be deleted because there are existing bookings for its fields.'
-        ]);
+        $hasBookings = \App\Models\Booking::whereIn('field_id', $venue->fields()->pluck('id'))->exists();
+        if ($hasBookings) {
+            return back()->withErrors(['venue' => 'Venue cannot be deleted because there are existing bookings for its fields.']);
+        }
+
+        if ($venue->logo && !str_starts_with($venue->logo, 'http')) {
+            Storage::disk('public')->delete($venue->logo);
+        }
+
+        $venue->delete();
+
+        return back()->with('success', 'Venue berhasil dihapus.');
     }
-
-    if ($venue->logo) {
-        Storage::disk('public')
-            ->delete($venue->logo);
-    }
-
-    $venue->delete();
-
-    return back()->with(
-        'success',
-        'Venue berhasil dihapus.'
-    );
-}
 
     public function assignAdmin(Venue $venue)
-{
-    $this->authorize('assignAdmin', $venue);
-    $admins = User::query()
-        ->where('role', 'admin')
-        ->whereDoesntHave('venue')
-        ->get();
+    {
+        $this->authorize('assignAdmin', $venue);
+        $admins = User::where('role', 'admin')->whereDoesntHave('venue')->get();
 
-    return view(
-        'admin.venues.assign-admin',
-        compact(
-            'venue',
-            'admins'
-        )
-    );
-}
-
-    public function storeAssignAdmin(
-    Request $request,
-    Venue $venue
-)
-{
-    $this->authorize('assignAdmin', $venue);
-    $request->validate([
-    'admin_id' => [
-        'required',
-        Rule::exists('users', 'id')
-            ->where('role', 'admin')
-    ]
-    ]);
-
-    $admin = User::findOrFail(
-    $request->admin_id
-    );
-
-    if ($admin->venue) {
-        return back()->withErrors([
-        'admin_id' =>
-            'Admin sudah memiliki venue.'
-    ]);
+        return view('admin.venues.assign-admin', compact('venue', 'admins'));
     }
 
-    $venue->update([
-        'admin_id' => $request->admin_id
-    ]);
+    public function storeAssignAdmin(Request $request, Venue $venue)
+    {
+        $this->authorize('assignAdmin', $venue);
+        $request->validate([
+            'admin_id' => ['nullable', Rule::exists('users', 'id')->where('role', 'admin')]
+        ]);
 
-    return redirect()
-        ->back()
-        ->with(
-            'success',
-            'Admin berhasil di-assign.'
-        );
-}
+        if (empty($request->admin_id)) {
+            $venue->update(['admin_id' => null]);
+            return redirect()->route('admin.venues.index')->with('success', 'Penugasan admin berhasil dilepas.');
+        }
+
+        $admin = User::findOrFail($request->admin_id);
+
+        if ($admin->venue && $admin->venue->id !== $venue->id) {
+            return back()->withErrors(['admin_id' => 'Admin sudah memiliki venue.']);
+        }
+
+        $venue->update(['admin_id' => $request->admin_id]);
+
+        return redirect()->route('admin.venues.index')->with('success', 'Admin berhasil di-assign.');
+    }
 
     public function myVenue()
-{
-    $user = auth()->user();
-    $venue = $user ? $user->venue : null;
+    {
+        $venue = auth()->user()?->venue;
+        abort_if(!$venue, 404);
 
-    if (!$venue) {
-        abort(404);
+        return view('admin.my-venue.edit', compact('venue'));
     }
 
-    return view(
-        'admin.venues.my-venue',
-        compact('venue')
-    );
-}
+    public function updateMyVenue(StoreVenueRequest $request)
+    {
+        $venue = auth()->user()?->venue;
+        abort_if(!$venue, 404);
+
+        DB::transaction(function () use ($request, $venue) {
+            $data = $request->only([
+                'name', 'address', 'city', 'province', 'latitude', 'longitude', 'refund_policy', 'reschedule_policy'
+            ]);
+
+            if ($request->hasFile('logo')) {
+                if ($venue->logo && !str_starts_with($venue->logo, 'http')) {
+                    Storage::disk('public')->delete($venue->logo);
+                }
+                $data['logo'] = $request->file('logo')->store('venues', 'public');
+            }
+
+            $venue->update($data);
+            $venue->facilities()->sync($request->facility_ids ?? []);
+            $venue->sportsCategories()->sync($request->sports_category_ids ?? []);
+        });
+
+        return back()->with('success', 'Profile venue berhasil diperbarui.');
+    }
+
+    public function deleteLogo(Venue $venue)
+    {
+        $this->authorize('update', $venue);
+
+        if ($venue->logo && !str_starts_with($venue->logo, 'http')) {
+            Storage::disk('public')->delete($venue->logo);
+        }
+        $venue->update(['logo' => null]);
+
+        return back()->with('success', 'Logo venue berhasil dihapus.');
+    }
+
+    public function deleteMyVenueLogo()
+    {
+        $venue = auth()->user()?->venue;
+        abort_if(!$venue, 404);
+
+        if ($venue->logo && !str_starts_with($venue->logo, 'http')) {
+            Storage::disk('public')->delete($venue->logo);
+        }
+        $venue->update(['logo' => null]);
+
+        return back()->with('success', 'Logo venue berhasil dihapus.');
+    }
 }

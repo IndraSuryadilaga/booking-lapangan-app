@@ -22,6 +22,15 @@ class SlotAvailabilityController extends Controller
 
         $date = Carbon::parse($validated['date']);
 
+        if (!$field->is_active) {
+            return response()->json([
+                'date' => $date->format('Y-m-d'),
+                'is_open' => false,
+                'slots' => [],
+                'message' => 'Lapangan sedang ditutup sementara (Maintenance Mode).',
+            ]);
+        }
+
         $cacheKey = "field_{$field->id}_slots_{$date->format('Y-m-d')}";
 
         $slotsData = Cache::remember($cacheKey, 60, function () use ($field, $date) {

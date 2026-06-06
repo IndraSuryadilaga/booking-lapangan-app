@@ -29,7 +29,7 @@ class VenuePolicy
      */
     public function create(User $user): bool
     {
-        return $user->isSuperAdmin() || $user->isAdmin();
+        return $user->isSuperAdmin();
     }
 
    public function update(User $user, Venue $venue): bool
@@ -43,7 +43,7 @@ class VenuePolicy
      */
     public function delete(User $user, Venue $venue): bool
     {
-        return $user->isSuperAdmin() || $venue->admin_id === $user->id;
+        return $user->isSuperAdmin();
     }
 
     /**

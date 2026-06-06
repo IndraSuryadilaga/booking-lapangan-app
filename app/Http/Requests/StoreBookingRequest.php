@@ -23,7 +23,16 @@ class StoreBookingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'field_id' => 'required|exists:fields,id',
+            'field_id' => [
+                'required',
+                'exists:fields,id',
+                function ($attribute, $value, $fail) {
+                    $field = \App\Models\Field::find($value);
+                    if ($field && !$field->is_active) {
+                        $fail('Lapangan tidak ditemukan atau sedang ditutup sementara (Maintenance Mode).');
+                    }
+                },
+            ],
             'booking_date' => 'required|date|after_or_equal:today',
             'slots' => 'required|array|min:1',
             'slots.*.start_time' => 'required|date_format:H:i:s',
@@ -40,6 +49,7 @@ class StoreBookingRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'field_id.exists' => 'Lapangan tidak ditemukan atau sedang ditutup sementara (Maintenance Mode).',
             'booking_date.after_or_equal' => 'Tanggal pemesanan tidak boleh di masa lampau.',
             'slots.required' => 'Anda harus memilih setidaknya satu slot waktu.',
             'slots.min' => 'Anda harus memilih setidaknya satu slot waktu.',

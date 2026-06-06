@@ -17,8 +17,40 @@ class BookingController extends Controller
         $this->bookingService = $bookingService;
     }
 
-    public function confirm()
+    public function confirm(Request $request)
     {
+        if ($request->has('field_id')) {
+            $request->validate([
+                'field_id' => 'required|exists:fields,id',
+                'date' => 'required|date|after_or_equal:today',
+                'slots' => 'required|array|min:1',
+            ]);
+
+            $field = \App\Models\Field::findOrFail($request->field_id);
+            if (!$field->is_active) {
+                return redirect()->route('dashboard')->with('error', 'Lapangan sedang ditutup sementara (Maintenance Mode).');
+            }
+
+            $slotsMapped = collect($request->slots)->map(function($slot) {
+                return [
+                    'start_time' => $slot['start'] . ':00',
+                    'end_time' => $slot['end'] . ':00',
+                    'price' => $slot['price'],
+                ];
+            })->toArray();
+
+            $totalPrice = collect($request->slots)->sum('price');
+
+            $pendingBooking = [
+                'field_id' => $request->field_id,
+                'booking_date' => $request->date,
+                'slots' => $slotsMapped,
+                'total_price' => $totalPrice,
+            ];
+
+            session(['pending_booking' => $pendingBooking]);
+        }
+
         $pendingBooking = session('pending_booking');
 
         if (!$pendingBooking) {
@@ -26,6 +58,11 @@ class BookingController extends Controller
         }
 
         $field = \App\Models\Field::with('venue')->findOrFail($pendingBooking['field_id']);
+        
+        if (!$field->is_active) {
+            session()->forget('pending_booking');
+            return redirect()->route('dashboard')->with('error', 'Lapangan sedang ditutup sementara (Maintenance Mode).');
+        }
 
         return view('bookings.confirm', [
             'bookingData' => $pendingBooking,
@@ -64,17 +101,10 @@ class BookingController extends Controller
         return view('bookings.index', ['bookings' => $bookings]);
     }
 
-    /**
-     * Display a listing of the user's booking history.
-     */
-    /**
-     * Display a listing of the user's booking history.
-     */
     public function history()
     {
         $bookings = Booking::with(['field.venue', 'payment'])
             ->where('user_id', auth()->id())
-            // PERUBAHAN: Memasukkan paid dan confirmed agar tiket aktif juga muncul
             ->whereIn('status', ['paid', 'confirmed', 'completed', 'cancelled', 'expired'])
             ->latest()
             ->paginate(10);
@@ -82,17 +112,12 @@ class BookingController extends Controller
         return view('bookings.history', compact('bookings'));
     }
 
-    /**
-     * Display the specified booking (E-Ticket / Invoice).
-     */
     public function show(Booking $booking)
     {
-        // Pastikan hanya pemilik yang bisa melihat tiketnya
         if ($booking->user_id !== auth()->id()) {
             abort(403, 'Anda tidak memiliki akses ke tiket ini.');
         }
 
-        // Load relasi lengkap untuk e-tiket
         $booking->load(['field.venue', 'slots', 'payment']);
 
         return view('bookings.show', compact('booking'));
@@ -100,7 +125,6 @@ class BookingController extends Controller
 
     public function cancel(Booking $booking)
     {
-        // Authorize that the user can cancel this booking
         $this->authorize('update', $booking);
 
         if ($booking->status !== 'pending') {
@@ -126,20 +150,19 @@ class BookingController extends Controller
         $fieldId = array_key_first($slotsData);
         $rawSlots = $slotsData[$fieldId];
 
-        // Pecah gabungan "Jam|Harga" menjadi array terpisah
         $selectedSlots = [];
         foreach ($rawSlots as $item) {
             $parts = explode('|', $item);
             $selectedSlots[] = [
-                'time' => $parts[0],                 // Jam (misal: 19:00)
-                'price' => isset($parts[1]) ? (int)$parts[1] : 0 // Harga (misal: 130000)
+                'time' => $parts[0],
+                'price' => isset($parts[1]) ? (int)$parts[1] : 0
             ];
         }
 
         session(['pending_booking' => [
             'field_id' => $fieldId,
             'booking_date' => $request->booking_date,
-            'slots' => $selectedSlots, // Sekarang formatnya sudah rapi
+            'slots' => $selectedSlots,
         ]]);
 
         return redirect()->route('bookings.confirm');

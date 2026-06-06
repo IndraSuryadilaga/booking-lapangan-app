@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'isSuperAdmin' => \App\Http\Middleware\IsSuperAdmin::class,
         ]);
     })
+    ->withProviders([
+        \App\Providers\AuthServiceProvider::class,
+    ])
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
+

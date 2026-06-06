@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminFacilityController;
 use App\Http\Controllers\Admin\AdminFieldController;
 use App\Http\Controllers\Admin\AdminFieldImageController;
@@ -68,11 +69,16 @@ Route::get(
 )->name('venues.show');
 
 Route::middleware(['auth', 'isAdminOrSuperAdmin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::resource('fields', AdminFieldController::class);
+    Route::patch('fields/{field}/toggle-status', [AdminFieldController::class, 'toggleStatus'])->name('fields.toggle-status');
     Route::resource('venues', AdminVenueController::class);
+    Route::delete('venues/{venue}/logo', [AdminVenueController::class, 'deleteLogo'])->name('venues.delete-logo');
     Route::get('venues/{venue}/assign-admin', [AdminVenueController::class, 'assignAdmin'] )->name('venues.assign-admin');
     Route::post('venues/{venue}/assign-admin', [AdminVenueController::class, 'storeAssignAdmin'])->name('venues.store-assign-admin');
     Route::get('my-venue', [AdminVenueController::class, 'myVenue'])->name('venues.my-venue');
+    Route::put('my-venue', [AdminVenueController::class, 'updateMyVenue'])->name('venues.my-venue.update');
+    Route::delete('my-venue/logo', [AdminVenueController::class, 'deleteMyVenueLogo'])->name('venues.my-venue.delete-logo');
     Route::post('fields/{field}/images', [AdminFieldImageController::class, 'store'])->name('fields.images.store');
     Route::put('fields/{field}/images/{image}', [AdminFieldImageController::class, 'setPrimary'])->name('fields.images.primary');
     Route::delete('fields/images/{image}', [AdminFieldImageController::class, 'destroy'])->name('fields.images.destroy');
@@ -85,7 +91,7 @@ Route::middleware(['auth', 'isAdminOrSuperAdmin'])->prefix('admin')->name('admin
 Route::middleware(['auth', 'isSuperAdmin'])
     ->prefix('admin')
     ->group(function () {
-    Route::resource('categories', AdminSportsCategoryController::class);
+    Route::resource('sports-categories', AdminSportsCategoryController::class)->parameters(['sports-categories' => 'sports_category']);
     Route::resource('facilities', AdminFacilityController::class);
     Route::resource('holidays', AdminPublicHolidayController::class);
 });
