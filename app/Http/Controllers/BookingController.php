@@ -22,7 +22,7 @@ class BookingController extends Controller
         if ($request->has('field_id')) {
             $request->validate([
                 'field_id' => 'required|exists:fields,id',
-                'date' => 'required|date|after_or_equal:today',
+                'date' => 'required|date|after_or_equal:today|before_or_equal:+60 days',
                 'slots' => 'required|array|min:1',
             ]);
 
@@ -58,7 +58,7 @@ class BookingController extends Controller
         }
 
         $field = \App\Models\Field::with('venue')->findOrFail($pendingBooking['field_id']);
-        
+
         if (!$field->is_active) {
             session()->forget('pending_booking');
             return redirect()->route('dashboard')->with('error', 'Lapangan sedang ditutup sementara (Maintenance Mode).');
@@ -77,10 +77,8 @@ class BookingController extends Controller
         try {
             $booking = $this->bookingService->createBooking($data);
 
-            // Hapus keranjang
             session()->forget('pending_booking');
 
-            // UBAH BARIS INI: Arahkan ke halaman Pembayaran, bukan langsung ke tiket
             return redirect()->route('payments.show', $booking)->with('success', 'Pesanan dibuat. Silakan selesaikan pembayaran.');
 
         } catch (\Exception $e) {

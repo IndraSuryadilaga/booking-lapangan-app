@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Venue;
 use App\Models\SportsCategory;
+use Illuminate\Support\Facades\DB;
 
 class VenueController extends Controller
 {
@@ -49,7 +50,7 @@ class VenueController extends Controller
         ]);
 
         $priceStart = $venue->fields
-            ->map(fn ($field) => $field->cheapest_price)
+            ->map(fn($field) => $field->cheapest_price)
             ->filter()
             ->min();
 
@@ -61,9 +62,28 @@ class VenueController extends Controller
             ->limit(6)
             ->get();
 
+        $fullyBookedDates = $this->getFullyBookedDates($venue->id);
+
         return view(
             'venues.show',
-            compact('venue', 'venues')
+            compact('venue', 'venues', 'fullyBookedDates')
         );
+    }
+
+    private function getFullyBookedDates($venueId)
+    {
+        $slotsPerDayThreshold = 24;
+
+        $bookedDates = \App\Models\Field::where('venue_id', $venueId)
+            ->join('booking_slots', 'fields.id', '=', 'booking_slots.field_id')
+            ->select('booking_slots.booking_date', DB::raw('COUNT(booking_slots.id) as booked_count'))
+            ->groupBy('booking_slots.booking_date')
+            ->having('booked_count', '>=', $slotsPerDayThreshold)
+            ->pluck('booking_date');
+
+        return $bookedDates->map(function ($date) {
+
+            return \Carbon\Carbon::parse($date)->format('Y-m-d');
+        })->toArray();
     }
 }
