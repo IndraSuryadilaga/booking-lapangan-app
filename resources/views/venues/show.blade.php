@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="pt-24 sm:pt-20 pb-12">
+    <div class="pt-24 sm:pt-20 pb-12 ">
         <x-organisms.venue-hero :venue="$venue" />
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 space-y-12 lg:space-y-16">

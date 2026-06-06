@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="space-y-8">
+    <div class="space-y-8 pt-44">
         <div class="border-b border-neutral-200 pb-5">
             <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Admin Dashboard</h1>
             <p class="mt-2 text-sm text-neutral-500">Pantau operasional, okupansi lapangan, dan pendapatan secara real-time.</p>

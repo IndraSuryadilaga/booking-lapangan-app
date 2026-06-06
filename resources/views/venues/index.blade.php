@@ -21,7 +21,7 @@
         }
     @endphp
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-8 md:pt-24 md:pb-12">
 
         {{-- Section Penawaran --}}
         <div class="mb-8 bg-slate-900 border border-slate-800 text-white rounded-2xl p-6 md:p-8 shadow-lg relative overflow-hidden">

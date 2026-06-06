@@ -1,4 +1,4 @@
-<div class="relative mt-4 inset-x-0 z-50 px-4 h-16 sm:px-6 lg:px-8 flex justify-center">
+<div class="fixed mt-4 inset-x-0 z-50 px-4 h-16 sm:px-6 lg:px-8 flex justify-center">
     <nav x-data="{ open: false }" class="w-full max-w-7xl bg-primary-600 text-white rounded-full px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-2xl relative transition-all duration-300">
 
         <div class="flex-1 flex items-center justify-start shrink-0">
@@ -57,7 +57,7 @@
                 </a>
             @else
                 <div class="flex items-center space-x-4">
-                    
+
                     <a href="/dashboard" class="relative p-2 rounded-full text-primary-100 hover:text-white hover:bg-primary-700 transition-colors focus:outline-none">
                         <span class="sr-only">Buka Aktivitas</span>
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>

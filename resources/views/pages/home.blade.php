@@ -16,7 +16,7 @@
     @endphp
 
     {{-- Hero Section --}}
-    <div class="bg-gradient-to-b from-slate-900 to-slate-950 text-white rounded-b-3xl overflow-hidden -mt-20 pt-36 pb-24 relative">
+    <div class="bg-gradient-to-b from-slate-900 to-slate-950 text-white rounded-b-3xl overflow-hidden pt-36 pb-24 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                 <div class="lg:col-span-6 space-y-6">
@@ -126,7 +126,7 @@
                             $sportName = strtolower($cat->name);
                             // Assign icons based on category name
                             $iconPath = '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>'; // default
-                            
+
                             if (str_contains($sportName, 'futsal')) {
                                 $iconPath = '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v20M2 12h20M12 12m-3 0a3 3 0 106 0 3 3 0 10-6 0"></path></svg>';
                             } elseif (str_contains($sportName, 'badminton') || str_contains($sportName, 'bulutangkir')) {
@@ -139,7 +139,7 @@
                                 $iconPath = '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2l3 6.5-6.5 1.5L6 15l6 7M22 12l-6.5-3L12 12M12 2a10 10 0 0110 10M12 22a10 10 0 01-10-10"></path></svg>';
                             }
                         @endphp
-                        
+
                         <a href="{{ route('venues.index') }}?category[]={{ $cat->id }}" class="group block p-6 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md hover:border-primary-300 transition-all duration-300 text-center">
                             <div class="w-16 h-16 mx-auto rounded-2xl bg-primary-50 flex items-center justify-center text-primary-500 group-hover:bg-primary-500 group-hover:text-white transition-all duration-300 shadow-inner">
                                 {!! $iconPath !!}

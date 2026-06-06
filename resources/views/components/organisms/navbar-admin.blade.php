@@ -4,8 +4,11 @@
     $isSuperAdmin = $user && $user->role === 'super-admin';
 @endphp
 
-<div class="relative z-40 px-4 sm:px-6 lg:px-8 flex justify-center -mt-6 mb-8">
-    <div class="w-full max-w-7xl bg-indigo-50 dark:bg-neutral-800 rounded-b-[2rem] pt-9 pb-3 px-4 sm:px-8 shadow-sm border border-t-0 border-indigo-100 dark:border-neutral-700">
+{{-- Kunci posisi menggunakan 'fixed top-4 inset-x-0' agar sejajar dengan navbar utama yang juga memiliki margin top 4 --}}
+<div class="fixed top-4 inset-x-0 z-40 px-4 sm:px-6 lg:px-8 flex justify-center pointer-events-none">
+
+    {{-- pt-[4.5rem] (72px) digunakan untuk melewati ketebalan navbar biru (64px) di atasnya --}}
+    <div class="w-full max-w-7xl bg-indigo-50 dark:bg-neutral-800 rounded-b-[2rem] pt-[4.5rem] pb-3 px-4 sm:px-8 shadow-md border border-t-0 border-indigo-100 dark:border-neutral-700 pointer-events-auto">
 
         <nav class="flex items-center overflow-x-auto scrollbar-hide py-1 gap-2 sm:gap-3" style="scrollbar-width: none;">
             <style>.scrollbar-hide::-webkit-scrollbar { display: none; }</style>

@@ -105,6 +105,10 @@ Route::get('/styleguide', function () {
     return view('pages.styleguide');
 });
 
+Route::get('/partner', function () {
+    return view('pages.partner');
+})->name('partner');
+
 require __DIR__ . '/auth.php';
 
 // Public home page (guest-facing)
