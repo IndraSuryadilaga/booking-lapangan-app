@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 pt-28">
 
         <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
@@ -7,7 +7,7 @@
                 <p class="text-sm text-slate-500 mt-2">Selamat datang kembali, {{ Auth::user()->name }}!</p>
             </div>
             @if (Auth::user()->role !== 'admin')
-                <a href="/catalog">
+                <a href="{{ route('venues.index') }}">
                     <x-atoms.button type="primary">Cari Lapangan Baru</x-atoms.button>
                 </a>
             @endif
@@ -68,7 +68,6 @@
             </div>
         @else
             @php
-                // Mengambil data langsung dari database untuk user yang sedang login
                 $pendingBookings = \App\Models\Booking::with('field.venue')
                     ->where('user_id', auth()->id())
                     ->where('status', 'pending')

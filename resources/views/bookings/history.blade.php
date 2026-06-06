@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 pt-28">
 
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <div>
@@ -7,7 +7,7 @@
                 <p class="text-sm text-slate-500 mt-2">Daftar semua pesanan lapangan Anda yang sudah selesai, dibatalkan, atau kedaluwarsa.</p>
             </div>
             <a href="{{ route('venues.index') }}">
-                <x-atoms.button type="primary">Cari Lapangan Lain</x-atoms.button>
+                <x-atoms.button type="primary">Cari Lapangan Baru</x-atoms.button>
             </a>
         </div>
 
