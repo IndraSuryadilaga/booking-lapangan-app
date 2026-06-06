@@ -1,50 +1,52 @@
 <x-app-layout>
-    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col lg:flex-row gap-8">
-            <!-- Main Content -->
-            <main class="flex-1 space-y-6">
-                <div class="flex justify-between items-center border-b border-neutral-200 pb-5">
-                    <div>
-                        <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Kategori Olahraga</h1>
-                        <p class="mt-2 text-sm text-neutral-500">Kelola kategori cabang olahraga yang tersedia untuk venue dan lapangan.</p>
-                    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="space-y-6">
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-neutral-200 pb-5">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Kategori Olahraga</h1>
+                    <p class="mt-2 text-sm text-neutral-500 font-normal">Kelola kategori cabang olahraga yang tersedia untuk venue dan lapangan.</p>
+                </div>
+                <div class="shrink-0">
                     <a href="{{ route('sports-categories.create') }}">
-                        <x-atoms.button type="primary" class="px-5 py-2.5 text-sm">
+                        <x-atoms.button type="primary" class="w-full sm:w-auto px-5 py-2.5 text-sm font-semibold shadow-sm hover:shadow transition-all">
                             + Tambah Kategori
                         </x-atoms.button>
                     </a>
                 </div>
+            </div>
 
-                @if(session('success'))
-                    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl">
-                        {{ session('success') }}
-                    </div>
-                @endif
+            @if(session('success'))
+                <div class="bg-success-50 border border-success-200 text-success-700 px-4 py-3 rounded-xl text-sm font-medium">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-                @if(session('error'))
-                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
-                        {{ session('error') }}
-                    </div>
-                @endif
+            @if(session('error'))
+                <div class="bg-danger-50 border border-danger-200 text-danger-700 px-4 py-3 rounded-xl text-sm font-medium">
+                    {{ session('error') }}
+                </div>
+            @endif
 
-                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+            <div class="bg-white border border-neutral-200/60 rounded-2xl shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="border-b border-slate-100 bg-slate-50/50">
-                                <th class="p-4 text-xs font-semibold text-neutral-500 uppercase">ID</th>
-                                <th class="p-4 text-xs font-semibold text-neutral-500 uppercase">Nama Kategori</th>
-                                <th class="p-4 text-xs font-semibold text-neutral-500 uppercase">Status</th>
-                                <th class="p-4 text-xs font-semibold text-neutral-500 uppercase text-center">Aksi</th>
+                            <tr class="border-b border-neutral-100 bg-slate-50/50">
+                                <th class="p-4 text-xs font-bold text-neutral-400 uppercase tracking-wider">ID</th>
+                                <th class="p-4 text-xs font-bold text-neutral-400 uppercase tracking-wider">Nama Kategori</th>
+                                <th class="p-4 text-xs font-bold text-neutral-400 uppercase tracking-wider">Status</th>
+                                <th class="p-4 text-xs font-bold text-neutral-400 uppercase tracking-wider text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-neutral-100">
                             @forelse ($categories as $category)
-                                <tr class="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50 transition-colors">
-                                    <td class="p-4 text-sm text-neutral-600">
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    <td class="p-4 text-sm text-neutral-600 font-mono">
                                         #{{ $category->id }}
                                     </td>
 
-                                    <td class="p-4 font-semibold text-neutral-900 text-sm">
+                                    <td class="p-4 font-bold text-neutral-900 text-sm">
                                         {{ $category->name }}
                                     </td>
 
@@ -58,13 +60,13 @@
 
                                     <td class="p-4 text-center">
                                         <div class="flex justify-center items-center gap-2">
-                                            <a href="{{ route('sports-categories.edit', $category->id) }}" class="bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded-lg text-xs font-semibold">
+                                            <a href="{{ route('sports-categories.edit', $category->id) }}" class="bg-warning-100 text-warning-700 hover:bg-warning-200 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm">
                                                 Edit
                                             </a>
 
                                             <button
                                                 type="button"
-                                                class="bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold"
+                                                class="bg-danger-100 text-danger-700 hover:bg-danger-200 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm"
                                                 x-data
                                                 @click="$dispatch('open-modal', 'confirm-delete-category-{{ $category->id }}')"
                                             >
@@ -73,19 +75,19 @@
 
                                             <!-- Delete Confirmation Modal -->
                                             <x-organisms.modal name="confirm-delete-category-{{ $category->id }}" maxWidth="sm">
-                                                <div class="p-6 space-y-4">
-                                                    <h3 class="text-base font-bold text-neutral-900">Hapus Kategori Olahraga</h3>
-                                                    <p class="text-sm text-neutral-600">
-                                                        Apakah Anda yakin ingin menghapus kategori <strong>{{ $category->name }}</strong> secara permanen? Tindakan ini tidak dapat dibatalkan.
+                                                <div class="p-6 space-y-4 text-left">
+                                                    <h3 class="text-lg font-bold text-neutral-900 tracking-tight">Hapus Kategori Olahraga</h3>
+                                                    <p class="text-sm text-neutral-500 leading-relaxed">
+                                                        Apakah Anda yakin ingin menghapus kategori <strong class="text-neutral-800">{{ $category->name }}</strong> secara permanen? Tindakan ini tidak dapat dibatalkan.
                                                     </p>
-                                                    <div class="flex justify-end gap-3 pt-2">
-                                                        <button type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-semibold" x-data @click="$dispatch('close-modal', 'confirm-delete-category-{{ $category->id }}')">
+                                                    <div class="flex justify-end gap-3 pt-3 border-t border-neutral-100">
+                                                        <button type="button" class="bg-neutral-100 hover:bg-neutral-200 text-neutral-600 px-4 py-2 rounded-xl text-sm font-bold transition-colors" x-data @click="$dispatch('close-modal', 'confirm-delete-category-{{ $category->id }}')">
                                                             Batal
                                                         </button>
-                                                        <form action="{{ route('sports-categories.destroy', $category->id) }}" method="POST">
+                                                        <form action="{{ route('sports-categories.destroy', $category->id) }}" method="POST" class="inline">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                                                            <button type="submit" class="bg-danger-600 hover:bg-danger-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-colors">
                                                                 Ya, Hapus
                                                             </button>
                                                         </form>
@@ -97,7 +99,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="p-8 text-center text-neutral-500 text-sm italic">
+                                    <td colspan="4" class="p-8 text-center text-neutral-400 text-sm italic">
                                         Belum ada kategori olahraga yang terdaftar.
                                     </td>
                                 </tr>
@@ -105,7 +107,7 @@
                         </tbody>
                     </table>
                 </div>
-            </main>
+            </div>
         </div>
     </div>
 </x-app-layout>
