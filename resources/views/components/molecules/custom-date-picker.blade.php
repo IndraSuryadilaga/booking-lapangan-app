@@ -76,7 +76,7 @@
     <button
         type="button"
         @click="isOpen = !isOpen"
-        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700/50 shadow-xs transition-colors cursor-pointer outline-hidden focus:ring-2 focus:ring-primary-500"
+        class="inline-flex items-center gap-2 px-4 py-4 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 shadow-xs transition-colors cursor-pointer outline-hidden focus:ring-2 focus:ring-primary-500"
     >
         <svg class="w-4 h-4 text-neutral-500 dark:text-neutral-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
