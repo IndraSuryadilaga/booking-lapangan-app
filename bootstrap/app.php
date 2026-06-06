@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'isAdminOrSuperAdmin' => \App\Http\Middleware\IsAdminOrSuperAdmin::class,
             'isSuperAdmin' => \App\Http\Middleware\IsSuperAdmin::class,
+            'forbidAdmin' => \App\Http\Middleware\ForbidAdminAccess::class,
         ]);
     })
     ->withProviders([
