@@ -1,11 +1,11 @@
 <?php
+
 namespace Database\Seeders;
 
 use App\Models\Field;
 use App\Models\SportsCategory;
 use App\Models\Venue;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class FieldSeeder extends Seeder
 {
@@ -14,75 +14,73 @@ class FieldSeeder extends Seeder
      */
     public function run(): void
     {
-        $venues = Venue::all();
-        $categories = SportsCategory::all();
+        $venueIds = Venue::pluck('id');
+        $categoryIds = SportsCategory::pluck('id');
 
-        if ($venues->count() < 1 || $categories->count() < 1) {
-            $this->command->info('Please seed Venues and SportsCategories before running FieldSeeder.');
+        if ($venueIds->isEmpty() || $categoryIds->isEmpty()) {
+            $this->command->error('Venues atau SportsCategories masih kosong! Silakan seed terlebih dahulu.');
             return;
         }
 
         $unsplashUrls = [
-            'https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?w=800&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1544698310-74ea9d1c8258?w=800&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1519861531473-9200262188bf?w=800&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=800&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1459865264687-595d652de67e?w=800&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1729843352938-0e10fbf96585?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1636959961919-985cbee8d6d9?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1765599020795-d203ff66e400?q=80&w=1121&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1572454181157-0b40dd7667fe?q=80&w=1201&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1719959396334-d086d719ffc8?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1578966663421-00f3bfebfa89?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1567220720374-a67f33b2a6b9?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1564769353575-73f33a36d84f?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1635842939844-1fbf6bea8e78?q=80&w=688&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1689942963385-f5bd03f3b270?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1709587824751-dd30420f5cf3?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1709587824645-cf6dd2041e2b?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1731221180372-57e35146bf20?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1697864810151-cceeb09b5239?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=800&h=600&fit=crop',
+            'https://images.unsplash.com/photo-1771909712463-b1c7b542f845?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?w=800&h=600&fit=crop',
         ];
 
-        $venues->each(function ($venue, $venueIndex) use ($categories, $unsplashUrls) {
+        $this->command->info("Men-generate 3-4 Lapangan untuk setiap Venue...");
 
+        foreach ($venueIds as $venueId) {
             $numberOfFields = rand(3, 4);
 
-            for ($i = 1; $i <= $numberOfFields; $i++) {
-                $category = $categories->random();
-                $fieldNumber = ($venueIndex * 5) + $i;
-                $fieldName = "Field {$fieldNumber} - {$venue->name}";
+            Field::factory($numberOfFields)
+                ->state(function () use ($venueId, $categoryIds) {
+                    return [
+                        'venue_id' => $venueId,
+                        'sports_category_id' => $categoryIds->random(),
+                    ];
+                })
+                ->create()
+                ->each(function ($field) use ($unsplashUrls) {
 
-                $field = Field::create([
-                    'venue_id' => $venue->id,
-                    'sports_category_id' => $category->id,
-                    'name' => $fieldName,
-                    'slug' => Str::slug($fieldName),
-                    'description' => 'A great, high-quality field for your sporting needs. Completely equipped and well maintained.',
-                    'type' => rand(0, 1) ? 'indoor' : 'outdoor',
-                    'surface_material' => rand(0, 1) ? 'Grass' : 'Synthetic',
-                    'is_active' => true,
-                ]);
-
-                $randomUrl = $unsplashUrls[array_rand($unsplashUrls)];
-
-                $field->images()->create([
-                    'image_path' => $randomUrl,
-                    'is_primary' => true,
-                    'sort_order' => 1,
-                ]);
-
-                for ($day = 0; $day <= 6; $day++) {
-                    $field->operatingHours()->create([
-                        'day_of_week' => $day,
-                        'open_time' => '07:00:00',
-                        'close_time' => '22:00:00',
-                        'is_open' => true,
+                    $field->images()->create([
+                        'image_path' => $unsplashUrls[array_rand($unsplashUrls)],
+                        'is_primary' => true,
+                        'sort_order' => 1,
                     ]);
-                }
 
-                $pricing = [
-                    'weekday' => rand(10, 15) * 10000,
-                    'weekend' => rand(15, 20) * 10000,
-                    'holiday' => rand(20, 25) * 10000,
-                ];
+                    $operatingHours = [];
+                    for ($day = 0; $day <= 6; $day++) {
+                        $operatingHours[] = [
+                            'day_of_week' => $day,
+                            'open_time' => '07:00:00',
+                            'close_time' => '22:00:00',
+                            'is_open' => true,
+                        ];
+                    }
+                    $field->operatingHours()->createMany($operatingHours);
 
-                foreach ($pricing as $dayType => $price) {
-                    $field->pricings()->create([
-                        'day_type' => $dayType,
-                        'price_per_slot' => $price,
-                    ]);
-                }
-            }
-        });
+                    $pricings = [
+                        ['day_type' => 'weekday', 'price_per_slot' => rand(10, 15) * 10000],
+                        ['day_type' => 'weekend', 'price_per_slot' => rand(15, 20) * 10000],
+                        ['day_type' => 'holiday', 'price_per_slot' => rand(20, 25) * 10000],
+                    ];
+                    $field->pricings()->createMany($pricings);
+                });
+        }
+
+        $this->command->info('Seeding Lapangan, Jam Operasional, dan Harga selesai dengan mantap!');
     }
 }

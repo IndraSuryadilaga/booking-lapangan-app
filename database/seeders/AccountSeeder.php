@@ -13,35 +13,34 @@ class AccountSeeder extends Seeder
      */
     public function run(): void
     {
+
         User::firstOrCreate(
             ['email' => 'superadmin@booking.com'],
             [
                 'name' => 'Super Administrator',
                 'password' => Hash::make('password'),
                 'role' => 'super-admin',
+                'email_verified_at' => now(),
             ]
         );
 
-        for ($i = 1; $i <= 5; $i++) {
-            User::firstOrCreate(
-                ['email' => "admin{$i}@example.com"],
-                [
-                    'name' => "Admin Venue {$i}",
-                    'password' => Hash::make('password'),
-                    'role' => 'admin',
-                ]
-            );
-        }
+        User::firstOrCreate(
+            ['email' => 'user@booking.com'],
+            [
+                'name' => 'Test Regular User',
+                'password' => Hash::make('password'),
+                'role' => 'user',
+                'email_verified_at' => now(),
+            ]
+        );
 
-        for ($i = 1; $i <= 10; $i++) {
-            User::firstOrCreate(
-                ['email' => "user{$i}@example.com"],
-                [
-                    'name' => "Regular User {$i}",
-                    'password' => Hash::make('password'),
-                    'role' => 'user',
-                ]
-            );
-        }
+        $jumlahUser = 20;
+        $this->command->info("Men-generate {$jumlahUser} Regular Users...");
+
+        User::factory($jumlahUser)->create([
+            'role' => 'user',
+        ]);
+
+        $this->command->info("AccountSeeder selesai! Super Admin dan User berhasil disiapkan.");
     }
 }

@@ -2,29 +2,22 @@
 
 namespace Database\Factories;
 
-use App\Models\Field;
-use App\Models\SportsCategory;
-use App\Models\Venue;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 class FieldFactory extends Factory
 {
-    protected $model = Field::class;
-
     public function definition(): array
     {
-        $name = fake()->word . ' Field';
+        $name = fake()->randomElement(['Arena', 'Court', 'Pitch', 'Field']) . ' ' . fake()->firstName();
 
         return [
-            'venue_id' => Venue::factory(),
-            'sports_category_id' => SportsCategory::factory(),
             'name' => $name,
-            'slug' => Str::slug($name . '-' . fake()->unique()->word),
-            'description' => fake()->paragraph(),
+            'slug' => Str::slug($name . '-' . fake()->unique()->lexify('????')),
+            'description' => 'A great, high-quality field for your sporting needs. Completely equipped and well maintained.',
             'type' => fake()->randomElement(['indoor', 'outdoor', 'semi-indoor']),
-            'surface_material' => fake()->word(),
-            'is_active' => fake()->boolean(),
+            'surface_material' => fake()->randomElement(['Grass', 'Synthetic', 'Vinyl', 'Parquet', 'Concrete']),
+            'is_active' => true,
         ];
     }
 }

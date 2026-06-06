@@ -22,8 +22,8 @@
     @endphp
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        
-        {{-- 1. Section Penawaran Pendaftaran Venue Sederhana --}}
+
+        {{-- Section Penawaran --}}
         <div class="mb-8 bg-slate-900 border border-slate-800 text-white rounded-2xl p-6 md:p-8 shadow-lg relative overflow-hidden">
             <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                 <div class="max-w-2xl">
@@ -45,12 +45,11 @@
             </div>
         </div>
 
-        {{-- 2. Section Filter Pencarian Horizontal --}}
+        {{-- Section Filter --}}
         <div class="mb-8 bg-white border border-slate-200 rounded-3xl p-5 md:p-6 shadow-md max-w-7xl mx-auto">
             <form method="GET" action="{{ route('venues.index') }}">
                 <div class="flex flex-col lg:flex-row gap-4 items-center w-full">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 flex-grow w-full">
-                        <!-- Kolom 1: Pencarian Nama Venue -->
                         <x-atoms.input
                             type="search"
                             name="search"
@@ -58,7 +57,6 @@
                             value="{{ request('search') }}"
                         />
 
-                        <!-- Kolom 2: Pilihan Kota (select-searchable) -->
                         <div class="relative w-full [&_button]:pl-10 sm:[&_button]:pl-11">
                             <span class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none text-neutral-400 z-10">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -71,7 +69,6 @@
                             />
                         </div>
 
-                        <!-- Kolom 3: Pilihan Kategori (select) -->
                         <x-atoms.select
                             name="category[]"
                             placeholder="Pilih Kategori"
@@ -84,7 +81,6 @@
                         </x-atoms.select>
                     </div>
 
-                    <!-- Action Buttons -->
                     <div class="flex items-center gap-3 w-full lg:w-auto shrink-0 justify-end mt-4 lg:mt-0">
                         <a href="{{ route('venues.index') }}" class="text-sm font-semibold text-neutral-500 hover:text-neutral-800 px-4 py-2.5 transition-colors rounded-full text-center">
                             Reset
@@ -97,7 +93,7 @@
             </form>
         </div>
 
-        {{-- 3. Results: Venue Cards + Pagination --}}
+        {{-- Section Katalog Venue Cards --}}
         <div class="mb-6 flex items-center justify-between">
             <h1 class="text-2xl font-extrabold">Katalog Venue</h1>
             <div class="text-sm text-neutral-500">Menampilkan {{ $venues->total() }} hasil</div>

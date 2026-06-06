@@ -13,7 +13,7 @@
                         <div class="p-6 sm:p-8 flex flex-col sm:flex-row items-start gap-6">
                             <div class="w-24 h-24 sm:w-28 sm:h-28 shrink-0 rounded-2xl overflow-hidden border border-slate-100 dark:border-neutral-700 shadow-sm bg-neutral-50 dark:bg-neutral-800">
                                 <img
-                                    src="{{ $venue->logo_url ?? 'https://images.unsplash.com/photo-1527067829737-402993088e6b?w=150&h=150&fit=crop' }}"
+                                    src="{{ $venue->logo ?? 'https://images.unsplash.com/photo-1527067829737-402993088e6b?w=150&h=150&fit=crop' }}"
                                     alt="Logo {{ $venue->name }}"
                                     class="w-full h-full object-cover"
                                 >
