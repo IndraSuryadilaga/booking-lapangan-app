@@ -10,14 +10,12 @@ use Illuminate\Support\Facades\Cache;
 
 class SlotAvailabilityController extends Controller
 {
-    // Menggunakan $fieldId mentah untuk menghindari masalah Policy/Model Binding
     public function index($fieldId, Request $request)
     {
-        // Mencari field secara manual
         $field = Field::findOrFail($fieldId);
 
         $validated = $request->validate([
-            'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
+            'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today', 'before_or_equal:+60 days'],
         ]);
 
         $date = Carbon::parse($validated['date']);

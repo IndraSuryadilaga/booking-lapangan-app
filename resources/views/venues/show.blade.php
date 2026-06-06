@@ -112,18 +112,13 @@
                     </div>
                 </div>
             </div>
-            {{-- END OF SECTION 2 GRID --}}
 
-            {{-- ======================================================== --}}
-            {{-- SECTION 3: COURT CATALOG (Daftar Lapangan & Jadwal)      --}}
-            {{-- ======================================================== --}}
+            {{--  COURT CATALOG --}}
             <div id="fields-list" class="bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-2xl p-6 sm:p-8 shadow-sm">
-                <x-organisms.court-catalog :venue="$venue" />
+                <x-organisms.court-catalog :venue="$venue" :fullyBookedDates="$fullyBookedDates" />
             </div>
 
-            {{-- ======================================================== --}}
-            {{-- SECTION 4: REVIEWS & REKOMENDASI                         --}}
-            {{-- ======================================================== --}}
+            {{-- REVIEWS & REKOMENDASI --}}
             <div class="space-y-12 lg:space-y-16">
 
                 {{-- 4A. Ulasan --}}

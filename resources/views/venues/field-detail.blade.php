@@ -50,7 +50,7 @@
                     <h2 class="text-xl font-semibold mb-4">Pilih Jadwal</h2>
                     <div class="mb-4">
                         <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
-                        <input type="date" id="date" x-model="selectedDate" min="{{ date('Y-m-d') }}" class="form-input w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+                        <input type="date" id="date" x-model="selectedDate" min="{{ date('Y-m-d') }}" max="{{ date('Y-m-d', strtotime('+60 days')) }}" class="form-input w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
                     </div>
                     <template x-if="isLoading"><div class="flex justify-center items-center h-48"><div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary-500"></div></div></template>
                     <template x-if="!isLoading && slots.length > 0"><div class="grid grid-cols-3 sm:grid-cols-4 gap-2 text-center"><template x-for="slot in slots" :key="slot.start"><div @click="toggleSlot(slot)" :class="getSlotClass(slot)" class="p-2 border rounded-md transition-colors duration-150 flex flex-col justify-center min-h-[60px]"><p class="font-semibold" x-text="slot.start"></p><p class="text-[10px] opacity-75" x-text="formatPrice(slot.price)"></p></div></template></div></template>

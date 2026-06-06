@@ -53,6 +53,7 @@
                 selectOption(val) {
                     this.value = val;
                     this.open = false;
+                    this.$dispatch('input', val);
                 }
             }"
             @click.outside="open = false"
