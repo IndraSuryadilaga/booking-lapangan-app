@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
         FacilitySeeder::class,
         VenueSeeder::class,
         FieldSeeder::class,
+        BookingSeeder::class,
+        ReviewSeeder::class,
     ]);
 }
 }
