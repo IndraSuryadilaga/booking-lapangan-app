@@ -57,13 +57,17 @@ class BookingController extends Controller
             return redirect()->route('dashboard')->with('error', 'Tidak ada booking yang sedang diproses.');
         }
 
-        $field = \App\Models\Field::findOrFail($pendingBooking['field_id']);
+        $field = \App\Models\Field::with('venue')->findOrFail($pendingBooking['field_id']);
+        
         if (!$field->is_active) {
             session()->forget('pending_booking');
             return redirect()->route('dashboard')->with('error', 'Lapangan sedang ditutup sementara (Maintenance Mode).');
         }
 
-        return view('bookings.confirm', ['bookingData' => $pendingBooking]);
+        return view('bookings.confirm', [
+            'bookingData' => $pendingBooking,
+            'field' => $field
+        ]);
     }
 
     public function store(StoreBookingRequest $request)
@@ -72,9 +76,13 @@ class BookingController extends Controller
 
         try {
             $booking = $this->bookingService->createBooking($data);
-            // Clear the pending booking from the session
+
+            // Hapus keranjang
             session()->forget('pending_booking');
-            return redirect()->route('bookings.show', $booking)->with('success', 'Booking berhasil dibuat.');
+
+            // UBAH BARIS INI: Arahkan ke halaman Pembayaran, bukan langsung ke tiket
+            return redirect()->route('payments.show', $booking)->with('success', 'Pesanan dibuat. Silakan selesaikan pembayaran.');
+
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage())->withInput();
         }
@@ -95,9 +103,9 @@ class BookingController extends Controller
 
     public function history()
     {
-        $bookings = Booking::where('user_id', auth()->id())
-            ->whereIn('status', ['completed', 'cancelled'])
-            ->with('field.venue')
+        $bookings = Booking::with(['field.venue', 'payment'])
+            ->where('user_id', auth()->id())
+            ->whereIn('status', ['paid', 'confirmed', 'completed', 'cancelled', 'expired'])
             ->latest()
             ->paginate(10);
 
@@ -106,17 +114,17 @@ class BookingController extends Controller
 
     public function show(Booking $booking)
     {
-        // Authorize that the user can view this booking
-        $this->authorize('view', $booking);
+        if ($booking->user_id !== auth()->id()) {
+            abort(403, 'Anda tidak memiliki akses ke tiket ini.');
+        }
 
-        $booking->load('field.venue', 'slots', 'payment');
+        $booking->load(['field.venue', 'slots', 'payment']);
 
-        return view('bookings.show', ['booking' => $booking]);
+        return view('bookings.show', compact('booking'));
     }
 
     public function cancel(Booking $booking)
     {
-        // Authorize that the user can cancel this booking
         $this->authorize('update', $booking);
 
         if ($booking->status !== 'pending') {
@@ -129,5 +137,34 @@ class BookingController extends Controller
         });
 
         return redirect()->route('bookings.index')->with('success', 'Booking berhasil dibatalkan.');
+    }
+
+    public function init(Request $request)
+    {
+        $request->validate([
+            'booking_date' => 'required|date',
+            'slots' => 'required|array|min:1',
+        ]);
+
+        $slotsData = $request->slots;
+        $fieldId = array_key_first($slotsData);
+        $rawSlots = $slotsData[$fieldId];
+
+        $selectedSlots = [];
+        foreach ($rawSlots as $item) {
+            $parts = explode('|', $item);
+            $selectedSlots[] = [
+                'time' => $parts[0],
+                'price' => isset($parts[1]) ? (int)$parts[1] : 0
+            ];
+        }
+
+        session(['pending_booking' => [
+            'field_id' => $fieldId,
+            'booking_date' => $request->booking_date,
+            'slots' => $selectedSlots,
+        ]]);
+
+        return redirect()->route('bookings.confirm');
     }
 }

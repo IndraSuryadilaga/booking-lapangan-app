@@ -39,9 +39,24 @@ Route::middleware('auth')->group(function () {
         Route::patch('/{booking}/cancel', 'cancel')->name('cancel');
     });
 
+// 1. Alur Booking & Konfirmasi
+    Route::post('/booking/init', [\App\Http\Controllers\BookingController::class, 'init'])->name('bookings.init');
+    Route::get('/booking/confirm', [\App\Http\Controllers\BookingController::class, 'confirm'])->name('bookings.confirm');
+    Route::post('/booking/store', [\App\Http\Controllers\BookingController::class, 'store'])->name('bookings.store');
+
+// 2. Alur Pembayaran
+    Route::get('/payments/{booking}', [\App\Http\Controllers\PaymentController::class, 'show'])->name('payments.show');
+    Route::post('/payments/{booking}/process', [\App\Http\Controllers\PaymentController::class, 'process'])->name('payments.process');
+
+// 3. Alur Riwayat (Untuk dikerjakan nanti)
+    Route::get('/dashboard/riwayat', [\App\Http\Controllers\BookingController::class, 'history'])->name('bookings.history');
+    Route::get('/dashboard/tiket/{booking}', [\App\Http\Controllers\BookingController::class, 'show'])->name('bookings.show');
+
     // Review Routes (authenticated, booking model-bound)
     Route::get('/bookings/{booking}/review/create', [ReviewController::class, 'create'])->name('reviews.create');
     Route::post('/bookings/{booking}/review', [ReviewController::class, 'store'])->name('reviews.store');
+
+    Route::get('/dashboard/riwayat', [\App\Http\Controllers\BookingController::class, 'history'])->name('bookings.history');
 });
 Route::get(
     '/venues',

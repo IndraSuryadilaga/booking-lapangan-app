@@ -54,19 +54,26 @@ class BookingService
             $booking = Booking::create([
                 'user_id' => auth()->id(),
                 'field_id' => $data['field_id'],
+                'booking_date' => $data['booking_date'],
+                'total_slots' => count($data['slots']),
                 'total_price' => $data['total_price'],
                 'status' => 'pending',
                 'expires_at' => $expiresAt,
             ]);
 
+
             // 6. Create BookingSlot records
             $bookingSlots = [];
+
             foreach ($data['slots'] as $slot) {
                 $bookingSlots[] = [
                     'booking_id' => $booking->id,
                     'field_id' => $data['field_id'],
                     'booking_date' => $data['booking_date'],
                     'start_time' => $slot['start_time'],
+                    'end_time' => \Carbon\Carbon::parse($slot['start_time'])->addHour()->format('H:i:s'),
+
+                    'price' => $slot['price'], // <-- GUNAKAN HARGA DINAMIS DARI FORM
                 ];
             }
             BookingSlot::insert($bookingSlots);

@@ -1,17 +1,8 @@
 <x-app-layout>
     <div class="pt-24 sm:pt-20 pb-12">
-
-        {{-- ======================================================== --}}
-        {{-- SECTION 1: HERO (Gambar Slider)                          --}}
-        {{-- ======================================================== --}}
         <x-organisms.venue-hero :venue="$venue" />
 
-        {{-- WADAH UTAMA (Membatasi lebar maksimal untuk S2, S3, S4) --}}
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 space-y-12 lg:space-y-16">
-
-            {{-- ======================================================== --}}
-            {{-- SECTION 2: INFORMASI VENUE (Grid Kiri & Kanan)           --}}
-            {{-- ======================================================== --}}
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                 {{-- KIRI: Detail Info (Span 2) --}}
@@ -34,7 +25,7 @@
                                 <div class="flex flex-wrap items-center gap-3 text-sm text-neutral-600 dark:text-neutral-400 mb-4">
                                     <div class="flex items-center gap-1">
                                         <svg class="w-4 h-4 text-warning-400" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>
-                                        <span class="font-bold text-neutral-900 dark:text-white">{{ $venue->rating_avg ?? '4.5' }}</span>
+                                        <span class="font-bold text-neutral-900 dark:text-white">{{ number_format($venue->reviews?->avg('rating') ?? 0, 1) }}</span>
                                     </div>
                                     <span class="text-neutral-300 dark:text-neutral-600">•</span>
                                     <div class="flex items-center gap-1">
@@ -89,7 +80,7 @@
                     </div>
                 </div>
 
-                {{-- KANAN: Peta & Harga (Span 1) --}}
+                {{-- Peta & Harga (Span 1) --}}
                 <div class="lg:col-span-1">
                     <div class="sticky top-24 space-y-6">
                         {{-- Peta --}}
@@ -123,15 +114,12 @@
             </div>
             {{-- END OF SECTION 2 GRID --}}
 
-
             {{-- ======================================================== --}}
             {{-- SECTION 3: COURT CATALOG (Daftar Lapangan & Jadwal)      --}}
-            {{-- (Sekarang memiliki lebar penuh, bebas dari Grid S2)      --}}
             {{-- ======================================================== --}}
             <div id="fields-list" class="bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-2xl p-6 sm:p-8 shadow-sm">
                 <x-organisms.court-catalog :venue="$venue" />
             </div>
-
 
             {{-- ======================================================== --}}
             {{-- SECTION 4: REVIEWS & REKOMENDASI                         --}}
@@ -145,18 +133,22 @@
                             <svg class="w-5 h-5 text-primary-600" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                             <h2 class="text-xl font-bold text-neutral-900 dark:text-white">Ulasan</h2>
                         </div>
-                        <a href="#" class="text-sm font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400">Lihat semua ulasan</a>
                     </div>
+
+                    @php
+                        $reviewsCollection = $venue->reviews ?? collect();
+                        $avgRating = $venue->rating_avg ?? $reviewsCollection->avg('rating') ?? 0;
+                        $totalReviews = $reviewsCollection->count();
+                    @endphp
 
                     <div class="flex items-end gap-4 mb-8">
                         <div class="text-4xl sm:text-5xl font-extrabold text-neutral-900 dark:text-white">
-                            {{ number_format($venue->rating_avg ?? 0.0, 1) }}<span class="text-xl sm:text-2xl text-neutral-400 font-bold">/5</span>
+                            {{ number_format($avgRating, 1) }}<span class="text-xl sm:text-2xl text-neutral-400 font-bold">/5</span>
                         </div>
                         <div class="pb-1 sm:pb-2">
                             @php
-                                $rating = $venue->rating_avg ?? 0;
-                                $fullStars = floor($rating);
-                                $hasHalfStar = ($rating - $fullStars) >= 0.5;
+                                $fullStars = floor($avgRating);
+                                $hasHalfStar = ($avgRating - $fullStars) >= 0.5;
                                 $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
                             @endphp
                             <div class="flex items-center gap-1 text-warning-400 mb-1">
@@ -170,27 +162,21 @@
                                     <svg class="w-5 h-5 text-neutral-300" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" /></svg>
                                 @endfor
                             </div>
-                            <div class="text-xs sm:text-sm text-neutral-500">
-                                {{ $venue->reviews->count() }} rating • {{ $venue->reviews->whereNotNull('comment')->count() }} ulasan
-                            </div>
+                            <div class="text-xs sm:text-sm text-neutral-500">{{ $totalReviews }} ulasan</div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                         @php
-                            $ratingVal = $venue->rating_avg ?? 0.0;
+                            $ratingVal = $avgRating;
                             $kebersihan = min(5.0, $ratingVal + 0.1);
                             $kondisi = max(1.0, $ratingVal - 0.1);
                             $komunikasi = $ratingVal;
 
-                            $kebersihanPercent = ($kebersihan / 5) * 100 . '%';
-                            $kondisiPercent = ($kondisi / 5) * 100 . '%';
-                            $komunikasiPercent = ($komunikasi / 5) * 100 . '%';
-
                             $criteria = [
-                                ['name' => 'Kebersihan', 'score' => number_format($kebersihan, 2), 'percent' => $kebersihanPercent],
-                                ['name' => 'Kondisi Lapangan', 'score' => number_format($kondisi, 2), 'percent' => $kondisiPercent],
-                                ['name' => 'Komunikasi', 'score' => number_format($komunikasi, 2), 'percent' => $komunikasiPercent],
+                                ['name' => 'Kebersihan', 'score' => number_format($kebersihan, 2), 'percent' => ($kebersihan / 5) * 100 . '%'],
+                                ['name' => 'Kondisi Lapangan', 'score' => number_format($kondisi, 2), 'percent' => ($kondisi / 5) * 100 . '%'],
+                                ['name' => 'Komunikasi', 'score' => number_format($komunikasi, 2), 'percent' => ($komunikasi / 5) * 100 . '%'],
                             ];
                         @endphp
                         @foreach($criteria as $item)
@@ -209,7 +195,8 @@
                     <div class="relative">
                         <div class="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide" style="scrollbar-width: none;">
                             <style>.scrollbar-hide::-webkit-scrollbar { display: none; }</style>
-                            @forelse($venue->reviews as $review)
+
+                            @forelse($venue->reviews ?? [] as $review)
                                 <div class="min-w-[300px] sm:min-w-[400px] bg-white dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-xl p-5 snap-start shadow-sm">
                                     <div class="flex justify-between items-start mb-3">
                                         <div class="flex items-center gap-3">
@@ -218,7 +205,7 @@
                                             </div>
                                             <div>
                                                 <div class="font-bold text-sm text-neutral-900 dark:text-white">{{ $review->user->name ?? 'Guest' }}</div>
-                                                <div class="text-xs text-neutral-500">Diulas: {{ $review->created_at->translatedFormat('d M Y') }}</div>
+                                                <div class="text-xs text-neutral-500">Diulas: {{ \Carbon\Carbon::parse($review->created_at)->translatedFormat('d M Y') }}</div>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-1 border border-slate-200 dark:border-neutral-600 rounded-md px-2 py-1">
@@ -227,11 +214,13 @@
                                         </div>
                                     </div>
                                     <p class="text-sm text-neutral-600 dark:text-neutral-400 mb-4 line-clamp-3">
-                                        {{ $review->comment ?? 'Tidak ada komentar.' }}
+                                        {{ $review->comment ?? 'Penilaian tanpa ulasan tertulis.' }}
                                     </p>
                                 </div>
                             @empty
-                                <div class="p-8 text-center text-sm text-neutral-400 italic w-full">Belum ada ulasan untuk venue ini.</div>
+                                <div class="w-full text-center py-8 text-sm text-neutral-500 border-2 border-dashed border-slate-200 rounded-xl">
+                                    Belum ada ulasan untuk venue ini. Jadilah yang pertama memberikan ulasan!
+                                </div>
                             @endforelse
                         </div>
                     </div>

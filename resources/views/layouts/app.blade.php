@@ -13,23 +13,31 @@
     </head>
     <body class="font-sans antialiased min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-900">
 
-    <x-organisms.navbar />
+        <x-organisms.navbar />
 
-    @if(request()->is('admin*') || request()->routeIs('sports-categories.*') || request()->routeIs('facilities.*') || request()->routeIs('holidays.*'))
-        <x-organisms.navbar-admin />
+        @if(request()->is('admin*') || request()->routeIs('sports-categories.*') || request()->routeIs('facilities.*') || request()->routeIs('holidays.*'))
+            <x-organisms.navbar-admin />
+        @endif
 
-        <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {{ $slot }}
-        </main>
+        @isset($header)
+            <header class="bg-white dark:bg-neutral-800 pt-16 shadow-sm">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    {{ $header }}
+                </div>
+            </header>
+        @endisset
 
-    @else
-        <main class="flex-grow">
-            {{ $slot }}
-        </main>
+        @if(request()->is('admin*') || request()->routeIs('sports-categories.*') || request()->routeIs('facilities.*') || request()->routeIs('holidays.*'))
+            <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                {{ $slot }}
+            </main>
+        @else
+            <main class="flex-grow">
+                {{ $slot }}
+            </main>
+        @endif
 
-    @endif
-
-    <x-organisms.footer />
+        <x-organisms.footer />
 
     </body>
 </html>

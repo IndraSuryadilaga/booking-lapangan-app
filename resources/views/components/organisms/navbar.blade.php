@@ -1,7 +1,6 @@
 <div class="relative mt-4 inset-x-0 z-50 px-4 h-16 sm:px-6 lg:px-8 flex justify-center">
     <nav x-data="{ open: false }" class="w-full max-w-7xl bg-primary-600 text-white rounded-full px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-2xl relative transition-all duration-300">
 
-        {{-- BAGIAN KIRI: Logo & Nama Brand (diberi flex-1 agar seimbang dengan Kanan) --}}
         <div class="flex-1 flex items-center justify-start shrink-0">
             <a href="/" class="flex items-center gap-2 h-8">
                 <x-atoms.application-logo color="white" class="block h-8 w-8" />
@@ -9,7 +8,6 @@
             </a>
         </div>
 
-        {{-- KELOMPOK MENU TENGAH (Murni di tengah, tidak terdorong Kiri/Kanan) --}}
         <div class="hidden md:flex items-center justify-center gap-2 lg:gap-4 shrink-0 px-4">
 
             <x-atoms.button href="/venues" variant="navbar" :active="request()->routeIs('venues.*') || request()->routeIs('home')" class="!px-4 !py-1.5 text-sm">
@@ -45,7 +43,6 @@
             @endauth
         </div>
 
-        {{-- KELOMPOK MENU KANAN (Auth / Dropdown) (diberi flex-1 agar seimbang dengan Kiri) --}}
         <div class="hidden md:flex flex-1 items-center justify-end space-x-3 shrink-0">
             @guest
                 <a href="{{ route('register') }}">
@@ -59,7 +56,20 @@
                     </x-atoms.button>
                 </a>
             @else
-                <div class="flex items-center space-x-5">
+                <div class="flex items-center space-x-4">
+                    
+                    <a href="/dashboard" class="relative p-2 rounded-full text-primary-100 hover:text-white hover:bg-primary-700 transition-colors focus:outline-none">
+                        <span class="sr-only">Buka Aktivitas</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+
+                        @if(auth()->check() && (\App\Models\Booking::where('user_id', auth()->id())->whereIn('status', ['pending', 'paid', 'confirmed'])->exists()))
+                            <span class="absolute top-1 right-1 flex h-2.5 w-2.5">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
+                            </span>
+                        @endif
+                    </a>
+
                     <x-molecules.dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button type="button" class="flex items-center gap-2 p-1 pr-2 rounded-full bg-primary-700/50 hover:bg-primary-700 border border-primary-500/50 focus:outline-none transition-colors">
@@ -77,6 +87,12 @@
                                 <p class="text-sm font-medium text-neutral-900 dark:text-white truncate">{{ Auth::user()->name }}</p>
                                 <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate">{{ Auth::user()->email }}</p>
                             </div>
+
+                            @if (Auth::user()->role === 'admin' || Auth::user()->role === 'super-admin')
+                                <x-molecules.dropdown-link :href="route('admin.dashboard')" class="dark:text-neutral-200 dark:hover:bg-neutral-700">
+                                    {{ __('Panel Admin') }}
+                                </x-molecules.dropdown-link>
+                            @endif
 
                             <x-molecules.dropdown-link :href="route('profile.edit')" class="dark:text-neutral-200 dark:hover:bg-neutral-700">
                                 {{ __('Profile') }}
@@ -96,8 +112,22 @@
             @endguest
         </div>
 
-        {{-- TOMBOL HAMBURGER MOBILE --}}
-        <div class="flex-1 flex items-center justify-end md:hidden">
+        <div class="flex-1 flex items-center justify-end md:hidden gap-2">
+
+            @auth
+                <button type="button" @click="$dispatch('open-sidebar')" class="relative inline-flex items-center justify-center p-2 rounded-full text-primary-100 hover:text-white hover:bg-primary-700 focus:outline-none transition-colors">
+                    <span class="sr-only">Buka Aktivitas</span>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+
+                    @if(\App\Models\Booking::where('user_id', auth()->id())->whereIn('status', ['pending', 'paid', 'confirmed'])->exists())
+                        <span class="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
+                        </span>
+                    @endif
+                </button>
+            @endauth
+
             <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-full text-primary-100 hover:text-white hover:bg-primary-700 focus:outline-none transition-colors">
                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                     <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -115,9 +145,8 @@
              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
              x-transition:leave-end="opacity-0 -translate-y-4 scale-95"
              class="absolute top-[calc(100%+0.75rem)] left-0 w-full bg-primary-600 rounded-2xl shadow-2xl overflow-hidden md:hidden z-50 py-2"
-             style="display: none;">
-
-            <div class="px-3 space-y-2">
+             style="display: none;"
+             @click.outside="open = false"> <div class="px-3 space-y-2">
                 <x-atoms.button href="/venues" variant="navbar" :active="request()->routeIs('venues') || request()->routeIs('home')" class="w-full justify-start !px-4 !py-3 text-sm">
                     <x-slot name="icon">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>

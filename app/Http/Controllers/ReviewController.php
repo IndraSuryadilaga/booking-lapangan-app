@@ -23,15 +23,16 @@ class ReviewController extends Controller
 
         // Booking must be completed
         if ($booking->status !== 'completed') {
-            return redirect()->back()->with('error', 'You can only review completed bookings.');
+            return redirect()->route('bookings.history')->with('error', 'You can only review completed bookings.');
         }
 
         // Prevent duplicate review per booking
         if ($booking->review()->exists()) {
-            return redirect()->back()->with('error', 'This booking has already been reviewed.');
+            // UBAH: Jangan gunakan back(), arahkan ke route riwayat
+            return redirect()->route('bookings.history')->with('error', 'This booking has already been reviewed.');
         }
 
-        // Render review form (view not created yet)
+        // Render review form
         return view('reviews.create', compact('booking'));
     }
 
@@ -49,12 +50,12 @@ class ReviewController extends Controller
 
         // Booking must be completed
         if ($booking->status !== 'completed') {
-            return redirect()->back()->with('error', 'You can only review completed bookings.');
+            return redirect()->route('bookings.history')->with('error', 'You can only review completed bookings.');
         }
 
         // Prevent duplicate review submission (defensive)
         if ($booking->review()->exists()) {
-            return redirect()->back()->with('error', 'This booking has already been reviewed.');
+            return redirect()->route('bookings.history')->with('error', 'This booking has already been reviewed.');
         }
 
         $validated = $request->validate([
@@ -74,7 +75,7 @@ class ReviewController extends Controller
             'comment' => $validated['comment'] ?? null,
         ]);
 
-        // Observer will update venue aggregates automatically
-        return redirect()->back()->with('success', 'Thank you for your review.');
+        // UBAH: Arahkan user ke halaman riwayat setelah sukses submit
+        return redirect()->route('bookings.history')->with('success', 'Thank you for your review.');
     }
 }

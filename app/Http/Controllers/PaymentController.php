@@ -65,7 +65,9 @@ class PaymentController extends Controller
                 ]);
             });
 
-            return redirect()->route('bookings.show', $booking)->with('success', 'Pembayaran berhasil! Booking Anda telah dikonfirmasi.');
+            return redirect()->route('bookings.show', $booking)
+                ->with('success', 'Pembayaran berhasil! Booking Anda telah dikonfirmasi.')
+                ->with('trigger_sidebar', true);
 
         } catch (\Exception $e) {
             logger()->error('Payment processing failed: ' . $e->getMessage());
