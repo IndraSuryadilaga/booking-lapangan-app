@@ -29,13 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ==== 2. RUTE KHUSUS CUSTOMER (Dilarang untuk Admin/Super Admin) ====
-    Route::middleware(function ($request, $next) {
-        if (in_array(auth()->user()->role, ['admin', 'super-admin'])) {
-            abort(403, 'Akses Ditolak: Admin tidak diperbolehkan memesan lapangan atau mengakses halaman pembayaran.');
-        }
-        return $next($request);
-    })->group(function () {
-
+    Route::middleware('forbidAdmin')->group(function () {
         // Alur Booking & Konfirmasi
         Route::prefix('bookings')->name('bookings.')->controller(BookingController::class)->group(function () {
             Route::post('/init', 'init')->name('init');
