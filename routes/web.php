@@ -15,24 +15,38 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\VenueController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/fields/{field:slug}', [FieldController::class, 'show'])->name('fields.show');
+// hlm utama & statis
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/styleguide', fn() => view('pages.styleguide'));
+Route::get('/partner', fn() => view('pages.partner'))->name('partner');
 
+// lapangan & venue (publik)
+Route::get('/fields/{field:slug}', [FieldController::class, 'show'])->name('fields.show');
+Route::get('/venues', [VenueController::class, 'index'])->name('venues.index');
+Route::get('/venues/{venue:slug}', [VenueController::class, 'show'])->name('venues.show');
+
+// rute autentikasi (login, register, dll)
 Route::middleware('auth')->group(function () {
-    // ==== 1. RUTE UMUM (Bisa diakses User & Admin) ====
+
+    // dashboard umum user & admin
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Profile routes
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::get('/profile/delete', [ProfileController::class, 'deleteConfirm'])->name('profile.delete');
-    Route::match(['put', 'patch'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // manajemen profil user
+    Route::controller(ProfileController::class)->group(function () {
+        Route::get('/profile', 'show')->name('profile.show');
+        Route::get('/profile/edit', 'edit')->name('profile.edit');
+        Route::get('/profile/delete', 'deleteConfirm')->name('profile.delete');
+        Route::match(['put', 'patch'], '/profile', 'update')->name('profile.update');
+        Route::delete('/profile', 'destroy')->name('profile.destroy');
+    });
 
-    // ==== 2. RUTE KHUSUS CUSTOMER (Dilarang untuk Admin/Super Admin) ====
+    // khusus customer (admin dilarang masuk)
     Route::middleware('forbidAdmin')->group(function () {
-        // Alur Booking & Konfirmasi
+
+        // transaksi & riwayat booking
         Route::prefix('bookings')->name('bookings.')->controller(BookingController::class)->group(function () {
             Route::post('/init', 'init')->name('init');
             Route::get('/confirm', 'confirm')->name('confirm');
@@ -43,13 +57,13 @@ Route::middleware('auth')->group(function () {
             Route::patch('/{booking}/cancel', 'cancel')->name('cancel');
         });
 
-        // Alur Pembayaran
-        Route::prefix('payments')->name('payments.')->controller(\App\Http\Controllers\PaymentController::class)->group(function () {
+        // proses pembayaran midtrans/manual
+        Route::prefix('payments')->name('payments.')->controller(PaymentController::class)->group(function () {
             Route::get('/{booking}', 'show')->name('show');
             Route::post('/{booking}/process', 'process')->name('process');
         });
 
-        // Alur Ulasan (Review)
+        // ulasan setelah selesai booking
         Route::prefix('bookings/{booking}/review')->name('reviews.')->controller(ReviewController::class)->group(function () {
             Route::get('/create', 'create')->name('create');
             Route::post('/', 'store')->name('store');
@@ -57,51 +71,42 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-Route::get('/venues', [VenueController::class, 'index'])->name('venues.index');
-Route::get('/venues/{venue:slug}', [VenueController::class, 'show'])->name('venues.show');
-
+// area admin & super admin
 Route::middleware(['auth', 'isAdminOrSuperAdmin'])->prefix('admin')->name('admin.')->group(function () {
+
+    // dashboard admin
     Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    Route::resource('fields', AdminFieldController::class);
+
+    // kelola lapangan & foto lapangan
     Route::patch('fields/{field}/toggle-status', [AdminFieldController::class, 'toggleStatus'])->name('fields.toggle-status');
-    Route::resource('venues', AdminVenueController::class);
-    Route::delete('venues/{venue}/logo', [AdminVenueController::class, 'deleteLogo'])->name('venues.delete-logo');
-    Route::get('venues/{venue}/assign-admin', [AdminVenueController::class, 'assignAdmin'])->name('venues.assign-admin');
-    Route::post('venues/{venue}/assign-admin', [AdminVenueController::class, 'storeAssignAdmin'])->name('venues.store-assign-admin');
-    Route::get('my-venue', [AdminVenueController::class, 'myVenue'])->name('venues.my-venue');
-    Route::put('my-venue', [AdminVenueController::class, 'updateMyVenue'])->name('venues.my-venue.update');
-    Route::delete('my-venue/logo', [AdminVenueController::class, 'deleteMyVenueLogo'])->name('venues.my-venue.delete-logo');
+    Route::resource('fields', AdminFieldController::class);
     Route::post('fields/{field}/images', [AdminFieldImageController::class, 'store'])->name('fields.images.store');
     Route::put('fields/{field}/images/{image}', [AdminFieldImageController::class, 'setPrimary'])->name('fields.images.primary');
     Route::delete('fields/images/{image}', [AdminFieldImageController::class, 'destroy'])->name('fields.images.destroy');
 
+    // kelola data venue (oleh super admin / admin utama)
+    Route::delete('venues/{venue}/logo', [AdminVenueController::class, 'deleteLogo'])->name('venues.delete-logo');
+    Route::get('venues/{venue}/assign-admin', [AdminVenueController::class, 'assignAdmin'])->name('venues.assign-admin');
+    Route::post('venues/{venue}/assign-admin', [AdminVenueController::class, 'storeAssignAdmin'])->name('venues.store-assign-admin');
+    Route::resource('venues', AdminVenueController::class);
+
+    // kelola profil venue milik admin yang sedang login
+    Route::get('my-venue', [AdminVenueController::class, 'myVenue'])->name('venues.my-venue');
+    Route::put('my-venue', [AdminVenueController::class, 'updateMyVenue'])->name('venues.my-venue.update');
+    Route::delete('my-venue/logo', [AdminVenueController::class, 'deleteMyVenueLogo'])->name('venues.my-venue.delete-logo');
+
+    // kelola/konfirmasi booking masuk
     Route::get('bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
     Route::get('bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');
     Route::patch('bookings/{booking}/status', [AdminBookingController::class, 'updateStatus'])->name('bookings.updateStatus');
 });
 
-Route::middleware(['auth', 'isSuperAdmin'])
-    ->prefix('admin')
-    ->group(function () {
-        Route::resource('sports-categories', AdminSportsCategoryController::class)->parameters(['sports-categories' => 'sports_category']);
-        Route::resource('facilities', AdminFacilityController::class);
-        Route::resource('holidays', AdminPublicHolidayController::class);
-    });
-
-// Testing routes
-Route::get('/admin/test', function () {
-    return 'Halo Admin! Anda berhasil masuk ke benteng pertahanan.';
-})->middleware('isAdminOrSuperAdmin');
-
-Route::get('/styleguide', function () {
-    return view('pages.styleguide');
+// area khusus super admin (master data)
+Route::middleware(['auth', 'isSuperAdmin'])->prefix('admin')->group(function () {
+    Route::resource('sports-categories', AdminSportsCategoryController::class)->parameters(['sports-categories' => 'sports_category']);
+    Route::resource('facilities', AdminFacilityController::class);
+    Route::resource('holidays', AdminPublicHolidayController::class);
 });
 
-Route::get('/partner', function () {
-    return view('pages.partner');
-})->name('partner');
-
+// load file rute auth bawaan laravel breeze/jetstream
 require __DIR__ . '/auth.php';
-
-// Public home page (guest-facing)
-Route::get('/', [HomeController::class, 'index'])->name('home');
