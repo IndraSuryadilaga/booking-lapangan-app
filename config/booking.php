@@ -11,7 +11,7 @@ return [
     | from being held indefinitely without payment.
     |
     */
-    'expiry_minutes' => 30,
+    'expiry_minutes' => 3,
 
     /*
     |--------------------------------------------------------------------------

@@ -73,7 +73,7 @@ class BookingService
                     'start_time' => $slot['start_time'],
                     'end_time' => \Carbon\Carbon::parse($slot['start_time'])->addHour()->format('H:i:s'),
 
-                    'price' => $slot['price'], // <-- GUNAKAN HARGA DINAMIS DARI FORM
+                    'price' => $slot['price'],
                 ];
             }
             BookingSlot::insert($bookingSlots);
