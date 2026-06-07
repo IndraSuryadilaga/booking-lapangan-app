@@ -16,7 +16,6 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
-        // Simpan URL redirect dari query parameter ke session
         if (request()->has('redirect')) {
             session(['url.intended' => request('redirect')]);
         }
@@ -32,7 +31,7 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
         $fallback = ($user && in_array($user->role, ['admin', 'super-admin']))
             ? route('admin.dashboard', absolute: false)
-            : route('dashboard', absolute: false);
+            : route('home', absolute: false);
 
         return redirect()->intended($fallback);
     }

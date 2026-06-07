@@ -92,15 +92,13 @@ export default {
                 sans: ['Plus Jakarta Sans', 'Inter', 'ui-sans-serif', 'system-ui'],
             },
             fontSize: {
-                '12': ['0.75rem', { lineHeight: '1.125rem', letterSpacing: '0.01em' }],    // 12px
-                '14': ['0.875rem', { lineHeight: '1.25rem', letterSpacing: '0.01em' }],     // 14px
-                '16': ['1rem', { lineHeight: '1.5rem', letterSpacing: '0' }],             // 16px
-                '18': ['1.125rem', { lineHeight: '1.75rem', letterSpacing: '-0.01em' }],    // 18px
-                '20': ['1.25rem', { lineHeight: '1.75rem', letterSpacing: '-0.015em' }],    // 20px
-                '24': ['1.5rem', { lineHeight: '2rem', letterSpacing: '-0.02em' }],        // 24px
-                '30': ['1.875rem', { lineHeight: '2.25rem', letterSpacing: '-0.02em' }],   // 30px
-                '36': ['2.25rem', { lineHeight: '2.75rem', letterSpacing: '-0.025em' }],   // 36px
-                '48': ['3rem', { lineHeight: '3.5rem', letterSpacing: '-0.025em' }],       // 48px
+                'xs': ['0.75rem', { lineHeight: '1.125rem', letterSpacing: '0.01em' }],    // 12px
+                'sm': ['0.875rem', { lineHeight: '1.25rem', letterSpacing: '0.01em' }],    // 14px
+                'base': ['1rem', { lineHeight: '1.5rem', letterSpacing: '0' }],             // 16px
+                'lg': ['1.125rem', { lineHeight: '1.75rem', letterSpacing: '-0.01em' }],   // 18px
+                '2xl': ['1.375rem', { lineHeight: '1.75rem', letterSpacing: '-0.015em' }], // 22px
+                '3xl': ['1.75rem', { lineHeight: '2.25rem', letterSpacing: '-0.02em' }],   // 28px
+                '4xl': ['2.25rem', { lineHeight: '2.75rem', letterSpacing: '-0.025em' }],  // 36px
             },
             borderRadius: {
                 'xl': '12px',
