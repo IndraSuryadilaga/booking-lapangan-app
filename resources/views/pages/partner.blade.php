@@ -1,13 +1,11 @@
 <x-app-layout>
     {{-- Hero Section --}}
-    <div class="bg-gradient-to-b from-slate-900 to-slate-950 text-white rounded-b-3xl overflow-hidden pt-36 pb-24 relative">        <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute -top-1/2 -right-1/2 w-[100%] aspect-square bg-gradient-to-b from-primary-400/30 to-transparent rounded-full blur-3xl transform rotate-12"></div>
-            <div class="absolute -bottom-1/2 -left-1/2 w-[100%] aspect-square bg-gradient-to-t from-primary-800/50 to-transparent rounded-full blur-3xl transform -rotate-12"></div>
-        </div>
+    <div class="bg-gradient-to-br from-neutral-700 via-[#031530] to-neutral-700 text-white rounded-b-[48px] overflow-hidden pt-36 pb-32 relative shadow-sm">
+        <div class="absolute top-0 right-0 -mr-32 -mt-32 w-96 h-96 rounded-full bg-primary-500/15 blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 -ml-32 -mb-32 w-80 h-80 rounded-full bg-accent-400/5 blur-3xl pointer-events-none"></div>
 
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold bg-primary-800 text-primary-100 border border-primary-500/50 mb-6 shadow-inner">
-                <svg class="w-4 h-4 text-warning-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <span class="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-white/10 backdrop-blur-md text-white border border-white/20 uppercase tracking-wider">
                 Kemitraan BookingLapangan
             </span>
             <h1 class="text-white text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 leading-tight">
@@ -18,7 +16,7 @@
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                 {{-- Mengarahkan langsung ke pendaftaran venue --}}
-                <x-atoms.button href="{{ route('admin.venues.create') }}">
+                <x-atoms.button href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20mendaftarkan%20venue%20saya%20di%20BookingLapangan.%20Mohon%20informasinya%20lebih%20lanjut." target="_blank" rel="noopener noreferrer">
                     Daftarkan Venue Sekarang
                 </x-atoms.button>
                 <x-atoms.button href="#benefits" variant="secondary">
@@ -135,11 +133,7 @@
         </div>
     </div>
 
-    {{--
-        =========================================================
-        5. BOTTOM CTA SECTION
-        =========================================================
-    --}}
+    {{-- cta section --}}
     <div class="py-20 bg-white dark:bg-neutral-800 text-center">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl font-extrabold text-neutral-900 dark:text-white mb-6">Siap Mengembangkan Bisnis Anda?</h2>
@@ -147,8 +141,8 @@
                 Jangan lewatkan kesempatan untuk digitalisasi venue Anda. Proses cepat, mudah, dan didukung tim yang siap membantu Anda kapan saja.
             </p>
             <div class="flex justify-center">
-                <a href="{{ route('admin.venues.create') }}">
-                    <x-atoms.button type="primary" class="!px-10 !py-4 text-lg shadow-lg">
+                <a href="https://wa.me/6281234567890?text=Halo%2C%20saya%20ingin%20mendaftarkan%20venue%20saya%20di%20BookingLapangan.%20Mohon%20informasinya%20lebih%20lanjut." target="_blank" rel="noopener noreferrer">
+                    <x-atoms.button type="primary">
                         Mulai Kemitraan Sekarang
                     </x-atoms.button>
                 </a>

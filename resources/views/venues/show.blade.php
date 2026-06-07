@@ -29,15 +29,14 @@
                                         <svg class="w-3.5 h-3.5 text-amber-500 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                         <span>{{ number_format($venue->reviews?->avg('rating') ?? 0, 1) }}</span>
                                     </div>
-                                    <span class="text-neutral-300 dark:text-neutral-600 hidden sm:inline">•</span>
                                     <div class="flex items-center gap-1.5 font-medium">
                                         <svg class="w-4 h-4 text-neutral-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                         <span class="truncate">{{ $venue->city ?? 'Kota Depok, Jawa Barat' }}</span>
                                     </div>
                                 </div>
 
-                                <div class="flex flex-wrap gap-2">
-                                    @forelse($venue->sportsCategories ?? [] as $cat)
+                                <div class="flex flex-wrap gap-2 text-10 text-xs">
+                                    @forelse($venue->fieldSportCategories as $cat)
                                         <x-atoms.badge type="sport" :name="$cat->name" :icon="$cat->icon ?? null" />
                                     @empty
                                         <x-atoms.badge type="sport" name="Multi-Sport" />
@@ -48,7 +47,7 @@
 
                         {{-- Deskripsi --}}
                         <div class="p-6 sm:p-8">
-                            <h2 class="text-base font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 text-xs mb-3">Tentang Venue</h2>
+                            <h2 class="text-base font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-3">Tentang Venue</h2>
                             <div class="text-sm sm:text-base text-neutral-700 dark:text-neutral-300 leading-relaxed max-w-prose">
                                 {{ $venue->description ?? 'Tidak ada deskripsi yang tersedia untuk venue ini.' }}
                             </div>
@@ -103,21 +102,19 @@
 
                         {{-- Fasilitas Tersedia --}}
                         <div class="p-6 sm:p-8">
-                            <h2 class="text-base font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 text-xs mb-4">Fasilitas Tersedia</h2>
+                            <h2 class="font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 text-xs mb-4">Fasilitas Tersedia</h2>
 
-                            <div class="flex flex-wrap gap-2.5">
+                            <div class="flex flex-wrap gap-2.5 text-xs">
                                 @forelse($venue->facilities ?? [] as $facility)
                                     <x-atoms.badge
                                         type="facility"
                                         :name="$facility->name"
                                         :icon="$facility->icon"
-                                        class="dark:bg-neutral-900 dark:text-neutral-200 dark:border-neutral-700"
                                     />
                                 @empty
                                     <x-atoms.badge
                                         type="facility"
                                         name="Cafe & Resto"
-                                        class="dark:bg-neutral-900 dark:text-neutral-200 dark:border-neutral-700"
                                     >
                                         <x-slot:icon>
                                             <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

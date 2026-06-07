@@ -1,14 +1,12 @@
 <x-app-layout>
-    {{-- Kita bungkus semuanya dalam komponen Alpine.js di sini --}}
     <div class="container mx-auto px-4 py-8" x-data="{
         ...slotCalendar({{ $field->id }}),
         mainImage: '{{ $field->images->isNotEmpty() ? asset('storage/' . ($field->images->firstWhere('is_primary', true)?->image_path ?? $field->images->first()->image_path)) : '' }}'
     }">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pb-24"> {{-- Padding bottom untuk memberi ruang bagi tombol sticky --}}
 
-            {{-- Kolom Kiri: Galeri Foto --}}
+            {{-- Galeri Foto --}}
             <div class="md:col-span-2">
-                {{-- Foto Primary --}}
                 <div class="mb-4">
                     @if($field->images->isNotEmpty())
                         <img :src="mainImage" alt="{{ $field->name }}" class="w-full h-auto max-h-[500px] object-cover rounded-lg shadow-lg">
@@ -30,9 +28,8 @@
                 </div>
             </div>
 
-            {{-- Kolom Kanan: Info & Booking --}}
+            {{-- Info & Booking --}}
             <div>
-                {{-- Info Lapangan --}}
                 <div class="mb-6">
                     <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ $field->name }}</h1>
                     <p class="text-lg text-gray-600 mb-4">{{ $field->venue->name }}</p>
@@ -64,7 +61,7 @@
             </div>
         </div>
 
-        {{-- Tombol Konfirmasi Sticky --}}
+        {{-- Tombol Konfirmasi --}}
         <div x-show="selectedSlots.length > 0" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-4" x-transition:enter-end="opacity-100 transform translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 transform translate-y-0" x-transition:leave-end="opacity-0 transform translate-y-4" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg-top" style="display: none;">
             <div class="container mx-auto flex justify-between items-center">
                 <div>

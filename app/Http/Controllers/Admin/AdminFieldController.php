@@ -62,6 +62,8 @@ class AdminFieldController extends Controller
 
             $field->operatingHours()->createMany($request->operating_hours);
             $field->pricings()->createMany($request->pricings);
+
+            $field->venue?->syncSportCategoriesFromFields();
         });
 
         return redirect()->route('admin.fields.index')->with('success', 'Lapangan berhasil ditambahkan!');
@@ -93,6 +95,8 @@ class AdminFieldController extends Controller
         $this->authorize('update', $field);
 
         DB::transaction(function () use ($request, $field) {
+            $previousVenueId = $field->venue_id;
+
             $field->update($request->safe()->except(['operating_hours', 'pricings']));
 
             if ($request->has('operating_hours')) {
@@ -112,6 +116,12 @@ class AdminFieldController extends Controller
                     );
                 }
             }
+
+            $field->venue?->syncSportCategoriesFromFields();
+
+            if ($previousVenueId !== $field->venue_id) {
+                Venue::find($previousVenueId)?->syncSportCategoriesFromFields();
+            }
         });
 
         return redirect()->route('admin.fields.index')->with('success', 'Data lapangan berhasil diperbarui!');
@@ -122,6 +132,8 @@ class AdminFieldController extends Controller
         $this->authorize('delete', $field);
 
         DB::transaction(function () use ($field) {
+            $venue = $field->venue;
+
             foreach ($field->images as $image) {
                 if (!str_starts_with($image->image_path, 'http')) {
                     Storage::disk('public')->delete($image->image_path);
@@ -129,6 +141,8 @@ class AdminFieldController extends Controller
             }
 
             $field->delete();
+
+            $venue?->syncSportCategoriesFromFields();
         });
 
         return redirect()->route('admin.fields.index')->with('success', 'Lapangan berhasil dihapus!');

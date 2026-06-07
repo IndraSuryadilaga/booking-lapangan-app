@@ -36,12 +36,39 @@ class Venue extends Model
 }
 
     public function sportsCategories()
-{
-    return $this->belongsToMany(
-        SportsCategory::class,
-        'venue_sport_categories'
-    );
-}
+    {
+        return $this->belongsToMany(
+            SportsCategory::class,
+            'venue_sport_categories'
+        );
+    }
+
+    /**
+     * Kategori olahraga yang benar-benar tersedia berdasarkan lapangan venue.
+     */
+    public function fieldSportCategories()
+    {
+        return $this->belongsToMany(
+            SportsCategory::class,
+            'fields',
+            'venue_id',
+            'sports_category_id'
+        )
+            ->whereNotNull('fields.sports_category_id')
+            ->select('sports_categories.*')
+            ->distinct()
+            ->orderBy('sports_categories.name');
+    }
+
+    public function syncSportCategoriesFromFields(): void
+    {
+        $categoryIds = $this->fields()
+            ->whereNotNull('sports_category_id')
+            ->distinct()
+            ->pluck('sports_category_id');
+
+        $this->sportsCategories()->sync($categoryIds);
+    }
 
     public function admin()
 {

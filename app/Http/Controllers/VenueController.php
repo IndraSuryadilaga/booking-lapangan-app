@@ -4,37 +4,30 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Venue;
-use App\Models\SportsCategory;
+use App\Services\VenueFilterService;
 use Illuminate\Support\Facades\DB;
 
 class VenueController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, VenueFilterService $filterService)
     {
-        $query = Venue::query()
-            ->with([
-                'sportsCategories',
-                'facilities',
-                'fields.pricings'
-            ]);
+        $venues = $filterService->filterVenues($request);
+        $allCategories = $filterService->getActiveCategories();
+        $cities = $filterService->getCities();
+        $categoryOptions = $filterService->getCategoryOptions($allCategories, 'Pilih Kategori');
+        $cityOptions = $filterService->getCityOptions($cities, 'Pilih Kota');
+        $filters = $filterService->parseFilters($request);
+        $selectedCategory = $filterService->getSelectedCategory($filters);
 
-        if ($request->filled('city')) {
-            $query->where('city', $request->input('city'));
-        }
-
-        $categories = $request->input('category', []);
-        if (!empty($categories)) {
-            $query->whereHas('fields', function ($q) use ($categories) {
-                $q->whereIn('sports_category_id', $categories);
-            });
-        }
-
-        $venues = $query->paginate(12)->withQueryString();
-
-        $allCategories = SportsCategory::where('is_active', true)->orderBy('name')->get();
-        $cities = Venue::distinct()->pluck('city')->filter()->values();
-
-        return view('venues.index', compact('venues', 'allCategories', 'cities'));
+        return view('venues.index', compact(
+            'venues',
+            'allCategories',
+            'cities',
+            'categoryOptions',
+            'cityOptions',
+            'filters',
+            'selectedCategory',
+        ));
     }
 
     public function show(Venue $venue)
@@ -44,7 +37,7 @@ class VenueController extends Controller
             'fields.images',
             'fields.pricings',
             'fields.operatingHours',
-            'sportsCategories',
+            'fieldSportCategories',
             'facilities',
             'reviews.user',
         ]);
@@ -57,7 +50,7 @@ class VenueController extends Controller
         $venue->price_start = $priceStart;
 
         $venues = Venue::where('id', '!=', $venue->id)
-            ->with(['sportsCategories', 'fields.pricings'])
+            ->with(['fieldSportCategories', 'fields.pricings'])
             ->orderByDesc('rating_avg')
             ->limit(6)
             ->get();

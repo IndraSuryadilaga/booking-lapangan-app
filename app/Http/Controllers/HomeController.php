@@ -8,6 +8,7 @@ use App\Models\Field;
 use App\Models\Booking;
 use App\Models\User;
 use App\Models\SportsCategory;
+use App\Services\VenueFilterService;
 use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
@@ -16,18 +17,20 @@ class HomeController extends Controller
      * Show the public homepage.
      * View `pages.home`.
      */
-    public function index()
+    public function index(VenueFilterService $filterService)
     {
         // Popular venues: top 6 by rating, only active venues
         $popularVenues = Venue::query()
-            ->with(['sportsCategories', 'fields.pricings', 'facilities'])
+            ->with(['fieldSportCategories', 'fields.pricings', 'facilities'])
             ->orderByDesc('rating_avg')
             ->limit(6)
             ->get();
 
         // Data for quick-search filters — withCount ensures fields_count is available in the view
         $allCategories = SportsCategory::where('is_active', true)->withCount('fields')->orderBy('name')->get();
-        $cities = Venue::distinct()->pluck('city')->filter()->values();
+        $cities = $filterService->getCities();
+        $categoryOptions = $filterService->getCategoryOptions($allCategories);
+        $cityOptions = $filterService->getCityOptions($cities);
 
         // Statistics
         $totalVenues = Venue::count();
@@ -49,6 +52,8 @@ class HomeController extends Controller
             'popularVenues',
             'allCategories',
             'cities',
+            'categoryOptions',
+            'cityOptions',
             'totalVenues',
             'totalFields',
             'totalUsers',

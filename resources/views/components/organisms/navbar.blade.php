@@ -1,5 +1,5 @@
 <div class="fixed mt-4 inset-x-0 z-50 px-4 h-16 sm:px-6 lg:px-8 flex justify-center">
-    <nav x-data="{ open: false }" class="w-full max-w-7xl bg-primary-600 text-white rounded-full px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-2xl relative transition-all duration-300">
+    <nav x-data="{ open: false }" class="w-full max-w-7xl bg-primary-500 text-white rounded-full px-4 sm:px-6 py-2.5 flex items-center justify-between shadow-2xl relative transition-all duration-300">
 
         <div class="flex-1 flex items-center justify-start shrink-0">
             <a href="/" class="flex items-center gap-2 h-8">
@@ -10,11 +10,24 @@
 
         <div class="hidden md:flex items-center justify-center gap-2 lg:gap-4 shrink-0 px-4">
 
-            <x-atoms.button href="/venues" variant="navbar" :active="request()->routeIs('venues.*') || request()->routeIs('home')" class="!px-4 !py-1.5 text-sm">
+            <x-atoms.button href="/" variant="navbar" :active="request()->routeIs('home')" class="!px-4 !py-1.5 text-sm">
                 <x-slot name="icon">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10a1 1 0 001 1h3m10-11v11a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
                 </x-slot>
-                Sewa Lapangan
+                Home
+            </x-atoms.button>
+
+            <x-atoms.button href="/venues" variant="navbar" :active="request()->routeIs('venues.*')" class="!px-4 !py-1.5 text-sm">
+                <x-slot name="icon">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <rect x="2" y="4" width="20" height="16" rx="2" />
+                        <line x1="12" y1="4" x2="12" y2="20" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </x-slot>
+                Venues
             </x-atoms.button>
 
             <x-atoms.button href="/partner" variant="navbar" :active="request()->routeIs('partner')" class="!px-4 !py-1.5 text-sm">
@@ -38,7 +51,7 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                         </x-slot>
                         <span class="relative pr-2">
-                            Pembayaran
+                            Payments
                             @if(auth()->check() && \App\Models\Booking::where('user_id', auth()->id())->whereIn('status', ['pending'])->exists())
                                 <span class="absolute top-0 right-0 -mt-0.5 -mr-1.5 flex h-2 w-2">
                                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
@@ -67,7 +80,7 @@
                 <div class="flex items-center space-x-4">
                     <x-molecules.dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            <button type="button" class="flex items-center gap-2 p-1 pr-2 rounded-full bg-primary-700/50 hover:bg-primary-700 border border-primary-500/50 focus:outline-none transition-colors">
+                            <button type="button" class="flex items-center gap-2 p-1 pr-2 rounded-full bg-primary-700/50 hover:bg-primary-600 border border-primary-500/50 focus:outline-none transition-colors">
                                 <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-primary-600 font-bold text-sm shadow-sm">
                                     {{ substr(Auth::user()->name, 0, 1) }}
                                 </div>

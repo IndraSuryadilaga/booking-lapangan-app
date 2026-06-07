@@ -1,35 +1,12 @@
 <x-app-layout>
-    @php
-        $cityOptions = [['value' => '', 'label' => 'Pilih Kota']];
-        foreach ($cities as $c) {
-            $cityOptions[] = ['value' => $c, 'label' => $c];
-        }
+    {{-- Section Penawaran --}}
+    <div class="bg-gradient-to-br from-neutral-700 via-[#031530] to-neutral-700 text-white rounded-b-[48px] overflow-hidden pt-6 pb-6 relative shadow-sm">
+        <div class="absolute top-0 right-0 -mr-32 -mt-32 w-96 h-96 rounded-full bg-primary-500/15 blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 -ml-32 -mb-32 w-80 h-80 rounded-full bg-accent-400/5 blur-3xl pointer-events-none"></div>
 
-        $categoryOptions = [['value' => '', 'label' => 'Badminton']];
-        foreach ($allCategories as $cat) {
-            $categoryOptions[] = ['value' => $cat->id, 'label' => $cat->name];
-        }
-
-        $selectedCategory = '';
-        if (request()->has('category')) {
-            $catInput = request('category');
-            if (is_array($catInput)) {
-                $selectedCategory = head($catInput);
-            } else {
-                $selectedCategory = $catInput;
-            }
-        }
-    @endphp
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-8 md:pt-24 md:pb-12">
-
-        {{-- Section Penawaran --}}
-        <div class="mb-8 bg-slate-900 border border-slate-800 text-white rounded-2xl p-6 md:p-8 shadow-lg relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-8 md:pt-24 md:pb-12">
             <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                 <div class="max-w-2xl">
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-3">
-                        Kemitraan Venue
-                    </span>
                     <h2 class="text-xl md:text-2xl font-extrabold tracking-tight text-white">Punya Lapangan Olahraga?</h2>
                     <p class="text-sm text-neutral-300 mt-2">
                         Daftarkan venue Anda sekarang untuk meraih lebih banyak pelanggan, kelola jadwal operasional, set tarif dinamis, dan terima pembayaran aman melalui dashboard terintegrasi.
@@ -44,7 +21,9 @@
                 </div>
             </div>
         </div>
+    </div>
 
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-8 md:pt-6 md:pb-12">
         {{-- Section Filter --}}
         <div class="mb-8 bg-white border border-slate-200 rounded-3xl p-5 md:p-6 shadow-md max-w-7xl mx-auto">
             <form method="GET" action="{{ route('venues.index') }}">
@@ -54,7 +33,7 @@
                             type="search"
                             name="search"
                             placeholder="Cari nama venue"
-                            value="{{ request('search') }}"
+                            value="{{ $filters['search'] }}"
                         />
 
                         <div class="relative w-full [&_button]:pl-10 sm:[&_button]:pl-11">
@@ -64,8 +43,8 @@
                             <x-atoms.select-searchable
                                 name="city"
                                 placeholder="Pilih Kota"
-                                :options="$cities"
-                                value="{{ request('city') }}"
+                                :options="$cityOptions"
+                                value="{{ $filters['city'] }}"
                             />
                         </div>
 
@@ -82,10 +61,12 @@
                     </div>
 
                     <div class="flex items-center gap-3 w-full lg:w-auto shrink-0 justify-end mt-4 lg:mt-0">
-                        <a href="{{ route('venues.index') }}" class="text-sm font-semibold text-neutral-500 hover:text-neutral-800 px-4 py-2.5 transition-colors rounded-full text-center">
+                        <a href="{{ route('venues.index') }}" class="inline-block">
+                            <x-atoms.button type="secondary">
                             Reset
+                            </x-atoms.button>
                         </a>
-                        <x-atoms.button type="primary" class="w-full lg:w-auto px-8 py-2.5 font-bold shadow-md hover:shadow-lg transition-all rounded-full">
+                        <x-atoms.button type="primary">
                             Cari
                         </x-atoms.button>
                     </div>

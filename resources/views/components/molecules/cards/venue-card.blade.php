@@ -17,7 +17,7 @@
         $rating = $venue->rating_avg;
         $location = $venue->city;
         $url = route('venues.show', $venue->slug);
-        $sports = $venue->sportsCategories;
+        $sports = $venue->fieldSportCategories;
 
         $lowestPrice = $venue->fields
             ->flatMap(fn ($field) => $field->pricings)
@@ -42,11 +42,11 @@
         </div>
 
         <div class="p-4 flex flex-col flex-grow">
-            <h3 class="font-bold text-18 text-primary-700 dark:text-neutral-100 leading-tight mb-2 line-clamp-2 group-hover:text-accent-300 transition-colors">
+            <h3 class="font-bold text-base text-primary-700 dark:text-neutral-100 leading-tight mb-2 line-clamp-2 group-hover:text-accent-300 transition-colors">
                 {{ $name }}
             </h3>
 
-            <div class="flex items-center justify-start text-14 text-neutral-500 dark:text-neutral-300 mb-4 gap-2">
+            <div class="flex items-center justify-start text-sm text-neutral-500 dark:text-neutral-300 mb-4 gap-2">
                 @if($rating && $rating !== 'N/A')
                     <svg class="w-3.5 h-3.5 text-warning-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                         <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
@@ -54,21 +54,22 @@
                     <span class="font-bold text-neutral-900 dark:text-white">{{ number_format($venue->reviews?->avg('rating') ?? 0, 1) }}</span>
                 @endif
 
-                <div class="flex items-center gap-1.5 min-w-0">
+                <div class="flex items-center gap-1.5 min-w-0 text-xs sm:text-sm">
                     @if($rating && $rating !== 'N/A')
                         <span class="text-neutral-300 dark:text-neutral-500 shrink-0">&bull;</span>
                     @endif
-                    <span class="font-semibold truncate text-xs sm:text-sm">{{ $location }}</span>
+                    <svg class="w-4 h-4 text-neutral-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span class="font-semibold truncate">{{ $location }}</span>
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center justify-start text-sm text-neutral-500 dark:text-neutral-300 mb-4 gap-2">
+            <div class="flex flex-wrap items-center justify-start text-xs text-neutral-500 dark:text-neutral-300 mb-4 gap-2">
                 @php
                     $sportsCollection = collect($sports);
                 @endphp
 
                 @if($sport)
-                    <x-atoms.badge type="sport" :name="$sport" />
+                    <x-atoms.badge type="sport" :name="$sport"/>
                 @endif
 
                 @foreach($sportsCollection->take(3) as $sportItem)
@@ -88,13 +89,13 @@
 
             <div class="flex items-center justify-start pt-3 border-t border-neutral-100 dark:border-neutral-500 mt-auto gap-1">
                 @if($lowestPrice)
-                    <span class="font-medium text-12 text-neutral-500 dark:text-neutral-200">Harga mulai</span>
-                    <span class="font-extrabold text-14 text-black dark:text-white">
+                    <span class="font-medium text-xs text-neutral-500 dark:text-neutral-200">Harga mulai</span>
+                    <span class="font-extrabold text-base text-accent-400 dark:text-white">
                         Rp {{ number_format($lowestPrice, 0, ',', '.') }}
                     </span>
-                    <span class="font-medium text-12 text-neutral-500 dark:text-neutral-200">/sesi</span>
+                    <span class="font-medium text-xs text-neutral-500 dark:text-neutral-200">/sesi</span>
                 @else
-                    <span class="font-medium text-12 text-neutral-500 dark:text-neutral-200">Harga belum tersedia</span>
+                    <span class="font-medium text-xs text-neutral-500 dark:text-neutral-200">Harga belum tersedia</span>
                 @endif
             </div>
         </div>
