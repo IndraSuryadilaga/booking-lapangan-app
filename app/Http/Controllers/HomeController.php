@@ -25,8 +25,8 @@ class HomeController extends Controller
             ->limit(6)
             ->get();
 
-        // Data for quick-search filters
-        $allCategories = SportsCategory::where('is_active', true)->orderBy('name')->get();
+        // Data for quick-search filters — withCount ensures fields_count is available in the view
+        $allCategories = SportsCategory::where('is_active', true)->withCount('fields')->orderBy('name')->get();
         $cities = Venue::distinct()->pluck('city')->filter()->values();
 
         // Statistics

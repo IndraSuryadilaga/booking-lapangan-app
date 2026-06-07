@@ -59,11 +59,15 @@ class Venue extends Model
 }
 
     public function getLogoUrlAttribute()
-{
-    return $this->logo
-        ? Storage::url($this->logo)
-        : null;
-}
+    {
+        if (!$this->logo) {
+            return 'https://images.unsplash.com/photo-1527067829737-402993088e6b?w=150&h=150&fit=crop';
+        }
+        if (filter_var($this->logo, FILTER_VALIDATE_URL)) {
+            return $this->logo;
+        }
+        return Storage::url($this->logo);
+    }
 
     protected $casts = [
     'is_active' => 'boolean',

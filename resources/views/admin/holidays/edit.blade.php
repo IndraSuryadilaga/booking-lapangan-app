@@ -1,55 +1,75 @@
 <x-app-layout>
-    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col lg:flex-row gap-8">
-            <!-- Main Content -->
-            <main class="flex-1 space-y-6">
-                <div class="border-b border-neutral-200 pb-5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-2xl space-y-6">
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-neutral-200 pb-5">
+                <div>
                     <h1 class="text-3xl font-extrabold text-neutral-900 tracking-tight">Edit Hari Libur</h1>
-                    <p class="mt-2 text-sm text-neutral-500">Ubah nama atau tanggal hari libur nasional.</p>
+                    <p class="mt-2 text-sm text-neutral-500 font-normal">Ubah nama atau tanggal hari libur nasional.</p>
                 </div>
+                <div class="shrink-0">
+                    <a href="{{ route('holidays.index') }}">
+                        <x-atoms.button type="secondary" class="px-4 py-2 text-sm">
+                            Kembali
+                        </x-atoms.button>
+                    </a>
+                </div>
+            </div>
 
-                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 max-w-xl">
-                    <form action="{{ route('holidays.update', $holiday->id) }}" method="POST" class="space-y-6">
-                        @csrf
-                        @method('PUT')
+            <!-- Error Alerts -->
+            @if($errors->any())
+                <div class="bg-danger-50 border border-danger-200 text-danger-700 px-4 py-3 rounded-xl">
+                    <strong class="text-sm font-semibold">Oops! Terjadi kesalahan:</strong>
+                    <ul class="list-disc pl-5 mt-1 text-sm">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                        <div>
-                            <label for="name" class="block text-sm font-medium text-neutral-700 mb-2">Nama Hari Libur</label>
-                            <x-atoms.input
-                                type="text"
-                                name="name"
-                                id="name"
-                                value="{{ old('name', $holiday->name) }}"
-                                placeholder="Masukkan nama hari libur"
-                                required
-                            />
-                        </div>
+            <!-- Form Card -->
+            <div class="bg-white border border-neutral-200/60 rounded-2xl shadow-sm p-6">
+                <form action="{{ route('holidays.update', $holiday->id) }}" method="POST" class="space-y-6">
+                    @csrf
+                    @method('PUT')
 
-                        <div>
-                            <label for="holiday_date" class="block text-sm font-medium text-neutral-700 mb-2">Tanggal Hari Libur</label>
-                            <x-atoms.input-date
-                                name="holiday_date"
-                                id="holiday_date"
-                                value="{{ old('holiday_date', $holiday->holiday_date ? \Carbon\Carbon::parse($holiday->holiday_date)->format('Y-m-d') : '') }}"
-                                :error="$errors->has('holiday_date')"
-                                :errorMessage="$errors->first('holiday_date')"
-                                required
-                            />
-                        </div>
+                    <div>
+                        <label for="name" class="block text-sm font-bold text-neutral-700 mb-2">Nama Hari Libur</label>
+                        <x-atoms.input
+                            type="text"
+                            name="name"
+                            id="name"
+                            value="{{ old('name', $holiday->name) }}"
+                            placeholder="Masukkan nama hari libur"
+                            required
+                        />
+                    </div>
 
-                        <div class="flex items-center gap-3 pt-4 border-t border-slate-100">
-                            <x-atoms.button type="primary" class="px-5 py-2.5 text-sm">
-                                Perbarui Hari Libur
+                    <div>
+                        <label for="holiday_date" class="block text-sm font-bold text-neutral-700 mb-2">Tanggal Hari Libur</label>
+                        <x-atoms.input-date
+                            name="holiday_date"
+                            id="holiday_date"
+                            value="{{ old('holiday_date', $holiday->holiday_date ? \Carbon\Carbon::parse($holiday->holiday_date)->format('Y-m-d') : '') }}"
+                            :error="$errors->has('holiday_date')"
+                            :errorMessage="$errors->first('holiday_date')"
+                            required
+                        />
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-6 border-t border-neutral-100">
+                        <x-atoms.button type="primary" class="px-5 py-2.5 text-sm font-semibold shadow-sm hover:shadow transition-all">
+                            Perbarui Hari Libur
+                        </x-atoms.button>
+                        <a href="{{ route('holidays.index') }}">
+                            <x-atoms.button type="secondary" class="px-5 py-2.5 text-sm font-medium transition-all" type-button="button">
+                                Batal
                             </x-atoms.button>
-                            <a href="{{ route('holidays.index') }}">
-                                <x-atoms.button type="secondary" class="px-5 py-2.5 text-sm" type-button="button">
-                                    Batal
-                                </x-atoms.button>
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </main>
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </x-app-layout>

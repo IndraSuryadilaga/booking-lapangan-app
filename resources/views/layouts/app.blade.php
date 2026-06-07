@@ -19,14 +19,20 @@
         <x-organisms.navbar-admin />
     @endif
 
-    <main class="flex-grow w-full {{ request()->is('admin*') || request()->routeIs('sports-categories.*') || request()->routeIs('facilities.*') || request()->routeIs('holidays.*') ? 'pt-0' : 'pt-0' }}">
+    <main class="flex-grow w-full">
         @isset($header)
             <div class="mb-8">
                 {{ $header }}
             </div>
         @endisset
 
-        {{ $slot }}
+        @if(request()->is('admin*') || request()->routeIs('sports-categories.*') || request()->routeIs('facilities.*') || request()->routeIs('holidays.*'))
+            <div class="pt-44 pb-12">
+                {{ $slot }}
+            </div>
+        @else
+            {{ $slot }}
+        @endif
     </main>
 
     @if(!request()->is('admin*') && !request()->routeIs('sports-categories.*') && !request()->routeIs('facilities.*') && !request()->routeIs('holidays.*'))
