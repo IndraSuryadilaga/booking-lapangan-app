@@ -43,9 +43,6 @@ class Venue extends Model
         );
     }
 
-    /**
-     * Kategori olahraga yang benar-benar tersedia berdasarkan lapangan venue.
-     */
     public function fieldSportCategories()
     {
         return $this->belongsToMany(

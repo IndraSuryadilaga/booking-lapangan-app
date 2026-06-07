@@ -102,7 +102,7 @@
                                 </x-molecules.dropdown-link>
                             @endif
 
-                            <x-molecules.dropdown-link :href="route('profile.edit')" class="dark:text-neutral-200 dark:hover:bg-neutral-700">
+                            <x-molecules.dropdown-link :href="route('profile.show')" class="dark:text-neutral-200 dark:hover:bg-neutral-700">
                                 {{ __('Profile') }}
                             </x-molecules.dropdown-link>
 
@@ -213,7 +213,7 @@
                     </div>
 
                     <div class="space-y-1">
-                        <a href="{{ route('profile.edit') }}" class="block px-4 py-3 rounded-lg text-sm font-medium text-primary-100 hover:bg-primary-700 hover:text-white">Profile Settings</a>
+                        <a href="{{ route('profile.show') }}" class="block px-4 py-3 rounded-lg text-sm font-medium text-primary-100 hover:bg-primary-700 hover:text-white">Profile Settings</a>
 
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
