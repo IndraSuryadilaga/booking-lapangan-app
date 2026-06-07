@@ -1,131 +1,226 @@
-# Sistem Booking Lapangan Olahraga
+# Aplikasi Booking Lapangan
 
-## Deskripsi Proyek
-Sistem informasi booking lapangan olahraga berbasis web yang komprehensif, real-time, dan terotomatisasi. Proyek ini bertujuan untuk memfasilitasi pengguna dalam menemukan dan memesan lapangan secara efisien, menyediakan dasbor manajerial bagi admin, serta mengelola siklus hidup transaksi secara otomatis dengan logika sistem mandiri untuk mencegah bentrok jadwal.
+![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-8.3+-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Alpine.js](https://img.shields.io/badge/Alpine.js-3-8BC0D0?style=for-the-badge&logo=alpine.js&logoColor=black)
+![MySQL](https://img.shields.io/badge/MySQL-8+-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+
+> **Tugas Akhir Mata Kuliah Pemrograman Web**  
+> Sistem informasi berbasis web untuk penyewaan lapangan olahraga secara daring.
+
+---
+
+## Deskripsi Singkat
+
+**Aplikasi Booking Lapangan** adalah sistem informasi berbasis web yang dirancang untuk mempermudah proses penyewaan lapangan olahraga. Aplikasi ini memungkinkan pengguna untuk menelusuri lapangan berdasarkan jenis olahraga, memeriksa ketersediaan jadwal secara real-time, melakukan pemesanan slot waktu, hingga menyelesaikan pembayaran dalam satu alur yang terintegrasi.
+
+Proyek ini hadir sebagai solusi atas permasalahan konvensional dalam penyewaan lapangan—seperti bentrok jadwal, proses booking manual, dan kurangnya transparansi ketersediaan. Dengan validasi di level aplikasi dan database, sistem mencegah double-booking, mengelola status transaksi secara otomatis, serta menyediakan dasbor manajerial bagi administrator untuk mengelola data master lapangan, venue, dan seluruh siklus transaksi.
+
+---
 
 ## Fitur Utama
 
 ### Untuk Pengunjung & Pengguna Terdaftar
--   **Pencarian Lapangan**: Melihat daftar lapangan dan memfilter berdasarkan jenis olahraga.
--   **Ketersediaan Real-time**: Melihat ketersediaan slot waktu dan kalender jadwal lapangan.
--   **Proses Booking**: Memilih slot waktu (mendukung multi-slot berurutan) dan melakukan checkout booking.
--   **Manajemen Transaksi**: Melihat riwayat booking, status transaksi, dan membatalkan booking aktif yang belum dibayar.
--   **Simulasi Pembayaran**: Melakukan simulasi proses pembayaran.
+
+- **Autentikasi & Registrasi** — Login, registrasi, dan manajemen profil pengguna (Laravel Breeze).
+- **Pencarian & Filter Lapangan** — Menelusuri daftar lapangan dan venue berdasarkan jenis olahraga.
+- **Cek Ketersediaan Jadwal** — Kalender interaktif untuk melihat slot waktu yang tersedia secara real-time.
+- **Sistem Booking** — Pemesanan slot waktu (mendukung multi-slot berurutan) dengan proses checkout.
+- **Manajemen Transaksi** — Riwayat booking, detail transaksi, dan pembatalan booking yang belum dibayar.
+- **Simulasi Pembayaran** — Proses pembayaran terintegrasi dalam alur booking.
+- **Ulasan & Rating** — Memberikan review setelah booking selesai.
 
 ### Untuk Administrator
--   **Dasbor Manajemen**: Akses penuh ke dasbor admin.
--   **Manajemen Data Master**: Operasi CRUD (Create, Read, Update, Delete) untuk jenis olahraga dan data lapangan (termasuk pengaturan jam operasional).
--   **Pemantauan Booking**: Memantau dan mengelola seluruh siklus transaksi booking dari semua pengguna.
 
-### Fitur Otomatisasi Sistem
--   **Pencegahan Double-Booking**: Validasi mutlak di level database dan aplikasi untuk mencegah pemesanan ganda.
--   **Manajemen Slot Otomatis**: Mengubah status booking menjadi 'expired' jika tidak dibayar dalam batas waktu tertentu, dan 'completed' setelah waktu pemakaian lapangan berakhir.
+- **Dasbor Manajemen** — Ringkasan aktivitas dan pemantauan transaksi.
+- **Manajemen Venue & Lapangan** — Operasi CRUD untuk venue, lapangan, foto, jam operasional, dan harga.
+- **Manajemen Data Master** — CRUD jenis olahraga, fasilitas, dan hari libur nasional.
+- **Pemantauan Booking** — Mengelola seluruh siklus transaksi booking dari semua pengguna.
 
-## Teknologi (Tech Stack)
+### Otomatisasi Sistem
 
-Proyek ini dibangun menggunakan teknologi modern untuk memastikan performa, skalabilitas, dan kemudahan pengembangan:
+- **Pencegahan Double-Booking** — Validasi di level database dan aplikasi.
+- **Kedaluwarsa Otomatis** — Booking yang tidak dibayar dalam batas waktu ditandai sebagai *expired*.
+- **Penyelesaian Otomatis** — Status booking berubah menjadi *completed* setelah waktu pemakaian berakhir.
 
--   **Backend Framework**: Laravel 13
--   **Frontend Styling**: Tailwind CSS v4
--   **Frontend Interaktif**: Alpine.js
--   **Templating**: Laravel Blade
--   **Database**: MySQL 8+
--   **Autentikasi**: Laravel Breeze
--   **Scheduler/Queue**: Laravel Scheduler + Queue
--   **Asset Bundler**: Vite
--   **HTTP Client**: Axios / Fetch API
--   **Storage**: Laravel Storage (local/S3)
--   **Icons**: Heroicons / Lucide
+---
 
-## Instalasi & Setup Lokal
+## Prasyarat (Prerequisites)
 
-Untuk menjalankan proyek ini di lingkungan lokal Anda, ikuti langkah-langkah berikut:
+Pastikan perangkat lunak berikut sudah terinstal sebelum menjalankan proyek:
 
-1.  **Clone Repositori**:
-    ```bash
-    git clone https://github.com/your-username/booking-lapangan.git
-    cd booking-lapangan
-    ```
+| Perangkat Lunak | Versi Minimum |
+|---|---|
+| [PHP](https://www.php.net/downloads) | 8.3 atau lebih baru |
+| [Composer](https://getcomposer.org/download/) | 2.x |
+| [Node.js](https://nodejs.org/) | 18.x atau lebih baru |
+| [NPM](https://www.npmjs.com/) | 9.x atau lebih baru (terinstal bersama Node.js) |
+| [MySQL](https://dev.mysql.com/downloads/) | 8.0 atau lebih baru |
+| [Git](https://git-scm.com/downloads) | Versi terbaru |
 
-2.  **Instal Dependensi PHP**:
-    ```bash
-    composer install
-    ```
+**Ekstensi PHP yang diperlukan:** `BCMath`, `Ctype`, `Fileinfo`, `JSON`, `Mbstring`, `OpenSSL`, `PDO`, `Tokenizer`, `XML`
 
-3.  **Konfigurasi Environment**:
-    ```bash
-    cp .env.example .env
-    php artisan key:generate
-    ```
-    Edit file `.env` dan sesuaikan konfigurasi database Anda (misalnya `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
+---
 
-4.  **Setup Database**:
-    Pastikan server MySQL Anda berjalan.
-    ```bash
-    php artisan migrate --seed
-    ```
-    Ini akan membuat tabel database dan mengisi data awal (termasuk akun admin dan user).
+## Langkah Instalasi (Getting Started)
 
-5.  **Instal Dependensi Frontend**:
-    ```bash
-    npm install
-    ```
+### 1. Clone Repositori
 
-6.  **Compile Assets**:
-    Untuk pengembangan (dengan Hot Module Replacement):
-    ```bash
-    npm run dev
-    ```
-    Untuk produksi:
-    ```bash
-    npm run build
-    ```
+```bash
+git clone https://github.com/IndraSuryadilaga/booking-lapangan-app.git
+cd booking-lapangan-app
+```
 
-7.  **Jalankan Server Lokal**:
-    ```bash
-    php artisan serve
-    ```
-    Aplikasi akan tersedia di `http://127.0.0.1:8000`.
+### 2. Instal Dependensi
 
-8.  **Link Storage (untuk upload gambar)**:
-    ```bash
-    php artisan storage:link
-    ```
+```bash
+composer install
+npm install
+```
 
-## Menjalankan Scheduler (Penting untuk Otomatisasi)
+### 3. Konfigurasi Environment
 
-Sistem ini menggunakan job terjadwal untuk mengelola status booking secara otomatis (misalnya, membatalkan booking yang kedaluwarsa). Untuk menjalankannya di lingkungan lokal, buka terminal baru dan jalankan perintah berikut:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Buka file `.env` dan sesuaikan konfigurasi database:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=booking_lapangan
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Buat database kosong di MySQL sebelum menjalankan migrasi:
+
+```sql
+CREATE DATABASE booking_lapangan;
+```
+
+### 4. Migrasi & Seeder Database
+
+```bash
+php artisan migrate --seed
+```
+
+Perintah ini akan membuat seluruh tabel dan mengisi data awal (akun admin, kategori olahraga, venue, lapangan, dan data contoh lainnya).
+
+### 5. Tautkan Storage (untuk Upload Gambar)
+
+```bash
+php artisan storage:link
+```
+
+### 6. Jalankan Aplikasi
+
+Buka **dua terminal terpisah** dan jalankan perintah berikut:
+
+**Terminal 1 — Asset bundler (Vite):**
+
+```bash
+npm run dev
+```
+
+**Terminal 2 — Server Laravel:**
+
+```bash
+php artisan serve
+```
+
+Aplikasi dapat diakses di [http://127.0.0.1:8000](http://127.0.0.1:8000).
+
+> **Alternatif:** Jalankan semua layanan sekaligus dengan `composer dev` (server, queue, log, dan Vite berjalan bersamaan).
+
+### 7. Jalankan Scheduler (Opsional, untuk Otomatisasi)
+
+Sistem menggunakan job terjadwal untuk mengelola status booking. Jalankan di terminal terpisah:
 
 ```bash
 php artisan schedule:work
 ```
 
-Biarkan proses ini berjalan di background selama Anda mengembangkan atau menguji fitur yang bergantung pada waktu.
+---
 
-## User Roles & Hak Akses
+## Akun Default (Setelah Seeding)
 
-Sistem ini membagi aktor menjadi tiga entitas utama dengan batasan akses yang jelas:
+| Peran | Email | Password |
+|---|---|---|
+| Super Admin | `superadmin@booking.com` | `password` |
+| Pengguna Biasa | `user@booking.com` | `password` |
 
--   **Pengunjung Biasa (Guest/Unregistered)**:
-    -   Dapat melihat daftar lapangan dan melakukan filter.
-    -   Dapat melihat ketersediaan slot waktu.
-    -   *Batasan*: Tidak dapat melakukan booking (akan diarahkan ke halaman login/registrasi).
+---
 
--   **Pengguna Terdaftar (Registered User)**:
-    -   Akses penuh ke Dashboard Personal (ringkasan aktivitas).
-    -   Dapat memilih slot waktu dan melakukan checkout booking.
-    -   Dapat mengelola transaksi dan melakukan simulasi pembayaran.
+## Struktur Folder
 
--   **Administrator (Admin)**:
-    -   Akses penuh ke Dashboard Manajemen.
-    -   Mengendalikan operasi CRUD untuk Data Master (Jenis Olahraga, Lapangan, Jam Operasional).
-    -   Memantau dan mengelola seluruh siklus transaksi booking.
+Berikut ringkasan lokasi logika utama dalam proyek:
 
-## Potensi Pengembangan (Future Enhancements)
+```
+booking-lapangan/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/        # Logika request & response
+│   │   │   ├── Admin/          # Controller khusus area admin
+│   │   │   └── Auth/           # Controller autentikasi (Breeze)
+│   │   └── Middleware/         # Middleware (role, akses admin, dll.)
+│   ├── Models/                 # Model Eloquent (Booking, Field, Venue, dll.)
+│   └── Jobs/                   # Job terjadwal (expire & complete booking)
+├── database/
+│   ├── migrations/             # Skema tabel database
+│   └── seeders/                # Data awal untuk pengujian
+├── resources/
+│   ├── views/                  # Template Blade (halaman & komponen UI)
+│   ├── css/                    # Stylesheet Tailwind CSS
+│   └── js/                     # JavaScript & Alpine.js
+├── routes/
+│   ├── web.php                 # Rute aplikasi web
+│   └── auth.php                # Rute autentikasi
+└── public/                     # Entry point & aset publik
+```
 
-Beberapa fitur dan peningkatan yang dapat diimplementasikan di masa mendatang untuk meningkatkan nilai dan kualitas proyek:
+---
 
--   **Jaminan Kualitas Melalui Pengujian (Testing)**: Implementasi Unit Test dan Feature Test menggunakan PHPUnit/Pest, khususnya untuk logika booking yang krusial.
--   **Dasbor Admin Analitis**: Penambahan halaman laporan dengan visualisasi data (grafik pendapatan, popularitas lapangan) menggunakan Chart.js.
--   **Sistem Notifikasi Proaktif**: Implementasi notifikasi email untuk konfirmasi booking, pembayaran, dan pengingat kedaluwarsa.
--   **Fitur Interaksi Pengguna (Review & Rating)**: Memungkinkan pengguna memberikan rating dan ulasan untuk lapangan setelah booking selesai.
+## Teknologi yang Digunakan
+
+| Kategori | Teknologi |
+|---|---|
+| Backend Framework | Laravel 13 |
+| Bahasa Pemrograman | PHP 8.3+ |
+| Frontend Styling | Tailwind CSS |
+| Frontend Interaktif | Alpine.js |
+| Templating | Laravel Blade |
+| Database | MySQL 8+ |
+| Autentikasi | Laravel Breeze |
+| Asset Bundler | Vite 6 |
+| HTTP Client | Axios |
+| Scheduler & Queue | Laravel Scheduler + Database Queue |
+
+---
+
+## Tim Pengembang
+
+| No | Nama                      | NIM             |
+|:---:|---------------------------|-----------------|
+| 1 | Indra Suryadilaga         | (2410817310014) |
+| 2 | Muhammad Dzul Fathi Ahyan | (2410817210011) |
+| 3 | Orlando Sugian            | (2410817210017) |
+
+> **Dosen Pengampu:** Ir. Muhammad Alkaff, S.Kom., M.Kom., Ph.D.
+
+> **Mata Kuliah:** Pemrograman Web II.
+
+> **Institusi:** Universitas Lambung Mangkurat.
+
+> **Tahun Akademik:** 2026.
+
+---
+
+## Lisensi
+
+Proyek ini dikembangkan sebagai tugas akhir mata kuliah Pemrograman Web dan bersifat edukatif. Penggunaan di luar konteks akademik dapat disesuaikan dengan kebijakan institusi dan tim pengembang.
