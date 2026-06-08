@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="max-w-4xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto py-10 px-4 sm:px-6 lg:px-8 pt-24">
 
         <div class="mb-8">
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Konfirmasi Pesanan</h1>
@@ -53,7 +53,7 @@
 
                         @foreach($bookingData['slots'] as $index => $slot)
                             @php
-                                $time = $slot['time'] ?? substr($slot['start_time'], 0, 5); // Antisipasi format data dari Controller
+                                $time = $slot['time'] ?? substr($slot['start_time'], 0, 5);
                                 $hargaSesi = $slot['price'];
                                 $totalSemua += $hargaSesi;
                             @endphp

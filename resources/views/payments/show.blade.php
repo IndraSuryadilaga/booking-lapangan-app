@@ -79,7 +79,6 @@
                         this.minutes = '00';
                         this.seconds = '00';
 
-                        // Otomatis refresh halaman agar backend mengeksekusi penghapusan DB
                         setTimeout(() => {
                             window.location.reload();
                         }, 1500);
