@@ -93,7 +93,7 @@
                             <div class="mb-4 flex items-center gap-4 p-3 bg-neutral-50 rounded-xl border border-neutral-100 w-fit">
                                 <img src="{{ $venue->logo_url }}" alt="Logo saat ini" class="w-16 h-16 object-cover rounded-xl border border-neutral-200 shadow-sm">
                                 <div class="flex flex-col gap-1.5">
-                                    <span class="text-xs text-neutral-400 font-medium">Biarkan kosong jika tidak ingin mengubah logo.</span>
+                                    <span class="text-xs text-neutral-400 font-medium">Biarkan jika tidak ingin mengubah logo.</span>
                                     <button type="button"
                                             onclick="if(confirm('Apakah Anda yakin ingin menghapus logo ini?')) { document.getElementById('delete-logo-form').submit(); }"
                                             class="text-xs font-bold text-danger-600 hover:text-danger-700 transition-colors w-fit">
