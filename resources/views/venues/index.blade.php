@@ -61,11 +61,9 @@
                     </div>
 
                     <div class="flex items-center gap-3 w-full lg:w-auto shrink-0 justify-end mt-4 lg:mt-0">
-                        <a href="{{ route('venues.index') }}" class="inline-block">
-                            <x-atoms.button type="secondary">
+                        <x-atoms.button href="{{ route('venues.index') }}" type="secondary">
                             Reset
-                            </x-atoms.button>
-                        </a>
+                        </x-atoms.button>
                         <x-atoms.button type="primary">
                             Cari
                         </x-atoms.button>
