@@ -12,7 +12,7 @@
 
 @if($venue)
     @php
-        $logo = $venue->logo;
+        $logo = $venue->logo_url;
         $name = $venue->name;
         $rating = $venue->rating_avg;
         $location = $venue->city;
