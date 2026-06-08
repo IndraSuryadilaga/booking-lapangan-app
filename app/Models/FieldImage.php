@@ -36,7 +36,7 @@ class FieldImage extends Model
             return $this->image_path;
         }
 
-        return Storage::disk('public')->url($this->image_path);
+        return asset('storage/' . $this->image_path);
     }
 
     /**
