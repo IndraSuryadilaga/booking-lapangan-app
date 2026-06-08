@@ -76,7 +76,7 @@ class BookingController extends Controller
 
         $booking->update(['status' => $validated['status']]);
 
-        return redirect()->route('admin.bookings.show', $booking)->with('success', 'Status booking berhasil diperbarui.');
+        return redirect()->route('admin.bookings.index')->with('success', 'Status booking berhasil diperbarui.');
     }
 
     private function authorizeAdminAccess(Booking $booking)

@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="container mx-auto px-4 py-8" x-data="{
         ...slotCalendar({{ $field->id }}),
-        mainImage: '{{ $field->images->isNotEmpty() ? asset('storage/' . ($field->images->firstWhere('is_primary', true)?->image_path ?? $field->images->first()->image_path)) : '' }}'
+        mainImage: '{{ $field->images->isNotEmpty() ? ($field->images->firstWhere('is_primary', true)?->url ?? $field->images->first()->url) : '' }}'
     }">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pb-24"> {{-- Padding bottom untuk memberi ruang bagi tombol sticky --}}
 
@@ -18,11 +18,11 @@
                 <div class="flex flex-wrap gap-2">
                     @foreach($field->images as $image)
                         <img
-                            src="{{ asset('storage/' . $image->image_path) }}"
-                            @click="mainImage = '{{ asset('storage/' . $image->image_path) }}'"
+                            src="{{ $image->url }}"
+                            @click="mainImage = '{{ $image->url }}'"
                             alt="Thumbnail"
                             class="w-24 h-24 object-cover rounded-md cursor-pointer border-2 hover:border-primary-500 transition-colors"
-                            :class="mainImage === '{{ asset('storage/' . $image->image_path) }}' ? 'border-primary-500' : 'border-transparent'"
+                            :class="mainImage === '{{ $image->url }}' ? 'border-primary-500' : 'border-transparent'"
                         >
                     @endforeach
                 </div>

@@ -110,8 +110,9 @@ class AdminFieldController extends Controller
 
             if ($request->has('pricings')) {
                 foreach ($request->pricings as $pricing) {
+                    $dayType = $pricing['tier'] === 'regular' ? 'weekday' : $pricing['tier'];
                     $field->pricings()->updateOrCreate(
-                        ['day_type' => $pricing['day_type']],
+                        ['day_type' => $dayType],
                         $pricing
                     );
                 }
