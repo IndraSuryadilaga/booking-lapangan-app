@@ -1,6 +1,6 @@
 <x-app-layout>
     <div x-data="paymentTimer('{{ $booking->expires_at->toIso8601String() }}')"
-         class="max-w-3xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+         class="max-w-3xl mx-auto py-10 px-4 sm:px-6 lg:px-8 pt-24">
 
         <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
 
@@ -79,7 +79,6 @@
                         this.minutes = '00';
                         this.seconds = '00';
 
-                        // Otomatis refresh halaman agar backend mengeksekusi penghapusan DB
                         setTimeout(() => {
                             window.location.reload();
                         }, 1500);

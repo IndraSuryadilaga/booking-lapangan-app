@@ -19,10 +19,15 @@ class BookingService
                 throw new \Exception('Lapangan sedang ditutup sementara (Maintenance Mode).');
             }
 
-            $bookingDate = Carbon::parse($data['booking_date']);
+            $now = Carbon::now('Asia/Makassar');
+            $bookingDate = Carbon::parse($data['booking_date'], 'Asia/Makassar');
 
-            if ($bookingDate->isPast()) {
-                throw new \Exception('Tidak dapat memesan slot di masa lampau.');
+            foreach ($data['slots'] as $slot) {
+                $slotStartTime = Carbon::parse($data['booking_date'] . ' ' . $slot['start_time'], 'Asia/Makassar');
+
+                if ($bookingDate->isToday() && $slotStartTime->lessThan($now)) {
+                    throw new \Exception('Tidak dapat memesan slot yang sudah lewat waktu.');
+                }
             }
 
             $dayOfWeek = $bookingDate->dayOfWeek;
@@ -73,7 +78,7 @@ class BookingService
                     'start_time' => $slot['start_time'],
                     'end_time' => \Carbon\Carbon::parse($slot['start_time'])->addHour()->format('H:i:s'),
 
-                    'price' => $slot['price'], // <-- GUNAKAN HARGA DINAMIS DARI FORM
+                    'price' => $slot['price'],
                 ];
             }
             BookingSlot::insert($bookingSlots);
