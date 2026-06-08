@@ -141,27 +141,22 @@
         Alpine.data('bookingCart', () => ({
             selectedCount: 0,
             totalPrice: 0,
-            currentCourtId: null, // Mengingat ID lapangan yang sedang dipilih
+            currentCourtId: null,
 
             calculate(event) {
                 const clickedCheckbox = event.target;
                 const courtId = clickedCheckbox.dataset.courtId;
 
                 if (clickedCheckbox.checked) {
-                    // Jika user klik jadwal di lapangan yang BEDA dari sebelumnya
                     if (this.currentCourtId !== null && this.currentCourtId !== courtId) {
 
-                        // Hapus/uncheck semua centang di lapangan sebelumnya otomatis
                         document.querySelectorAll('.slot-checkbox:checked').forEach(el => {
                             if (el.dataset.courtId !== courtId) {
                                 el.checked = false;
                             }
                         });
 
-                        // (Opsional) Kamu bisa memunculkan alert jika mau:
-                        // alert('Anda hanya bisa memesan satu lapangan dalam 1 transaksi. Pilihan sebelumnya telah dibatalkan.');
                     }
-                    // Update lapangan aktif saat ini
                     this.currentCourtId = courtId;
                 }
 

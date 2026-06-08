@@ -24,30 +24,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // View Composer khusus untuk Sidebar
-        View::composer('components.organisms.quick-access-sidebar', function ($view) {
-            if (Auth::check()) {
-                $user = Auth::user();
 
-                // Ambil booking pending (Keranjang)
-                $pendingBookings = Booking::with('field.venue')
-                    ->where('user_id', $user->id)
-                    ->where('status', 'pending')
-                    ->latest()
-                    ->get();
-
-                // Ambil tiket aktif (Belum lewat tanggal mainnya)
-                $activeBookings = Booking::with('field.venue')
-                    ->where('user_id', $user->id)
-                    ->whereIn('status', ['paid', 'confirmed'])
-                    ->whereDate('booking_date', '>=', now()->toDateString())
-                    ->latest()
-                    ->get();
-
-                $view->with(compact('pendingBookings', 'activeBookings'));
-            } else {
-                $view->with(['pendingBookings' => collect(), 'activeBookings' => collect()]);
-            }
-        });
     }
 }
